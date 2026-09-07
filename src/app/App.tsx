@@ -8,8 +8,10 @@ import { useLocation } from 'react-router-dom';
 function AppContent() {
   const location = useLocation();
   const isAuthPage = location.pathname === '/login';
+  const isKioskPage = location.pathname.startsWith('/kiosk');
+  const isGpsIngestPage = location.pathname.startsWith('/gps-ingest');
 
-  if (isAuthPage) {
+  if (isAuthPage || isKioskPage || isGpsIngestPage) {
     return (
       <AuthLayout>
         <AppRoutes />

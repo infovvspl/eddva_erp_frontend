@@ -1,0 +1,430 @@
+// RBAC Types
+export interface Permission {
+  id: string;
+  key: string;
+  name: string;
+  description: string;
+  module: string;
+  resource: string | null;
+  action: string | null;
+  isSystem: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface PermissionFormData {
+  key: string;
+  name: string;
+  description: string;
+  module: string;
+}
+
+export interface Role {
+  id: string;
+  name: string;
+  description: string;
+  isSystem: boolean;
+  createdAt: string;
+  updatedAt?: string;
+  rolePermissions: RolePermission[];
+  userRoles?: any[];
+}
+
+export interface RolePermission {
+  id: string;
+  roleId: string;
+  permissionId: string;
+  createdAt: string;
+  permission: Permission;
+}
+
+export interface RoleFormData {
+  name: string;
+  description: string;
+  permissionIds: string[];
+}
+
+export interface CanteenUser {
+  id: string;
+  name: string;
+  email: string;
+  roleId: string;
+  roles: string[];
+  permissions: string[];
+  status: 'ACTIVE' | 'INACTIVE';
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface CanteenUserWithRoles {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  roles: Role[];
+  permissions: string[];
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface CanteenUserFormData {
+  firstName: string;
+  lastName: string;
+  phone?: string;
+}
+
+export interface CreateUserFormData {
+  name: string;
+  email: string;
+  password: string;
+  roleId: string;
+}
+
+export interface UsersResponse {
+  users: CanteenUser[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+// Reports Types
+export interface ReportParams {
+  startDate?: string;
+  endDate?: string;
+  [key: string]: string | undefined;
+}
+
+export interface SalesReport {
+  totalSales: number;
+  totalOrders: number;
+  averageOrderValue: number;
+  topSellingItems: {
+    name: string;
+    quantitySold: number;
+    revenue: number;
+  }[];
+  salesByDate: {
+    date: string;
+    sales: number;
+    orders: number;
+  }[];
+}
+
+export interface ItemSalesReportRow {
+  itemId?: string;
+  itemName: string;
+  categoryName?: string;
+  quantitySold: number;
+  revenue: number;
+  orderCount?: number;
+}
+
+export interface ItemSalesReport {
+  items: ItemSalesReportRow[];
+  totalRevenue?: number;
+  totalQuantity?: number;
+}
+
+export interface CategorySalesReportRow {
+  categoryId?: string;
+  categoryName: string;
+  quantitySold: number;
+  revenue: number;
+  orderCount?: number;
+}
+
+export interface CategorySalesReport {
+  categories: CategorySalesReportRow[];
+  totalRevenue?: number;
+}
+
+export interface PaymentSummaryReportRow {
+  paymentMode: string;
+  count: number;
+  totalAmount: number;
+}
+
+export interface PaymentSummaryReport {
+  payments: PaymentSummaryReportRow[];
+  totalAmount?: number;
+  totalTransactions?: number;
+}
+
+export interface ShiftReportRow {
+  shiftId?: string;
+  terminalName?: string;
+  openedAt: string;
+  closedAt?: string;
+  openingCash: number;
+  closingCash?: number;
+  totalSales?: number;
+  totalOrders?: number;
+  status: string;
+  openedBy?: string;
+  closedBy?: string;
+}
+
+export interface ShiftsReport {
+  shifts: ShiftReportRow[];
+  totalShifts?: number;
+  totalSales?: number;
+}
+
+// Menu Types
+export type FoodType = 'VEG' | 'NON_VEG' | 'EGG';
+
+export interface MenuCategory {
+  id: string;
+  name: string;
+  displayOrder: number;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface MenuCategoryFormData {
+  name: string;
+  displayOrder: number;
+}
+
+export interface MenuItem {
+  id: string;
+  categoryId: string;
+  name: string;
+  description: string;
+  price: number;
+  taxRate: number;
+  foodType: FoodType;
+  imageUrl: string;
+  isAvailable: boolean;
+  availableDays: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface MenuItemFormData {
+  categoryId: string;
+  name: string;
+  description: string;
+  price: number;
+  taxRate: number;
+  foodType: FoodType;
+  imageUrl: string;
+  isAvailable: boolean;
+  availableDays: string;
+}
+
+export interface MenuItemAvailability {
+  isAvailable: boolean;
+}
+
+export interface MenuSchedule {
+  id: string;
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  itemId: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface MenuScheduleFormData {
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+}
+
+// Member Types
+export type MemberType = 'STUDENT' | 'TEACHER' | 'STAFF' | 'GUEST';
+
+export interface CanteenMember {
+  id: string;
+  name: string;
+  memberType: MemberType;
+  idCardBarcode: string;
+  externalRefId: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface CanteenMemberFormData {
+  name: string;
+  memberType: MemberType;
+  idCardBarcode: string;
+  externalRefId: string;
+}
+
+// POS Types
+export interface PosTerminal {
+  id: string;
+  name: string;
+  location: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface PosTerminalFormData {
+  name: string;
+  location: string;
+}
+
+export interface Shift {
+  id: string;
+  terminalId: string;
+  terminalName?: string;
+  openingCash: number;
+  closingCash?: number;
+  openedAt: string;
+  closedAt?: string;
+  status: 'OPEN' | 'CLOSED';
+  openedBy?: string;
+  closedBy?: string;
+}
+
+export interface OpenShiftFormData {
+  terminalId: string;
+  openingCash: number;
+}
+
+export interface CloseShiftFormData {
+  closingCash: number;
+}
+
+// Order Types
+export type OrderStatus = 'PLACED' | 'PREPARING' | 'READY' | 'COMPLETED' | 'CANCELLED';
+
+export interface OrderItem {
+  id?: string;
+  itemId: string;
+  quantity: number;
+}
+
+export interface OrderItemDetail {
+  id: string;
+  orderId: string;
+  itemId: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+  menuItem?: {
+    id: string;
+    name: string;
+    price: number;
+    foodType: string;
+    imageUrl?: string;
+  };
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface AddOrderItemFormData {
+  itemId: string;
+  quantity: number;
+}
+
+export interface UpdateOrderStatusFormData {
+  status: OrderStatus;
+}
+
+export interface Order {
+  id: string;
+  memberId: string;
+  terminalId: string;
+  discountAmount: number;
+  items: OrderItem[];
+  totalAmount?: number;
+  status: OrderStatus;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface OrderFormData {
+  memberId: string;
+  terminalId: string;
+  discountAmount: number;
+  items: OrderItem[];
+  status?: OrderStatus;
+}
+
+// Wallet Types
+export type WalletStatus = 'ACTIVE' | 'BLOCKED';
+
+export interface Wallet {
+  id: string;
+  memberId: string;
+  balance: number;
+  dailySpendLimit: number;
+  status: WalletStatus;
+  blockedReason?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface WalletFormData {
+  initialBalance: number;
+  dailySpendLimit: number;
+}
+
+export interface UpdateWalletFormData {
+  dailySpendLimit?: number;
+}
+
+export interface BlockWalletFormData {
+  reason: string;
+}
+
+export type TopupPaymentMode = 'CASH' | 'CARD' | 'UPI' | 'BANK_TRANSFER' | 'OTHER';
+
+export interface WalletTopup {
+  id: string;
+  walletId: string;
+  amount: number;
+  paymentMode: TopupPaymentMode;
+  transactionRef?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface WalletTopupFormData {
+  amount: number;
+  paymentMode: TopupPaymentMode;
+  transactionRef?: string;
+}
+
+export type WalletTransactionType = 'CREDIT' | 'DEBIT';
+
+export interface WalletTransaction {
+  id: string;
+  walletId: string;
+  type: WalletTransactionType;
+  amount: number;
+  balanceBefore: number;
+  balanceAfter: number;
+  description?: string;
+  referenceId?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+// Payment Types
+export type PaymentMode = 'CASH' | 'CARD' | 'UPI' | 'WALLET' | 'OTHER';
+
+export interface Payment {
+  id: string;
+  orderId: string;
+  paymentMode: PaymentMode;
+  amount: number;
+  transactionRef?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface PaymentFormData {
+  paymentMode: PaymentMode;
+  amount: number;
+  transactionRef?: string;
+}
