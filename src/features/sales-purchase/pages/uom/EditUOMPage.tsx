@@ -6,6 +6,7 @@ import Card from '../../../../components/ui/Card';
 import UOMForm from '../../components/uom/UOMForm';
 import { getUOM, updateUOM } from '../../api/sales-purchase.api';
 import type { UOMFormData } from '../../types/sales-purchase.types';
+import { getApiErrorMessage } from '../../utils/errors';
 
 export default function EditUOMPage() {
   const { id } = useParams();
@@ -26,7 +27,7 @@ export default function EditUOMPage() {
       const data = await getUOM(uomId);
       setDefaultValues({
         name: data.name,
-        code: data.code,
+        symbol: data.symbol,
       });
     } catch (error: any) {
       console.error('Failed to load data:', error);
@@ -49,7 +50,7 @@ export default function EditUOMPage() {
       if (error.response?.status === 401) {
         return;
       }
-      alert(error instanceof Error ? error.message : 'Failed to update UOM');
+      alert(getApiErrorMessage(error, 'Failed to update UOM'));
     } finally {
       setIsSubmitting(false);
     }

@@ -1,10 +1,11 @@
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Edit, CreditCard, Calendar, IndianRupee, ArrowUp, ArrowDown, FileText } from 'lucide-react';
+import { ArrowLeft, Edit, CreditCard, Calendar, IndianRupee, Building2, FileText } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import { getPayment } from '../../api/sales-purchase.api';
 import type { Payment } from '../../types/sales-purchase.types';
+import { getApiErrorMessage } from '../../utils/errors';
 
 export default function PaymentDetailsPage() {
   const { id } = useParams();
@@ -27,7 +28,7 @@ export default function PaymentDetailsPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err instanceof Error ? err.message : 'Failed to load payment');
+      setError(getApiErrorMessage(err, 'Failed to load payment'));
     } finally {
       setLoading(false);
     }
@@ -71,16 +72,16 @@ export default function PaymentDetailsPage() {
                   <CreditCard className="h-4 w-4" />
                   <span className="text-sm font-medium">Payment Number</span>
                 </div>
-                <div className="text-lg font-bold text-slate-900">PAY-{payment.id.slice(0, 8)}</div>
+                <div className="text-lg font-bold text-slate-900">Payment #{payment.payment_id}</div>
               </div>
             </Card>
             <Card className="border-slate-200">
               <div className="p-4">
                 <div className="flex items-center gap-2 text-slate-600 mb-2">
-                  {payment.paymentType === 'RECEIVED' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
-                  <span className="text-sm font-medium">Type</span>
+                  <Building2 className="h-4 w-4" />
+                  <span className="text-sm font-medium">Vendor</span>
                 </div>
-                <div className="text-lg font-bold text-slate-900">{payment.paymentType}</div>
+                <div className="text-lg font-bold text-slate-900">{payment.invoice?.vendor?.vendor_name || '-'}</div>
               </div>
             </Card>
             <Card className="border-slate-200">
@@ -89,7 +90,7 @@ export default function PaymentDetailsPage() {
                   <Calendar className="h-4 w-4" />
                   <span className="text-sm font-medium">Payment Date</span>
                 </div>
-                <div className="text-lg font-bold text-slate-900">{payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString() : '-'}</div>
+                <div className="text-lg font-bold text-slate-900">{payment.payment_date ? new Date(payment.payment_date).toLocaleDateString() : '-'}</div>
               </div>
             </Card>
             <Card className="border-slate-200">
@@ -98,7 +99,7 @@ export default function PaymentDetailsPage() {
                   <IndianRupee className="h-4 w-4" />
                   <span className="text-sm font-medium">Amount</span>
                 </div>
-                <div className="text-lg font-bold text-slate-900">{payment.amount.toFixed(2)}</div>
+                <div className="text-lg font-bold text-slate-900">{(Number(payment.amount) || 0).toFixed(2)}</div>
               </div>
             </Card>
           </div>
@@ -111,22 +112,22 @@ export default function PaymentDetailsPage() {
                   <label className="text-sm font-medium text-slate-500">Invoice</label>
                   <div className="mt-1 flex items-center gap-2 text-slate-900">
                     <FileText className="h-4 w-4 text-slate-400" />
-                    INV-{payment.invoiceId?.slice(0, 8) || '-'}
+                    {payment.invoice?.invoice_number || `Invoice #${payment.pi_id}`}
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-500">Payment Method</label>
-                  <div className="mt-1 text-slate-900">{payment.paymentMethod}</div>
+                  <label className="text-sm font-medium text-slate-500">Payment Mode</label>
+                  <div className="mt-1 text-slate-900">{payment.mode || '-'}</div>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-500">Reference</label>
-                  <div className="mt-1 text-slate-900">{payment.reference || '-'}</div>
+                  <div className="mt-1 text-slate-900">{payment.reference_no || '-'}</div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-500">Status</label>
+                  <label className="text-sm font-medium text-slate-500">Invoice Payment Status</label>
                   <div className="mt-1">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      {payment.status}
+                      {payment.invoice?.payment_status || '-'}
                     </span>
                   </div>
                 </div>

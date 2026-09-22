@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import ItemCategoryTable from '../../components/item-categories/ItemCategoryTable';
-import { getItemCategories } from '../../api/sales-purchase.api';
+import { getItemCategories, deleteItemCategory } from '../../api/sales-purchase.api';
+import { getApiErrorMessage } from '../../utils/errors';
 import type { ItemCategory } from '../../types/sales-purchase.types';
 
 export default function ItemCategoriesPage() {
@@ -26,9 +27,24 @@ export default function ItemCategoriesPage() {
         // Let the axios interceptor handle 401
         return;
       }
-      setError(err instanceof Error ? err.message : 'Failed to load categories');
+      setError(getApiErrorMessage(err, 'Failed to load categories'));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('Are you sure you want to delete this category?')) {
+      return;
+    }
+    try {
+      await deleteItemCategory(id);
+      setCategories(categories.filter((c) => c.category_id !== id));
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        return;
+      }
+      alert(getApiErrorMessage(err, 'Failed to delete category'));
     }
   };
 
@@ -54,7 +70,7 @@ export default function ItemCategoriesPage() {
           ) : error ? (
             <div className="text-center py-8 text-red-500">{error}</div>
           ) : (
-            <ItemCategoryTable categories={categories} />
+            <ItemCategoryTable categories={categories} onDelete={handleDelete} />
           )}
         </div>
       </Card>

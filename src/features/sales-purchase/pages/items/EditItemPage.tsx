@@ -6,6 +6,7 @@ import Card from '../../../../components/ui/Card';
 import ItemForm from '../../components/items/ItemForm';
 import { getItem, updateItem, getItemCategories, getUOMs, getTaxCodes } from '../../api/sales-purchase.api';
 import type { ItemFormData, ItemCategory, UOM, TaxCode } from '../../types/sales-purchase.types';
+import { getApiErrorMessage } from '../../utils/errors';
 
 export default function EditItemPage() {
   const { id } = useParams();
@@ -33,15 +34,13 @@ export default function EditItemPage() {
         getTaxCodes(),
       ]);
       setDefaultValues({
-        itemCode: itemData.itemCode,
-        itemName: itemData.itemName,
-        categoryId: itemData.categoryId,
-        uomId: itemData.uomId,
-        quantity: itemData.quantity,
-        hsnSacCode: itemData.hsnSacCode,
-        purchasePrice: itemData.purchasePrice,
-        salesPrice: itemData.salesPrice,
-        taxCodeId: itemData.taxCodeId,
+        item_name: itemData.item_name,
+        category_id: itemData.category_id,
+        uom_id: itemData.uom_id,
+        hsn_sac_code: itemData.hsn_sac_code || undefined,
+        purchase_price: Number(itemData.purchase_price),
+        sales_price: Number(itemData.sales_price),
+        tax_code_id: itemData.tax_code_id,
       });
       setCategories(categoriesData);
       setUOMs(uomsData);
@@ -67,7 +66,7 @@ export default function EditItemPage() {
       if (error.response?.status === 401) {
         return;
       }
-      alert(error instanceof Error ? error.message : 'Failed to update item');
+      alert(getApiErrorMessage(error, 'Failed to update item'));
     } finally {
       setIsSubmitting(false);
     }

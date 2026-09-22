@@ -5,6 +5,7 @@ import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import { getPaymentTerm } from '../../api/sales-purchase.api';
 import type { PaymentTerm } from '../../types/sales-purchase.types';
+import { getApiErrorMessage } from '../../utils/errors';
 
 export default function PaymentTermDetailsPage() {
   const { id } = useParams();
@@ -27,7 +28,7 @@ export default function PaymentTermDetailsPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err instanceof Error ? err.message : 'Failed to load payment term');
+      setError(getApiErrorMessage(err, 'Failed to load payment term'));
     } finally {
       setLoading(false);
     }
@@ -72,7 +73,7 @@ export default function PaymentTermDetailsPage() {
                   <label className="text-sm font-medium text-slate-500">Term Name</label>
                   <div className="mt-1 flex items-center gap-2">
                     <Clock className="h-5 w-5 text-slate-400" />
-                    <p className="text-lg font-medium text-slate-900">{paymentTerm.termName}</p>
+                    <p className="text-lg font-medium text-slate-900">{paymentTerm.term_name}</p>
                   </div>
                 </div>
                 <div>
@@ -81,13 +82,13 @@ export default function PaymentTermDetailsPage() {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-500">Payment Term ID</label>
-                  <p className="mt-1 text-slate-900">{paymentTerm.id}</p>
+                  <p className="mt-1 text-slate-900">{paymentTerm.payment_term_id}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-500">Created At</label>
                   <div className="mt-1 flex items-center gap-2">
                     <Calendar className="h-5 w-5 text-slate-400" />
-                    <p className="text-slate-900">{paymentTerm.createdAt ? new Date(paymentTerm.createdAt).toLocaleString() : '-'}</p>
+                    <p className="text-slate-900">{paymentTerm.created_at ? new Date(paymentTerm.created_at).toLocaleString() : '-'}</p>
                   </div>
                 </div>
               </div>

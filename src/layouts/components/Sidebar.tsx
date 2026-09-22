@@ -1,8 +1,13 @@
 import { NavLink } from 'react-router-dom';
 import { useState } from 'react';
-import { LayoutDashboard, GraduationCap, Building, ShoppingCart, ArrowRight, ChevronDown, Database, Shield, Key, Users, Utensils, Clock, UserPlus, Search, Monitor, PlayCircle, Receipt, CreditCard, Wallet, BarChart2, BookOpen, Folder, Settings, AlertTriangle, Trophy, Home, Swords, Award, Medal, Bell, Building2, UserCheck, LogIn, MessageSquare, Calendar, Boxes, Tag, MapPin, Truck, Package, ClipboardList, Tags, ClipboardCheck, Wrench, Contact, BellRing, Bus, Route } from 'lucide-react';
+import { ArrowRightLeft, BedDouble, Briefcase, Gift, GitBranch, Handshake, HeartHandshake, Mail, CalendarCheck, Gavel, DoorOpen, BadgeCheck, LayoutDashboard, GraduationCap, Building, ShoppingCart, ArrowRight, ChevronDown, Database, Shield, Key, Users, Utensils, Clock, UserPlus, Search, Monitor, PlayCircle, Receipt, CreditCard, Wallet, BarChart2, BookOpen, Folder, Settings, AlertTriangle, Trophy, Home, Swords, Award, Medal, Bell, Building2, UserCheck, LogIn, MessageSquare, Calendar, Boxes, Tag, MapPin, Truck, Package, ClipboardList, Tags, ClipboardCheck, Wrench, Contact, BellRing, Bus, Route } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useUIStore } from '../../stores/ui.store';
+import { useIsInstituteAdmin } from '../../features/sales-purchase/utils/rbac.utils';
+import { useIsInstituteAdmin as useIsCanteenInstituteAdmin } from '../../features/canteen/utils/rbac.utils';
+import { useIsInstituteAdmin as useIsAdmissionInstituteAdmin } from '../../features/admission/utils/rbac.utils';
+import { useIsInstituteAdmin as useIsHostelInstituteAdmin } from '../../features/hostel/utils/rbac.utils';
+import { useIsInstituteAdmin as useIsAlumniInstituteAdmin } from '../../features/alumni/utils/rbac.utils';
 
 interface NavItem {
   path: string;
@@ -14,31 +19,12 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  {
-    path: '/front-office',
-    label: 'Front Office',
-    icon: Building,
-    children: [
-      { path: '/front-office', label: 'Dashboard', icon: LayoutDashboard },
-      { path: '/front-office/permissions', label: 'Permissions', icon: Key },
-      { path: '/front-office/roles', label: 'Roles', icon: Shield },
-      { path: '/front-office/users', label: 'Users', icon: Users },
-      { path: '/front-office/notifications', label: 'Notifications', icon: Bell },
-      { path: '/front-office/departments', label: 'Departments', icon: Building2 },
-      { path: '/front-office/employees', label: 'Employees', icon: UserPlus },
-      { path: '/front-office/employees/available', label: 'Available Employees', icon: Search },
-      { path: '/front-office/visitors', label: 'Visitors', icon: UserCheck },
-      { path: '/front-office/visitor-logs', label: 'Visitor Logs', icon: LogIn },
-      { path: '/front-office/enquiries', label: 'Enquiries', icon: MessageSquare },
-      { path: '/front-office/appointments', label: 'Appointments', icon: Calendar },
-      { path: '/front-office/complaints', label: 'Complaints', icon: AlertTriangle },
-    ]
-  },
   { 
     path: '/sales-purchase', 
     label: 'Sales & Purchase', 
     icon: ShoppingCart,
     children: [
+      { path: '/sales-purchase/dashboard', label: 'Dashboard', icon: LayoutDashboard },
       { path: '/sales-purchase/permissions', label: 'Permissions', icon: Key },
       { path: '/sales-purchase/roles', label: 'Roles', icon: Shield },
       { path: '/sales-purchase/users', label: 'Users', icon: Users },
@@ -51,6 +37,7 @@ const navItems: NavItem[] = [
       { path: '/sales-purchase/vendors', label: 'Vendors', icon: Database },
       { path: '/sales-purchase/customers', label: 'Customers', icon: Database },
       { path: '/sales-purchase/purchase-orders', label: 'Purchase Orders', icon: Database },
+      { path: '/sales-purchase/approval-rules', label: 'PO Approval Rules', icon: Database },
       { path: '/sales-purchase/grn', label: 'Goods Received Notes', icon: Database },
       { path: '/sales-purchase/invoices', label: 'Purchase-Invoices', icon: Database },
       { path: '/sales-purchase/payments', label: 'Purchase-Payments', icon: Database },
@@ -82,6 +69,93 @@ const navItems: NavItem[] = [
     ]
   },
   {
+    path: '/admission',
+    label: 'Admission',
+    icon: GraduationCap,
+    children: [
+      { path: '/admission/permissions', label: 'Permissions', icon: Key },
+      { path: '/admission/roles', label: 'Roles', icon: Shield },
+      { path: '/admission/users', label: 'Users', icon: Users },
+      { path: '/admission/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { path: '/admission/sessions', label: 'Academic Sessions', icon: Calendar },
+      { path: '/admission/programs', label: 'Programs', icon: BookOpen },
+      { path: '/admission/enquiries', label: 'Enquiries & Leads', icon: MessageSquare },
+      { path: '/admission/applicants', label: 'Applicants', icon: UserPlus },
+      { path: '/admission/applications', label: 'Applications', icon: ClipboardList },
+      { path: '/admission/tests', label: 'Entrance Tests', icon: ClipboardCheck },
+      { path: '/admission/interviews', label: 'Interviews', icon: UserCheck },
+      { path: '/admission/merit-lists', label: 'Merit Lists', icon: Medal },
+      { path: '/admission/offers', label: 'Offers', icon: Award },
+      { path: '/admission/payments', label: 'Admission Payments', icon: CreditCard },
+      { path: '/admission/confirmations', label: 'Confirmations', icon: BadgeCheck },
+      { path: '/admission/reports', label: 'Reports', icon: BarChart2 },
+      { path: '/admission/notifications', label: 'Notification Log', icon: Bell },
+      { path: '/admission/fee-structures', label: 'Fee Structures', icon: Wallet },
+    ]
+  },
+  {
+    path: '/hostel',
+    label: 'Hostel',
+    icon: Home,
+    children: [
+      { path: '/hostel/permissions', label: 'Permissions', icon: Key },
+      { path: '/hostel/roles', label: 'Roles', icon: Shield },
+      { path: '/hostel/users', label: 'Users', icon: Users },
+      { path: '/hostel/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { path: '/hostel/alerts', label: 'Alerts', icon: AlertTriangle },
+      { path: '/hostel/residents', label: 'Residents', icon: UserCheck },
+      { path: '/hostel/allotments', label: 'Allotments', icon: ClipboardList },
+      { path: '/hostel/transfer-requests', label: 'Transfer Requests', icon: ArrowRightLeft },
+      { path: '/hostel/gate-passes', label: 'Gate Passes', icon: LogIn },
+      { path: '/hostel/gate-passes/scan', label: 'Gate Scan', icon: ClipboardCheck },
+      { path: '/hostel/attendance', label: 'Attendance', icon: Calendar },
+      { path: '/hostel/blocks', label: 'Blocks', icon: Building2 },
+      { path: '/hostel/rooms', label: 'Rooms', icon: DoorOpen },
+      { path: '/hostel/beds', label: 'Beds', icon: BedDouble },
+      { path: '/hostel/visitors', label: 'Visitors', icon: Contact },
+      { path: '/hostel/mess-menu', label: 'Mess Menu', icon: Utensils },
+      { path: '/hostel/mess-attendance', label: 'Mess Attendance', icon: CalendarCheck },
+      { path: '/hostel/complaints', label: 'Complaints', icon: Wrench },
+      { path: '/hostel/fee-plans', label: 'Fee Plans', icon: Tags },
+      { path: '/hostel/invoices', label: 'Fee Invoices', icon: Receipt },
+      { path: '/hostel/payments', label: 'Fee Payments', icon: CreditCard },
+      { path: '/hostel/discipline', label: 'Discipline', icon: Gavel },
+      { path: '/hostel/reports', label: 'Reports', icon: BarChart2 },
+      { path: '/hostel/notifications', label: 'Notification Log', icon: Bell },
+    ]
+  },
+  {
+    path: '/alumni',
+    label: 'Alumni',
+    icon: GraduationCap,
+    children: [
+      { path: '/alumni/permissions', label: 'Permissions', icon: Key },
+      { path: '/alumni/roles', label: 'Roles', icon: Shield },
+      { path: '/alumni/users', label: 'Users', icon: Users },
+      { path: '/alumni/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { path: '/alumni/register', label: 'Register Alumni', icon: UserPlus },
+      { path: '/alumni/profiles', label: 'Directory', icon: Contact },
+      { path: '/alumni/public-directory', label: 'Public Directory', icon: Search },
+      { path: '/alumni/me', label: 'My Profile', icon: UserCheck },
+      { path: '/alumni/me/verification', label: 'My Verification', icon: BadgeCheck },
+      { path: '/alumni/me/notifications', label: 'My Notifications', icon: BellRing },
+      { path: '/alumni/groups', label: 'Groups', icon: Users },
+      { path: '/alumni/events', label: 'Events', icon: Calendar },
+      { path: '/alumni/event-registrations', label: 'Event Registrations', icon: CreditCard },
+      { path: '/alumni/jobs', label: 'Job Board', icon: Briefcase },
+      { path: '/alumni/job-applications', label: 'Job Applications', icon: ClipboardList },
+      { path: '/alumni/mentorship-programs', label: 'Mentorship Programs', icon: Handshake },
+      { path: '/alumni/mentors', label: 'Mentors', icon: UserCheck },
+      { path: '/alumni/mentorship-matches', label: 'Mentorship Matches', icon: GitBranch },
+      { path: '/alumni/campaigns', label: 'Campaigns', icon: HeartHandshake },
+      { path: '/alumni/donations', label: 'Donations', icon: Gift },
+      { path: '/alumni/newsletters', label: 'Newsletters', icon: Mail },
+      { path: '/alumni/communication-logs', label: 'Communication Logs', icon: MessageSquare },
+      { path: '/alumni/reports', label: 'Reports', icon: BarChart2 },
+      { path: '/alumni/notifications', label: 'Notifications', icon: Bell },
+    ]
+  },
+  {
     path: '/library',
     label: 'Library',
     icon: BookOpen,
@@ -95,6 +169,26 @@ const navItems: NavItem[] = [
       { path: '/library/books', label: 'Books', icon: BookOpen },
       { path: '/library/issues', label: 'Issues', icon: AlertTriangle },
       { path: '/library/reservations', label: 'Reservations', icon: Clock },
+    ]
+  },
+  {
+    path: '/front-office',
+    label: 'Front Office',
+    icon: Building,
+    children: [
+      { path: '/front-office', label: 'Dashboard', icon: LayoutDashboard },
+      { path: '/front-office/permissions', label: 'Permissions', icon: Key },
+      { path: '/front-office/roles', label: 'Roles', icon: Shield },
+      { path: '/front-office/users', label: 'Users', icon: Users },
+      { path: '/front-office/notifications', label: 'Notifications', icon: Bell },
+      { path: '/front-office/departments', label: 'Departments', icon: Building2 },
+      { path: '/front-office/employees', label: 'Employees', icon: UserPlus },
+      { path: '/front-office/employees/available', label: 'Available Employees', icon: Search },
+      { path: '/front-office/visitors', label: 'Visitors', icon: UserCheck },
+      { path: '/front-office/visitor-logs', label: 'Visitor Logs', icon: LogIn },
+      { path: '/front-office/enquiries', label: 'Enquiries', icon: MessageSquare },
+      { path: '/front-office/appointments', label: 'Appointments', icon: Calendar },
+      { path: '/front-office/complaints', label: 'Complaints', icon: AlertTriangle },
     ]
   },
   {
@@ -182,6 +276,55 @@ export default function Sidebar() {
   const sidebarOpen = useUIStore((state) => state.sidebarOpen);
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
   const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
+
+  const isSalesPurchaseAdmin = useIsInstituteAdmin();
+  const isCanteenAdmin = useIsCanteenInstituteAdmin();
+  const isAdmissionAdmin = useIsAdmissionInstituteAdmin();
+  const isHostelAdmin = useIsHostelInstituteAdmin();
+  const isAlumniAdmin = useIsAlumniInstituteAdmin();
+  const visibleNavItems = navItems.map((item) => {
+    if (item.path === '/sales-purchase' && item.children && !isSalesPurchaseAdmin) {
+      return {
+        ...item,
+        children: item.children.filter(
+          (child) => child.path !== '/sales-purchase/roles' && child.path !== '/sales-purchase/users'
+        ),
+      };
+    }
+    if (item.path === '/canteen' && item.children && !isCanteenAdmin) {
+      return {
+        ...item,
+        children: item.children.filter(
+          (child) => child.path !== '/canteen/roles' && child.path !== '/canteen/users'
+        ),
+      };
+    }
+    if (item.path === '/admission' && item.children && !isAdmissionAdmin) {
+      return {
+        ...item,
+        children: item.children.filter(
+          (child) => child.path !== '/admission/roles' && child.path !== '/admission/users'
+        ),
+      };
+    }
+    if (item.path === '/hostel' && item.children && !isHostelAdmin) {
+      return {
+        ...item,
+        children: item.children.filter(
+          (child) => child.path !== '/hostel/roles' && child.path !== '/hostel/users'
+        ),
+      };
+    }
+    if (item.path === '/alumni' && item.children && !isAlumniAdmin) {
+      return {
+        ...item,
+        children: item.children.filter(
+          (child) => child.path !== '/alumni/roles' && child.path !== '/alumni/users'
+        ),
+      };
+    }
+    return item;
+  });
 
   const toggleMenu = (path: string) => {
     setExpandedMenus((prev) => {
@@ -287,7 +430,7 @@ export default function Sidebar() {
 
           <nav className="flex-1 overflow-y-auto p-4">
             <ul className="space-y-1">
-              {navItems.map((item) => renderNavItem(item))}
+              {visibleNavItems.map((item) => renderNavItem(item))}
             </ul>
           </nav>
         </div>

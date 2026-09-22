@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import WarehouseTable from '../../components/warehouses/WarehouseTable';
-import { getWarehouses } from '../../api/sales-purchase.api';
+import { getWarehouses, deleteWarehouse } from '../../api/sales-purchase.api';
+import { getApiErrorMessage } from '../../utils/errors';
 import type { Warehouse } from '../../types/sales-purchase.types';
 
 export default function WarehousesPage() {
@@ -25,9 +26,24 @@ export default function WarehousesPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err instanceof Error ? err.message : 'Failed to load warehouses');
+      setError(getApiErrorMessage(err, 'Failed to load warehouses'));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('Are you sure you want to delete this warehouse?')) {
+      return;
+    }
+    try {
+      await deleteWarehouse(id);
+      setWarehouses(warehouses.filter((w) => w.warehouse_id !== id));
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        return;
+      }
+      alert(getApiErrorMessage(err, 'Failed to delete warehouse'));
     }
   };
 
@@ -53,7 +69,7 @@ export default function WarehousesPage() {
           ) : error ? (
             <div className="text-center py-8 text-red-500">{error}</div>
           ) : (
-            <WarehouseTable warehouses={warehouses} />
+            <WarehouseTable warehouses={warehouses} onDelete={handleDelete} />
           )}
         </div>
       </Card>

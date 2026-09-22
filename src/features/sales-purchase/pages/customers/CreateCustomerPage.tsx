@@ -1,15 +1,27 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import CustomerForm from '../../components/customers/CustomerForm';
-import { createCustomer } from '../../api/sales-purchase.api';
-import type { CustomerFormData } from '../../types/sales-purchase.types';
+import { createCustomer, getPaymentTerms } from '../../api/sales-purchase.api';
+import type { CustomerFormData, PaymentTerm } from '../../types/sales-purchase.types';
+import { getApiErrorMessage } from '../../utils/errors';
 
 export default function CreateCustomerPage() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentTerms, setPaymentTerms] = useState<PaymentTerm[]>([]);
+
+  useEffect(() => {
+    getPaymentTerms()
+      .then(setPaymentTerms)
+      .catch((err) => {
+        if (err.response?.status !== 401) {
+          console.error('Failed to load payment terms:', err);
+        }
+      });
+  }, []);
 
   const handleSubmit = async (data: CustomerFormData) => {
     try {
@@ -21,7 +33,7 @@ export default function CreateCustomerPage() {
       if (error.response?.status === 401) {
         return;
       }
-      alert(error instanceof Error ? error.message : 'Failed to create customer');
+      alert(getApiErrorMessage(error, 'Failed to create customer'));
     } finally {
       setIsSubmitting(false);
     }
@@ -48,6 +60,7 @@ export default function CreateCustomerPage() {
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
             submitText="Create Customer"
+            paymentTerms={paymentTerms}
           />
         </div>
       </Card>

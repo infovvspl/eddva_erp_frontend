@@ -1,112 +1,131 @@
 // Item Categories
 export interface ItemCategory {
-  id: string;
-  categoryName: string;
-  createdAt?: string;
-  updatedAt?: string;
+  category_id: number;
+  institute_id: string;
+  name: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ItemCategoryFormData {
-  categoryName: string;
+  name: string;
 }
 
 // UOM (Unit of Measure)
 export interface UOM {
-  id: string;
+  uom_id: number;
+  institute_id: string;
   name: string;
-  code: string;
-  createdAt?: string;
-  updatedAt?: string;
+  symbol: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  created_at: string;
+  updated_at: string;
 }
 
 export interface UOMFormData {
   name: string;
-  code: string;
+  symbol: string;
 }
 
 // Tax Codes
 export interface TaxCode {
-  id: string;
+  tax_code_id: number;
+  institute_id: string;
   name: string;
-  cgstPct: number;
-  sgstPct: number;
-  igstPct: number;
-  effectiveFrom: string;
-  createdAt?: string;
-  updatedAt?: string;
+  cgst_pct: string;
+  sgst_pct: string;
+  igst_pct: string;
+  effective_from: string;
+  is_active: boolean;
+  created_at: string;
+  created_by: string | null;
 }
 
 export interface TaxCodeFormData {
   name: string;
-  cgstPct: number;
-  sgstPct: number;
-  igstPct: number;
-  effectiveFrom: string;
+  cgst_pct: number;
+  sgst_pct: number;
+  igst_pct: number;
+  effective_from: string;
 }
 
 // Payment Terms
 export interface PaymentTerm {
-  id: string;
-  termName: string;
+  payment_term_id: number;
+  institute_id: string;
+  term_name: string;
   days: number;
-  createdAt?: string;
-  updatedAt?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface PaymentTermFormData {
-  termName: string;
+  term_name: string;
   days: number;
 }
 
 // Warehouses
 export interface Warehouse {
-  id: string;
+  warehouse_id: number;
+  institute_id: string;
   name: string;
-  address: string;
-  isDefault: boolean;
-  createdAt?: string;
-  updatedAt?: string;
+  address: string | null;
+  is_default: boolean;
+  status: 'ACTIVE' | 'INACTIVE';
+  created_at: string;
+  updated_at: string;
 }
 
 export interface WarehouseFormData {
   name: string;
   address: string;
-  isDefault: boolean;
+  is_default: boolean;
 }
 
 // Items
 export interface Item {
-  id: string;
-  itemCode: string;
-  itemName: string;
-  categoryId: string;
-  uomId: string;
-  quantity: number;
-  hsnSacCode: string;
-  purchasePrice: number;
-  salesPrice: number;
-  taxCodeId: string;
-  category?: ItemCategory;
-  uom?: UOM;
-  taxCode?: TaxCode;
-  createdAt?: string;
-  updatedAt?: string;
+  item_id: number;
+  institute_id: string;
+  item_code: string;
+  item_name: string;
+  category_id: number;
+  uom_id: number;
+  hsn_sac_code: string | null;
+  purchase_price: string;
+  sales_price: string;
+  tax_code_id: number;
+  status: string;
+  category?: { name: string };
+  uom?: { name: string; symbol: string };
+  tax_code?: TaxCode;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ItemFormData {
-  itemCode: string;
-  itemName: string;
-  categoryId: string;
-  uomId: string;
-  quantity: number;
-  hsnSacCode: string;
-  purchasePrice: number;
-  salesPrice: number;
-  taxCodeId: string;
+  item_name: string;
+  category_id: number;
+  uom_id: number;
+  hsn_sac_code?: string;
+  purchase_price: number;
+  sales_price: number;
+  tax_code_id: number;
 }
 
 // Vendors
 export interface VendorContact {
+  contact_id: number;
+  vendor_id: number;
+  name: string;
+  designation: string;
+  phone: string;
+  email: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface VendorContactFormData {
   name: string;
   designation: string;
   phone: string;
@@ -114,51 +133,74 @@ export interface VendorContact {
 }
 
 export interface VendorBankDetail {
-  accountNo: string;
+  bank_id: number;
+  vendor_id: number;
+  account_no: string;
   ifsc: string;
   swift: string;
-  bankName: string;
-  isPrimary: boolean;
+  bank_name: string;
+  is_primary: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface VendorBankDetailFormData {
+  account_no: string;
+  ifsc: string;
+  swift: string;
+  bank_name: string;
+  is_primary: boolean;
 }
 
 export interface Vendor {
-  id: string;
-  vendorName: string;
-  gstin?: string;
-  taxId?: string;
-  addressLine1?: string;
-  addressLine2?: string;
-  city?: string;
-  state?: string;
-  pincode?: string;
-  paymentTermId?: string;
-  creditLimit?: number;
+  vendor_id: number;
+  institute_id: string;
+  vendor_code: string;
+  vendor_name: string;
+  gstin: string | null;
+  tax_id: string | null;
+  address_line1: string | null;
+  address_line2: string | null;
+  city: string | null;
+  state: string | null;
+  pincode: string | null;
+  payment_term_id: number | null;
+  credit_limit: string | null;
   status: string;
   contacts?: VendorContact[];
-  bankDetails?: VendorBankDetail[];
-  paymentTerm?: PaymentTerm;
-  createdAt?: string;
-  updatedAt?: string;
+  bank_details?: VendorBankDetail[];
+  payment_term?: PaymentTerm;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface VendorFormData {
-  vendorName: string;
+  vendor_name: string;
   gstin?: string;
-  taxId?: string;
-  addressLine1?: string;
-  addressLine2?: string;
+  tax_id?: string;
+  address_line1?: string;
+  address_line2?: string;
   city?: string;
   state?: string;
   pincode?: string;
-  paymentTermId?: string;
-  creditLimit?: number;
-  status: string;
-  contacts?: VendorContact[];
-  bankDetails?: VendorBankDetail[];
+  payment_term_id?: number;
+  credit_limit?: number;
+  status?: string;
 }
 
 // Customers
 export interface CustomerContact {
+  contact_id: number;
+  customer_id: number;
+  name: string;
+  designation: string;
+  phone: string;
+  email: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CustomerContactFormData {
   name: string;
   designation: string;
   phone: string;
@@ -166,389 +208,676 @@ export interface CustomerContact {
 }
 
 export interface Customer {
-  id: string;
-  customerName: string;
-  gstin?: string;
-  addressLine1?: string;
-  addressLine2?: string;
-  city?: string;
-  state?: string;
-  pincode?: string;
-  paymentTermId?: string;
-  creditLimit?: number;
+  customer_id: number;
+  institute_id: string;
+  customer_code: string;
+  customer_name: string;
+  gstin: string | null;
+  tax_id: string | null;
+  address_line1: string | null;
+  address_line2: string | null;
+  city: string | null;
+  state: string | null;
+  pincode: string | null;
+  payment_term_id: number | null;
+  credit_limit: string | null;
   status: string;
   contacts?: CustomerContact[];
-  paymentTerm?: PaymentTerm;
-  createdAt?: string;
-  updatedAt?: string;
+  payment_term?: PaymentTerm;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface CustomerFormData {
-  customerName: string;
+  customer_name: string;
   gstin?: string;
-  addressLine1?: string;
-  addressLine2?: string;
+  tax_id?: string;
+  address_line1?: string;
+  address_line2?: string;
   city?: string;
   state?: string;
   pincode?: string;
-  paymentTermId?: string;
-  creditLimit?: number;
-  status: string;
-  contacts?: CustomerContact[];
+  payment_term_id?: number;
+  credit_limit?: number;
+  status?: string;
 }
 
 // Purchase Orders
 export interface PurchaseOrderItem {
-  id: string;
-  itemId: string;
+  po_item_id: number;
+  purchase_order_id: number;
+  item_id: number;
+  quantity: string;
+  unit_price: string;
+  tax_code_id: number;
+  line_discount: string;
+  line_tax_amount: string;
+  line_total: string;
+  received_qty: string;
+  created_at?: string;
+  updated_at?: string;
+  item?: { item_id: number; item_code: string; item_name: string };
+  tax_code?: TaxCode;
+}
+
+export interface PurchaseOrderItemFormData {
+  item_id: number;
   quantity: number;
-  unitPrice: number;
-  taxCodeId: string;
+  unit_price: number;
+  tax_code_id: number;
+  line_discount?: number;
 }
 
 export interface PurchaseOrder {
-  id: string;
-  vendorId: string;
-  poDate: string;
-  expectedDeliveryDate: string;
-  warehouseId: string;
-  discount: number;
-  items: PurchaseOrderItem[];
+  po_id: number;
+  institute_id: string;
+  po_number: string;
+  financial_year: string;
+  vendor_id: number;
+  po_date: string;
+  expected_delivery_date: string | null;
+  warehouse_id: number;
   status: string;
+  subtotal: string;
+  tax_amount: string;
+  discount: string;
+  grand_total: string;
+  created_by: string | null;
+  submitted_at: string | null;
+  approved_by: string | null;
+  approved_at: string | null;
+  rejected_by: string | null;
+  rejected_at: string | null;
+  rejection_reason: string | null;
+  cancelled_by: string | null;
+  cancelled_at: string | null;
+  created_at: string;
+  updated_at: string;
   vendor?: Vendor;
   warehouse?: Warehouse;
-  createdAt?: string;
-  updatedAt?: string;
+  items?: PurchaseOrderItem[];
 }
 
 export interface PurchaseOrderFormData {
-  vendorId: string;
-  poDate: string;
-  expectedDeliveryDate: string;
-  warehouseId: string;
+  vendor_id: number;
+  po_date: string;
+  expected_delivery_date: string;
+  warehouse_id: number;
   discount: number;
-  items: PurchaseOrderItem[];
+  items: PurchaseOrderItemFormData[];
+}
+
+// PO Approval Rules
+export interface ApprovalRule {
+  rule_id: number;
+  institute_id: string;
+  name: string;
+  min_amount: string | null;
+  max_amount: string | null;
+  approver_role_id: number | null;
+  sequence: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  approver_role?: { role_id: number; name: string } | null;
+}
+
+export interface ApprovalRuleFormData {
+  name: string;
+  min_amount?: number;
+  max_amount?: number;
+  approver_role_id?: number;
+  sequence: number;
+  is_active?: boolean;
 }
 
 // GRN (Goods Received Note)
 export interface GRNItem {
-  poItemId: string;
-  itemId: string;
-  receivedQty: number;
-  acceptedQty: number;
-  rejectedQty: number;
+  grn_item_id: number;
+  grn_id: number;
+  po_item_id: number;
+  item_id: number;
+  received_qty: string;
+  accepted_qty: string;
+  rejected_qty: string;
+  created_at?: string;
+  item?: { item_id: number; item_code: string; item_name: string };
+}
+
+export interface GRNItemFormData {
+  po_item_id: number;
+  received_qty: number;
+  accepted_qty: number;
+  rejected_qty: number;
 }
 
 export interface GRN {
-  id: string;
-  poId: string;
-  vendorId: string;
-  receivedDate: string;
-  warehouseId: string;
-  items: GRNItem[];
+  grn_id: number;
+  institute_id: string;
+  grn_number: string;
+  financial_year: string;
+  purchase_order_id: number;
+  vendor_id: number;
+  received_date: string;
+  warehouse_id: number;
   status: string;
-  purchaseOrder?: PurchaseOrder;
+  created_by: string | null;
+  cancelled_by: string | null;
+  cancelled_at: string | null;
+  created_at: string;
+  updated_at: string;
   vendor?: Vendor;
   warehouse?: Warehouse;
-  createdAt?: string;
-  updatedAt?: string;
+  purchase_order?: { po_id: number; po_number: string };
+  items?: GRNItem[];
 }
 
 export interface GRNFormData {
-  poId: string;
-  vendorId: string;
-  receivedDate: string;
-  warehouseId: string;
-  items: GRNItem[];
+  purchase_order_id: number;
+  received_date: string;
+  warehouse_id: number;
+  items: GRNItemFormData[];
 }
 
-// Invoices
+// Invoices (Purchase Invoices — see SalesInvoice for the separate sales flow)
 export interface InvoiceItem {
-  itemId: string;
+  pi_item_id: number;
+  pi_id: number;
+  po_item_id: number | null;
+  grn_item_id: number | null;
+  item_id: number;
+  quantity: string;
+  unit_price: string;
+  cgst_rate: string;
+  sgst_rate: string;
+  igst_rate: string;
+  cgst_amount: string;
+  sgst_amount: string;
+  igst_amount: string;
+  line_discount: string;
+  line_total: string;
+  item?: { item_id: number; item_code: string; item_name: string };
+}
+
+export interface InvoiceItemFormData {
+  item_id: number;
+  po_item_id?: number;
+  grn_item_id?: number;
   quantity: number;
-  unitPrice: number;
-  taxCodeId: string;
+  unit_price: number;
+  tax_code_id: number;
+  line_discount?: number;
+}
+
+export interface InvoicePayment {
+  payment_id: number;
+  pi_id: number;
+  payment_date: string;
+  amount: string;
+  mode: string;
+  reference_no: string | null;
+  created_by?: string | null;
+  created_at?: string;
 }
 
 export interface Invoice {
-  id: string;
-  invoiceType: 'SALES' | 'PURCHASE';
-  vendorInvoiceNumber?: string;
-  customerId?: string;
-  vendorId?: string;
-  poId?: string;
-  grnId?: string;
-  invoiceDate: string;
-  dueDate: string;
-  warehouseId: string;
-  discount: number;
-  items: InvoiceItem[];
+  pi_id: number;
+  institute_id: string;
+  invoice_number: string;
+  financial_year: string;
+  vendor_invoice_number: string;
+  vendor_id: number;
+  purchase_order_id: number | null;
+  grn_id: number | null;
+  invoice_date: string;
+  due_date: string | null;
+  subtotal: string;
+  tax_amount: string;
+  discount: string;
+  grand_total: string;
+  paid_amount: string;
+  payment_status: string;
   status: string;
-  customer?: Customer;
+  created_by: string | null;
+  posted_by: string | null;
+  posted_at: string | null;
+  cancelled_by: string | null;
+  cancelled_at: string | null;
+  created_at: string;
+  updated_at: string;
   vendor?: Vendor;
-  purchaseOrder?: PurchaseOrder;
-  grn?: GRN;
-  warehouse?: Warehouse;
-  createdAt?: string;
-  updatedAt?: string;
+  purchase_order?: { po_id: number; po_number: string };
+  grn?: { grn_id: number; grn_number: string };
+  items?: InvoiceItem[];
+  payments?: InvoicePayment[];
 }
 
 export interface InvoiceFormData {
-  vendorInvoiceNumber: string;
-  vendorId: string;
-  poId?: string;
-  grnId?: string;
-  invoiceDate: string;
+  vendor_invoice_number: string;
+  vendor_id: number;
+  purchase_order_id?: number;
+  grn_id?: number;
+  invoice_date: string;
+  due_date?: string;
   discount: number;
-  items: InvoiceItem[];
+  items: InvoiceItemFormData[];
 }
 
-// Payments
+// Payments (Purchase Payments — see SalesReceipt for the separate sales flow)
 export interface Payment {
-  id: string;
-  paymentType: 'RECEIVED' | 'PAID';
-  purchaseInvoiceId?: string;
-  invoiceId?: string;
-  paymentDate: string;
-  amount: number;
+  payment_id: number;
+  institute_id: string;
+  pi_id: number;
+  payment_date: string;
+  amount: string;
   mode: string;
-  referenceNo?: string;
-  status: string;
+  reference_no: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
   invoice?: Invoice;
-  createdAt?: string;
-  updatedAt?: string;
 }
 
 export interface PaymentFormData {
-  purchaseInvoiceId: string;
-  paymentDate: string;
+  pi_id: number;
+  payment_date: string;
   amount: number;
   mode: string;
-  referenceNo?: string;
+  reference_no?: string;
 }
 
 // Sales Orders
 export interface SalesOrderItem {
-  id: string;
-  itemId: string;
+  so_item_id: number;
+  sales_order_id: number;
+  item_id: number;
+  quantity: string;
+  unit_price: string;
+  tax_code_id: number;
+  line_discount: string;
+  line_tax_amount: string;
+  line_total: string;
+  invoiced_qty: string;
+  created_at?: string;
+  updated_at?: string;
+  item?: { item_id: number; item_code: string; item_name: string };
+  tax_code?: TaxCode;
+}
+
+export interface SalesOrderItemFormData {
+  item_id: number;
   quantity: number;
-  unitPrice: number;
-  taxCodeId: string;
+  unit_price: number;
+  tax_code_id: number;
+  line_discount?: number;
 }
 
 export interface SalesOrder {
-  id: string;
-  customerId: string;
-  soDate: string;
-  deliveryDate: string;
-  discount: number;
-  items: SalesOrderItem[];
+  so_id: number;
+  institute_id: string;
+  so_number: string;
+  financial_year: string;
+  customer_id: number;
+  so_date: string;
+  delivery_date: string | null;
   status: string;
+  subtotal: string;
+  tax_amount: string;
+  discount: string;
+  grand_total: string;
+  created_by: string | null;
+  confirmed_at: string | null;
+  cancelled_by: string | null;
+  cancelled_at: string | null;
+  created_at: string;
+  updated_at: string;
   customer?: Customer;
-  createdAt?: string;
-  updatedAt?: string;
+  items?: SalesOrderItem[];
 }
 
 export interface SalesOrderFormData {
-  customerId: string;
-  soDate: string;
-  deliveryDate: string;
+  customer_id: number;
+  so_date: string;
+  delivery_date?: string;
   discount: number;
-  items: SalesOrderItem[];
+  items: SalesOrderItemFormData[];
 }
 
 // Sales Invoices
 export interface SalesInvoiceItem {
-  itemId: string;
+  si_item_id: number;
+  si_id: number;
+  so_item_id: number | null;
+  item_id: number;
+  quantity: string;
+  unit_price: string;
+  cgst_rate: string;
+  sgst_rate: string;
+  igst_rate: string;
+  cgst_amount: string;
+  sgst_amount: string;
+  igst_amount: string;
+  line_discount: string;
+  line_total: string;
+  item?: { item_id: number; item_code: string; item_name: string };
+}
+
+export interface SalesInvoiceItemFormData {
+  item_id: number;
+  so_item_id?: number;
   quantity: number;
-  unitPrice: number;
-  taxCodeId: string;
+  unit_price: number;
+  tax_code_id: number;
+  line_discount?: number;
+}
+
+export interface SalesInvoiceReceipt {
+  receipt_id: number;
+  si_id: number;
+  receipt_date: string;
+  amount: string;
+  mode: string;
+  reference_no: string | null;
+  created_by?: string | null;
+  created_at?: string;
 }
 
 export interface SalesInvoice {
-  id: string;
-  customerId: string;
-  soId?: string;
-  invoiceDate: string;
-  discount: number;
-  items: SalesInvoiceItem[];
+  si_id: number;
+  institute_id: string;
+  invoice_number: string;
+  financial_year: string;
+  customer_id: number;
+  sales_order_id: number | null;
+  invoice_date: string;
+  due_date: string | null;
+  subtotal: string;
+  tax_amount: string;
+  discount: string;
+  grand_total: string;
+  paid_amount: string;
+  payment_status: string;
   status: string;
+  created_by: string | null;
+  posted_by: string | null;
+  posted_at: string | null;
+  cancelled_by: string | null;
+  cancelled_at: string | null;
+  created_at: string;
+  updated_at: string;
   customer?: Customer;
-  salesOrder?: SalesOrder;
-  createdAt?: string;
-  updatedAt?: string;
+  sales_order?: { so_id: number; so_number: string };
+  items?: SalesInvoiceItem[];
+  receipts?: SalesInvoiceReceipt[];
 }
 
 export interface SalesInvoiceFormData {
-  customerId: string;
-  soId?: string;
-  invoiceDate: string;
+  customer_id: number;
+  sales_order_id?: number;
+  invoice_date: string;
+  due_date?: string;
   discount: number;
-  items: SalesInvoiceItem[];
+  items: SalesInvoiceItemFormData[];
 }
 
 // Sales Receipts
 export interface SalesReceipt {
-  id: string;
-  salesInvoiceId: string;
-  receiptDate: string;
-  amount: number;
+  receipt_id: number;
+  institute_id: string;
+  si_id: number;
+  receipt_date: string;
+  amount: string;
   mode: string;
-  referenceNo?: string;
-  status: string;
-  salesInvoice?: SalesInvoice;
-  createdAt?: string;
-  updatedAt?: string;
+  reference_no: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+  invoice?: SalesInvoice;
 }
 
 export interface SalesReceiptFormData {
-  salesInvoiceId: string;
-  receiptDate: string;
+  si_id: number;
+  receipt_date: string;
   amount: number;
   mode: string;
-  referenceNo?: string;
+  reference_no?: string;
 }
 
 // Reports
 export interface PurchaseRegisterItem {
-  id: string;
   invoiceNumber: string;
   vendorInvoiceNumber: string;
   invoiceDate: string;
-  dueDate: string;
-  subtotal: number;
-  taxAmount: number;
-  discount: number;
-  grandTotal: number;
-  status: string;
-  paymentStatus: string;
   vendor: {
-    id: string;
-    vendorCode: string;
-    vendorName: string;
-    gstin: string;
+    vendor_id: number;
+    vendor_name: string;
+    vendor_code: string;
   };
-  items: Array<{
-    id: string;
-    itemId: string;
-    quantity: number;
-    unitPrice: number;
-    cgstAmount: number;
-    sgstAmount: number;
-    igstAmount: number;
-    lineTotal: number;
-    item: {
-      id: string;
-      itemCode: string;
-      itemName: string;
-      hsnSacCode: string;
-    };
-    taxCode: {
-      id: string;
-      name: string;
-      cgstPct: number;
-      sgstPct: number;
-      igstPct: number;
-    };
-  }>;
+  item: {
+    item_id: number;
+    item_code: string;
+    item_name: string;
+  };
+  quantity: string;
+  taxableValue: number;
+  cgst: string;
+  sgst: string;
+  igst: string;
+  discount: string;
+  lineTotal: string;
+  paymentStatus: string;
 }
 
 export interface SalesRegisterItem {
-  id: string;
   invoiceNumber: string;
-  customerInvoiceNumber: string;
   invoiceDate: string;
-  dueDate: string;
-  subtotal: number;
-  taxAmount: number;
-  discount: number;
-  grandTotal: number;
-  status: string;
-  paymentStatus: string;
   customer: {
-    id: string;
-    customerCode: string;
-    customerName: string;
-    gstin: string;
+    customer_id: number;
+    customer_name: string;
+    customer_code: string;
   };
-  items: Array<{
-    id: string;
-    itemId: string;
-    quantity: number;
-    unitPrice: number;
-    cgstAmount: number;
-    sgstAmount: number;
-    igstAmount: number;
-    lineTotal: number;
-    item: {
-      id: string;
-      itemCode: string;
-      itemName: string;
-      hsnSacCode: string;
-    };
-    taxCode: {
-      id: string;
-      name: string;
-      cgstPct: number;
-      sgstPct: number;
-      igstPct: number;
-    };
-  }>;
+  item: {
+    item_id: number;
+    item_code: string;
+    item_name: string;
+  };
+  quantity: string;
+  taxableValue: number;
+  cgst: string;
+  sgst: string;
+  igst: string;
+  discount: string;
+  lineTotal: string;
+  paymentStatus: string;
+}
+
+export interface RegisterSummary {
+  invoiceCount: number;
+  totalCgst: string;
+  totalSgst: string;
+  totalIgst: string;
+  totalDiscount: string;
+  totalSubtotal: string;
+  totalTax: string;
+  totalGrandTotal: string;
+}
+
+export interface RegisterPagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface RegisterResponse<T> {
+  data: T[];
+  pagination: RegisterPagination;
+  summary: RegisterSummary;
 }
 
 // RBAC Types
 export interface Permission {
-  id: string;
-  permissionKey: string;
+  permission_id: number;
+  key: string;
+  resource: string;
+  action: string;
+  name: string;
+  category: string;
   description: string;
-  isSystem: boolean;
-  instituteId: string | null;
-  createdAt: string;
-  updatedAt: string;
+  is_system: boolean;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface PermissionFormData {
-  permissionKey: string;
+  resource: string;
+  action: string;
+  name: string;
+  category: string;
   description: string;
+  is_active?: boolean;
+}
+
+export interface PermissionResource {
+  resource: string;
+  name: string;
+  available_actions: string[];
+  permissions: Permission[];
+}
+
+export interface PermissionsCatalog {
+  total: number;
+  resources: PermissionResource[];
+  all_permissions: Permission[];
 }
 
 export interface RolePermission {
-  permission: Permission;
+  resource: string;
+  actions: string[];
 }
 
 export interface Role {
-  id: string;
-  roleName: string;
+  role_id: number;
+  institute_id: string;
+  name: string;
   description: string;
-  status: 'ACTIVE' | 'INACTIVE';
-  instituteId: string;
-  createdAt: string;
-  updatedAt: string;
-  rolePermissions: RolePermission[];
+  permissions: RolePermission[];
+  created_at: string;
+  updated_at: string;
+  _count?: {
+    user_roles: number;
+  };
 }
 
 export interface RoleFormData {
-  roleName: string;
-  description?: string;
-  permissionIds?: string[];
+  name: string;
+  description: string;
+  permissions: RolePermission[];
 }
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  roleId: string;
-  role?: Role;
-  status: 'ACTIVE' | 'INACTIVE';
-  instituteId: string;
-  createdAt: string;
-  updatedAt: string;
+export interface UserAssignment {
+  id: number;
+  eddva_user_id: string;
+  user_name: string;
+  user_email: string;
+  username: string;
+  role_id: number;
+  is_active?: boolean;
+  role?: Pick<Role, 'role_id' | 'name'>;
+  assigned_at?: string;
 }
 
-export interface UserFormData {
-  name: string;
-  email: string;
-  password?: string;
-  roleId: string;
-  status?: 'ACTIVE' | 'INACTIVE';
+export interface UserAssignmentFormData {
+  eddva_user_id: string;
+  user_name: string;
+  user_email: string;
+  username: string;
+  password: string;
+  role_id: number;
+}
+
+export interface ResetPasswordFormData {
+  new_password: string;
+}
+
+export interface ResetPasswordResponse {
+  success: boolean;
+  message: string;
+}
+
+// Dashboard
+export interface DashboardStatusCount {
+  status: string;
+  count: number;
+}
+
+export interface DashboardPurchaseOrders {
+  by_status: DashboardStatusCount[];
+  open_count: number;
+  pending_approval_count: number;
+  pending_approval_value: number;
+}
+
+export interface DashboardGRNs {
+  draft_count: number;
+  posted_count: number;
+}
+
+export interface DashboardInvoiceSummary {
+  period_count: number;
+  period_subtotal: number;
+  period_tax: number;
+  period_discount: number;
+  period_grand_total: number;
+  outstanding_count: number;
+  outstanding_amount: number;
+  overdue_count: number;
+  overdue_amount: number;
+}
+
+export interface DashboardTopVendor {
+  vendor_id: number;
+  vendor_name: string;
+  vendor_code: string;
+  invoice_count: number;
+  total_amount: number;
+}
+
+export interface DashboardTopCustomer {
+  customer_id: number;
+  customer_name: string;
+  customer_code: string;
+  invoice_count: number;
+  total_amount: number;
+}
+
+export interface DashboardPurchaseSection {
+  purchase_orders: DashboardPurchaseOrders;
+  grns: DashboardGRNs;
+  invoices: DashboardInvoiceSummary;
+  top_vendors: DashboardTopVendor[];
+}
+
+export interface DashboardSalesOrders {
+  by_status: DashboardStatusCount[];
+  open_count: number;
+}
+
+export interface DashboardSalesSection {
+  sales_orders: DashboardSalesOrders;
+  invoices: DashboardInvoiceSummary;
+  top_customers: DashboardTopCustomer[];
+}
+
+export interface DashboardSummary {
+  range: {
+    from: string | null;
+    to: string | null;
+  };
+  vendor_count: number;
+  customer_count: number;
+  active_item_count: number;
+  purchase: DashboardPurchaseSection;
+  sales: DashboardSalesSection;
 }

@@ -13,6 +13,7 @@ export default function EditGRNPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [defaultValues, setDefaultValues] = useState<GRNFormData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -25,10 +26,15 @@ export default function EditGRNPage() {
       setLoading(true);
       const data = await getGRN(grnId);
       setDefaultValues({
-        purchaseOrderId: data.purchaseOrderId,
-        grnDate: data.grnDate,
-        warehouseId: data.warehouseId,
-        items: data.items,
+        purchase_order_id: data.purchase_order_id,
+        received_date: data.received_date,
+        warehouse_id: data.warehouse_id,
+        items: (data.items || []).map((item) => ({
+          po_item_id: item.po_item_id,
+          received_qty: Number(item.received_qty),
+          accepted_qty: Number(item.accepted_qty),
+          rejected_qty: Number(item.rejected_qty),
+        })),
       });
     } catch (error: any) {
       console.error('Failed to load data:', error);
@@ -44,6 +50,7 @@ export default function EditGRNPage() {
     if (!id) return;
     try {
       setIsSubmitting(true);
+      setError(null);
       await updateGRN(id, data);
       navigate('/sales-purchase/grn');
     } catch (error: any) {
@@ -51,7 +58,7 @@ export default function EditGRNPage() {
       if (error.response?.status === 401) {
         return;
       }
-      alert(error instanceof Error ? error.message : 'Failed to update GRN');
+      setError(error.response?.data?.error?.message || error.response?.data?.message || error.message || 'Failed to update GRN');
     } finally {
       setIsSubmitting(false);
     }
@@ -79,6 +86,11 @@ export default function EditGRNPage() {
       ) : (
         <Card className="border-slate-200">
           <div className="p-6">
+            {error && (
+              <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
             {defaultValues && (
               <GRNForm
                 defaultValues={defaultValues}

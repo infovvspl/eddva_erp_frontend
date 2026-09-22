@@ -44,6 +44,7 @@ import FrontOfficeVisitorLogDetailPage from '../features/front-office/pages/visi
 import FrontOfficeKioskLandingPage from '../features/front-office/pages/kiosk/KioskLandingPage';
 import FrontOfficeKioskCheckInPage from '../features/front-office/pages/kiosk/KioskCheckInPage';
 // Sales & Purchase Routes
+import SalesPurchaseDashboardPage from '../features/sales-purchase/pages/dashboard/SalesPurchaseDashboardPage';
 import ItemCategoriesPage from '../features/sales-purchase/pages/item-categories/ItemCategoriesPage';
 import CreateItemCategoryPage from '../features/sales-purchase/pages/item-categories/CreateItemCategoryPage';
 import ItemCategoryDetailsPage from '../features/sales-purchase/pages/item-categories/ItemCategoryDetailsPage';
@@ -55,7 +56,6 @@ import EditUOMPage from '../features/sales-purchase/pages/uom/EditUOMPage';
 import TaxCodesPage from '../features/sales-purchase/pages/tax-codes/TaxCodesPage';
 import CreateTaxCodePage from '../features/sales-purchase/pages/tax-codes/CreateTaxCodePage';
 import TaxCodeDetailsPage from '../features/sales-purchase/pages/tax-codes/TaxCodeDetailsPage';
-import EditTaxCodePage from '../features/sales-purchase/pages/tax-codes/EditTaxCodePage';
 import PaymentTermsPage from '../features/sales-purchase/pages/payment-terms/PaymentTermsPage';
 import CreatePaymentTermPage from '../features/sales-purchase/pages/payment-terms/CreatePaymentTermPage';
 import PaymentTermDetailsPage from '../features/sales-purchase/pages/payment-terms/PaymentTermDetailsPage';
@@ -80,6 +80,10 @@ import PurchaseOrdersPage from '../features/sales-purchase/pages/purchase-orders
 import CreatePurchaseOrderPage from '../features/sales-purchase/pages/purchase-orders/CreatePurchaseOrderPage';
 import PurchaseOrderDetailsPage from '../features/sales-purchase/pages/purchase-orders/PurchaseOrderDetailsPage';
 import EditPurchaseOrderPage from '../features/sales-purchase/pages/purchase-orders/EditPurchaseOrderPage';
+import ApprovalRulesPage from '../features/sales-purchase/pages/approval-rules/ApprovalRulesPage';
+import CreateApprovalRulePage from '../features/sales-purchase/pages/approval-rules/CreateApprovalRulePage';
+import ApprovalRuleDetailsPage from '../features/sales-purchase/pages/approval-rules/ApprovalRuleDetailsPage';
+import EditApprovalRulePage from '../features/sales-purchase/pages/approval-rules/EditApprovalRulePage';
 import GRNsPage from '../features/sales-purchase/pages/grn/GRNsPage';
 import CreateGRNPage from '../features/sales-purchase/pages/grn/CreateGRNPage';
 import GRNDetailsPage from '../features/sales-purchase/pages/grn/GRNDetailsPage';
@@ -118,7 +122,8 @@ import CreatePermissionPage from '../features/sales-purchase/pages/rbac/CreatePe
 import EditPermissionPage from '../features/sales-purchase/pages/rbac/EditPermissionPage';
 import UsersPage from '../features/sales-purchase/pages/rbac/UsersPage';
 import CreateUserPage from '../features/sales-purchase/pages/rbac/CreateUserPage';
-import EditUserPage from '../features/sales-purchase/pages/rbac/EditUserPage';
+// Canteen Auth
+import CanteenLoginPage from '../features/canteen/pages/auth/CanteenLoginPage';
 // Canteen RBAC
 import CanteenRolesPage from '../features/canteen/pages/rbac/RolesPage';
 import CanteenCreateRolePage from '../features/canteen/pages/rbac/CreateRolePage';
@@ -128,7 +133,6 @@ import CanteenCreatePermissionPage from '../features/canteen/pages/rbac/CreatePe
 import CanteenEditPermissionPage from '../features/canteen/pages/rbac/EditPermissionPage';
 import CanteenUsersPage from '../features/canteen/pages/rbac/UsersPage';
 import CanteenCreateUserPage from '../features/canteen/pages/rbac/CreateUserPage';
-import CanteenEditUserPage from '../features/canteen/pages/rbac/EditUserPage';
 // Canteen Menu
 import MenuCategoriesPage from '../features/canteen/pages/menu/MenuCategoriesPage';
 import CreateMenuCategoryPage from '../features/canteen/pages/menu/CreateMenuCategoryPage';
@@ -165,6 +169,179 @@ import WalletTransactionsPage from '../features/canteen/pages/wallet/WalletTrans
 import WalletsPage from '../features/canteen/pages/wallet/WalletsPage';
 // Canteen Reports
 import CanteenReportsPage from '../features/canteen/pages/reports/CanteenReportsPage';
+// Admission Auth & RBAC
+import AdmissionLoginPage from '../features/admission/pages/auth/AdmissionLoginPage';
+import AdmissionSessionsPage from '../features/admission/pages/sessions/SessionsPage';
+import AdmissionCreateSessionPage from '../features/admission/pages/sessions/CreateSessionPage';
+import AdmissionEditSessionPage from '../features/admission/pages/sessions/EditSessionPage';
+import AdmissionProgramsPage from '../features/admission/pages/programs/ProgramsPage';
+import AdmissionCreateProgramPage from '../features/admission/pages/programs/CreateProgramPage';
+import AdmissionEditProgramPage from '../features/admission/pages/programs/EditProgramPage';
+import AdmissionApplicantsPage from '../features/admission/pages/applicants/ApplicantsPage';
+import AdmissionCreateApplicantPage from '../features/admission/pages/applicants/CreateApplicantPage';
+import AdmissionEditApplicantPage from '../features/admission/pages/applicants/EditApplicantPage';
+import AdmissionEnquiriesPage from '../features/admission/pages/enquiries/EnquiriesPage';
+import AdmissionCreateEnquiryPage from '../features/admission/pages/enquiries/CreateEnquiryPage';
+import AdmissionEditEnquiryPage from '../features/admission/pages/enquiries/EditEnquiryPage';
+import AdmissionEnquiryDetailPage from '../features/admission/pages/enquiries/EnquiryDetailPage';
+import AdmissionConvertEnquiryPage from '../features/admission/pages/enquiries/ConvertEnquiryPage';
+import AdmissionApplicationsPage from '../features/admission/pages/applications/ApplicationsPage';
+import AdmissionCreateApplicationPage from '../features/admission/pages/applications/CreateApplicationPage';
+import AdmissionEditApplicationPage from '../features/admission/pages/applications/EditApplicationPage';
+import AdmissionApplicationDetailPage from '../features/admission/pages/applications/ApplicationDetailPage';
+import AdmissionTestsPage from '../features/admission/pages/tests/TestsPage';
+import AdmissionCreateTestPage from '../features/admission/pages/tests/CreateTestPage';
+import AdmissionEditTestPage from '../features/admission/pages/tests/EditTestPage';
+import AdmissionTestDetailPage from '../features/admission/pages/tests/TestDetailPage';
+import AdmissionInterviewsPage from '../features/admission/pages/interviews/InterviewsPage';
+import AdmissionCreateInterviewPage from '../features/admission/pages/interviews/CreateInterviewPage';
+import AdmissionEditInterviewPage from '../features/admission/pages/interviews/EditInterviewPage';
+import AdmissionInterviewDetailPage from '../features/admission/pages/interviews/InterviewDetailPage';
+import AdmissionMeritListsPage from '../features/admission/pages/meritLists/MeritListsPage';
+import AdmissionCreateMeritListPage from '../features/admission/pages/meritLists/CreateMeritListPage';
+import AdmissionEditMeritListPage from '../features/admission/pages/meritLists/EditMeritListPage';
+import AdmissionMeritListDetailPage from '../features/admission/pages/meritLists/MeritListDetailPage';
+import AdmissionDashboardPage from '../features/admission/pages/dashboard/DashboardPage';
+import AdmissionNotificationsPage from '../features/admission/pages/notifications/NotificationsPage';
+import AdmissionReportsPage from '../features/admission/pages/reports/ReportsPage';
+import AdmissionConfirmationsPage from '../features/admission/pages/confirmations/ConfirmationsPage';
+import AdmissionConfirmationDetailPage from '../features/admission/pages/confirmations/ConfirmationDetailPage';
+import AdmissionPaymentsPage from '../features/admission/pages/payments/PaymentsPage';
+import AdmissionPaymentDetailPage from '../features/admission/pages/payments/PaymentDetailPage';
+import AdmissionOffersPage from '../features/admission/pages/offers/OffersPage';
+import AdmissionOfferDetailPage from '../features/admission/pages/offers/OfferDetailPage';
+import AdmissionFeeStructuresPage from '../features/admission/pages/feeStructures/FeeStructuresPage';
+import AdmissionCreateFeeStructurePage from '../features/admission/pages/feeStructures/CreateFeeStructurePage';
+import AdmissionEditFeeStructurePage from '../features/admission/pages/feeStructures/EditFeeStructurePage';
+import AdmissionRolesPage from '../features/admission/pages/rbac/RolesPage';
+import AdmissionCreateRolePage from '../features/admission/pages/rbac/CreateRolePage';
+import AdmissionEditRolePage from '../features/admission/pages/rbac/EditRolePage';
+import AdmissionPermissionsPage from '../features/admission/pages/rbac/PermissionsPage';
+import AdmissionCreatePermissionPage from '../features/admission/pages/rbac/CreatePermissionPage';
+import AdmissionEditPermissionPage from '../features/admission/pages/rbac/EditPermissionPage';
+import AdmissionUsersPage from '../features/admission/pages/rbac/UsersPage';
+import AdmissionCreateUserPage from '../features/admission/pages/rbac/CreateUserPage';
+// Hostel RBAC
+import HostelPermissionsPage from '../features/hostel/pages/rbac/PermissionsPage';
+import HostelCreatePermissionPage from '../features/hostel/pages/rbac/CreatePermissionPage';
+import HostelEditPermissionPage from '../features/hostel/pages/rbac/EditPermissionPage';
+import HostelBlocksPage from '../features/hostel/pages/blocks/BlocksPage';
+import HostelCreateBlockPage from '../features/hostel/pages/blocks/CreateBlockPage';
+import HostelEditBlockPage from '../features/hostel/pages/blocks/EditBlockPage';
+import HostelBlockDetailPage from '../features/hostel/pages/blocks/BlockDetailPage';
+import HostelRoomsPage from '../features/hostel/pages/rooms/RoomsPage';
+import HostelCreateRoomPage from '../features/hostel/pages/rooms/CreateRoomPage';
+import HostelEditRoomPage from '../features/hostel/pages/rooms/EditRoomPage';
+import HostelRoomDetailPage from '../features/hostel/pages/rooms/RoomDetailPage';
+import HostelBedsPage from '../features/hostel/pages/beds/BedsPage';
+import HostelCreateBedPage from '../features/hostel/pages/beds/CreateBedPage';
+import HostelBedDetailPage from '../features/hostel/pages/beds/BedDetailPage';
+import HostelResidentsPage from '../features/hostel/pages/residents/ResidentsPage';
+import HostelCreateResidentPage from '../features/hostel/pages/residents/CreateResidentPage';
+import HostelEditResidentPage from '../features/hostel/pages/residents/EditResidentPage';
+import HostelResidentDetailPage from '../features/hostel/pages/residents/ResidentDetailPage';
+import HostelAllotmentsPage from '../features/hostel/pages/allotments/AllotmentsPage';
+import HostelAllotmentDetailPage from '../features/hostel/pages/allotments/AllotmentDetailPage';
+import HostelTransferRequestsPage from '../features/hostel/pages/transfer-requests/TransferRequestsPage';
+import HostelTransferRequestDetailPage from '../features/hostel/pages/transfer-requests/TransferRequestDetailPage';
+import HostelGatePassesPage from '../features/hostel/pages/gate-passes/GatePassesPage';
+import HostelCreateGatePassPage from '../features/hostel/pages/gate-passes/CreateGatePassPage';
+import HostelGateScanPage from '../features/hostel/pages/gate-passes/GateScanPage';
+import HostelGatePassDetailPage from '../features/hostel/pages/gate-passes/GatePassDetailPage';
+import HostelAttendancePage from '../features/hostel/pages/attendance/AttendancePage';
+import HostelMarkAttendancePage from '../features/hostel/pages/attendance/MarkAttendancePage';
+import HostelRollCallPage from '../features/hostel/pages/attendance/RollCallPage';
+import HostelAttendanceDetailPage from '../features/hostel/pages/attendance/AttendanceDetailPage';
+import HostelMessMenuPage from '../features/hostel/pages/mess-menu/MessMenuPage';
+import HostelCreateMenuEntryPage from '../features/hostel/pages/mess-menu/CreateMenuEntryPage';
+import HostelEditMenuEntryPage from '../features/hostel/pages/mess-menu/EditMenuEntryPage';
+import HostelVisitorsPage from '../features/hostel/pages/visitors/VisitorsPage';
+import HostelCreateVisitorPage from '../features/hostel/pages/visitors/CreateVisitorPage';
+import HostelVisitorDetailPage from '../features/hostel/pages/visitors/VisitorDetailPage';
+import HostelMessAttendancePage from '../features/hostel/pages/mess-attendance/MessAttendancePage';
+import HostelMarkMessAttendancePage from '../features/hostel/pages/mess-attendance/MarkMessAttendancePage';
+import HostelMessRollCallPage from '../features/hostel/pages/mess-attendance/MessRollCallPage';
+import HostelComplaintsPage from '../features/hostel/pages/complaints/ComplaintsPage';
+import HostelCreateComplaintPage from '../features/hostel/pages/complaints/CreateComplaintPage';
+import HostelComplaintDetailPage from '../features/hostel/pages/complaints/ComplaintDetailPage';
+import HostelFeePlansPage from '../features/hostel/pages/fee-plans/FeePlansPage';
+import HostelCreateFeePlanPage from '../features/hostel/pages/fee-plans/CreateFeePlanPage';
+import HostelEditFeePlanPage from '../features/hostel/pages/fee-plans/EditFeePlanPage';
+import HostelInvoicesPage from '../features/hostel/pages/invoices/InvoicesPage';
+import HostelCreateInvoicePage from '../features/hostel/pages/invoices/CreateInvoicePage';
+import HostelInvoiceDetailPage from '../features/hostel/pages/invoices/InvoiceDetailPage';
+import HostelPaymentsPage from '../features/hostel/pages/payments/PaymentsPage';
+import HostelPaymentDetailPage from '../features/hostel/pages/payments/PaymentDetailPage';
+import HostelDisciplinePage from '../features/hostel/pages/discipline/DisciplinePage';
+import HostelCreateDisciplinePage from '../features/hostel/pages/discipline/CreateDisciplinePage';
+import HostelDisciplineDetailPage from '../features/hostel/pages/discipline/DisciplineDetailPage';
+import HostelAlertsPage from '../features/hostel/pages/alerts/AlertsPage';
+import HostelDashboardPage from '../features/hostel/pages/dashboard/DashboardPage';
+import HostelReportsPage from '../features/hostel/pages/reports/ReportsPage';
+import HostelNotificationsPage from '../features/hostel/pages/notifications/NotificationsPage';
+import HostelRolesPage from '../features/hostel/pages/rbac/RolesPage';
+import HostelCreateRolePage from '../features/hostel/pages/rbac/CreateRolePage';
+import HostelEditRolePage from '../features/hostel/pages/rbac/EditRolePage';
+import HostelUsersPage from '../features/hostel/pages/rbac/UsersPage';
+import HostelCreateUserPage from '../features/hostel/pages/rbac/CreateUserPage';
+// Alumni RBAC
+import AlumniRolesPage from '../features/alumni/pages/rbac/RolesPage';
+import AlumniCreateRolePage from '../features/alumni/pages/rbac/CreateRolePage';
+import AlumniEditRolePage from '../features/alumni/pages/rbac/EditRolePage';
+import AlumniUsersPage from '../features/alumni/pages/rbac/UsersPage';
+import AlumniCreateUserPage from '../features/alumni/pages/rbac/CreateUserPage';
+import AlumniPermissionsPage from '../features/alumni/pages/rbac/PermissionsPage';
+import AlumniCreatePermissionPage from '../features/alumni/pages/rbac/CreatePermissionPage';
+import AlumniEditPermissionPage from '../features/alumni/pages/rbac/EditPermissionPage';
+import AlumniRegisterPage from '../features/alumni/pages/auth/RegisterAlumniPage';
+import AlumniProfilesPage from '../features/alumni/pages/profiles/ProfilesPage';
+import AlumniCreateProfilePage from '../features/alumni/pages/profiles/CreateProfilePage';
+import AlumniEditProfilePage from '../features/alumni/pages/profiles/EditProfilePage';
+import AlumniProfileDetailPage from '../features/alumni/pages/profiles/ProfileDetailPage';
+import AlumniPublicDirectoryPage from '../features/alumni/pages/public/PublicDirectoryPage';
+import AlumniMyProfilePage from '../features/alumni/pages/me/MyProfilePage';
+import AlumniMyVerificationPage from '../features/alumni/pages/me/MyVerificationPage';
+import AlumniMyNotificationsPage from '../features/alumni/pages/me/MyNotificationsPage';
+import AlumniGroupsPage from '../features/alumni/pages/groups/GroupsPage';
+import AlumniCreateGroupPage from '../features/alumni/pages/groups/CreateGroupPage';
+import AlumniEditGroupPage from '../features/alumni/pages/groups/EditGroupPage';
+import AlumniGroupDetailPage from '../features/alumni/pages/groups/GroupDetailPage';
+import AlumniEventsPage from '../features/alumni/pages/events/EventsPage';
+import AlumniCreateEventPage from '../features/alumni/pages/events/CreateEventPage';
+import AlumniEditEventPage from '../features/alumni/pages/events/EditEventPage';
+import AlumniEventDetailPage from '../features/alumni/pages/events/EventDetailPage';
+import AlumniEventRegistrationsPage from '../features/alumni/pages/event-registrations/EventRegistrationsPage';
+import AlumniEventRegistrationDetailPage from '../features/alumni/pages/event-registrations/EventRegistrationDetailPage';
+import AlumniJobsPage from '../features/alumni/pages/jobs/JobsPage';
+import AlumniCreateJobPage from '../features/alumni/pages/jobs/CreateJobPage';
+import AlumniEditJobPage from '../features/alumni/pages/jobs/EditJobPage';
+import AlumniJobDetailPage from '../features/alumni/pages/jobs/JobDetailPage';
+import AlumniJobApplicationsPage from '../features/alumni/pages/job-applications/JobApplicationsPage';
+import AlumniJobApplicationDetailPage from '../features/alumni/pages/job-applications/JobApplicationDetailPage';
+import AlumniMentorshipProgramsPage from '../features/alumni/pages/mentorship-programs/MentorshipProgramsPage';
+import AlumniCreateMentorshipProgramPage from '../features/alumni/pages/mentorship-programs/CreateMentorshipProgramPage';
+import AlumniEditMentorshipProgramPage from '../features/alumni/pages/mentorship-programs/EditMentorshipProgramPage';
+import AlumniMentorshipProgramDetailPage from '../features/alumni/pages/mentorship-programs/MentorshipProgramDetailPage';
+import AlumniMentorsPage from '../features/alumni/pages/mentors/MentorsPage';
+import AlumniCreateMentorPage from '../features/alumni/pages/mentors/CreateMentorPage';
+import AlumniEditMentorPage from '../features/alumni/pages/mentors/EditMentorPage';
+import AlumniMentorshipMatchesPage from '../features/alumni/pages/mentorship-matches/MentorshipMatchesPage';
+import AlumniMentorshipMatchDetailPage from '../features/alumni/pages/mentorship-matches/MentorshipMatchDetailPage';
+import AlumniCampaignsPage from '../features/alumni/pages/campaigns/CampaignsPage';
+import AlumniCreateCampaignPage from '../features/alumni/pages/campaigns/CreateCampaignPage';
+import AlumniEditCampaignPage from '../features/alumni/pages/campaigns/EditCampaignPage';
+import AlumniCampaignDetailPage from '../features/alumni/pages/campaigns/CampaignDetailPage';
+import AlumniDonationsPage from '../features/alumni/pages/donations/DonationsPage';
+import AlumniCreateDonationPage from '../features/alumni/pages/donations/CreateDonationPage';
+import AlumniDonationDetailPage from '../features/alumni/pages/donations/DonationDetailPage';
+import AlumniNewslettersPage from '../features/alumni/pages/newsletters/NewslettersPage';
+import AlumniCreateNewsletterPage from '../features/alumni/pages/newsletters/CreateNewsletterPage';
+import AlumniEditNewsletterPage from '../features/alumni/pages/newsletters/EditNewsletterPage';
+import AlumniNewsletterDetailPage from '../features/alumni/pages/newsletters/NewsletterDetailPage';
+import AlumniCommunicationLogsPage from '../features/alumni/pages/communication-logs/CommunicationLogsPage';
+import AlumniDashboardPage from '../features/alumni/pages/dashboard/DashboardPage';
+import AlumniReportsPage from '../features/alumni/pages/reports/ReportsPage';
+import AlumniNotificationsPage from '../features/alumni/pages/notifications/NotificationsPage';
 // Library RBAC
 import LibraryRolesPage from '../features/library/pages/rbac/RolesPage';
 import LibraryCreateRolePage from '../features/library/pages/rbac/CreateRolePage';
@@ -598,6 +775,11 @@ export const routeConfig = [
 
   // Sales & Purchase Routes
   {
+    path: '/sales-purchase/dashboard',
+    element: SalesPurchaseDashboardPage,
+    isProtected: true,
+  },
+  {
     path: '/sales-purchase/item-categories',
     element: ItemCategoriesPage,
     isProtected: true,
@@ -650,11 +832,6 @@ export const routeConfig = [
   {
     path: '/sales-purchase/tax-codes/:id',
     element: TaxCodeDetailsPage,
-    isProtected: true,
-  },
-  {
-    path: '/sales-purchase/tax-codes/:id/edit',
-    element: EditTaxCodePage,
     isProtected: true,
   },
   {
@@ -775,6 +952,26 @@ export const routeConfig = [
   {
     path: '/sales-purchase/purchase-orders/:id/edit',
     element: EditPurchaseOrderPage,
+    isProtected: true,
+  },
+  {
+    path: '/sales-purchase/approval-rules',
+    element: ApprovalRulesPage,
+    isProtected: true,
+  },
+  {
+    path: '/sales-purchase/approval-rules/new',
+    element: CreateApprovalRulePage,
+    isProtected: true,
+  },
+  {
+    path: '/sales-purchase/approval-rules/:id',
+    element: ApprovalRuleDetailsPage,
+    isProtected: true,
+  },
+  {
+    path: '/sales-purchase/approval-rules/:id/edit',
+    element: EditApprovalRulePage,
     isProtected: true,
   },
   {
@@ -952,12 +1149,14 @@ export const routeConfig = [
     element: CreateUserPage,
     isProtected: true,
   },
+
+  // Canteen Auth Routes
   {
-    path: '/sales-purchase/users/:id/edit',
-    element: EditUserPage,
-    isProtected: true,
+    path: '/canteen/login',
+    element: CanteenLoginPage,
+    isPublic: true,
   },
-  
+
   // Canteen RBAC Routes
   {
     path: '/canteen/roles',
@@ -997,11 +1196,6 @@ export const routeConfig = [
   {
     path: '/canteen/users/new',
     element: CanteenCreateUserPage,
-    isProtected: true,
-  },
-  {
-    path: '/canteen/users/:id/edit',
-    element: CanteenEditUserPage,
     isProtected: true,
   },
   
@@ -1160,6 +1354,906 @@ export const routeConfig = [
   {
     path: '/canteen/menu/schedules/:id/edit',
     element: EditMenuSchedulePage,
+    isProtected: true,
+  },
+
+  // Admission Setup Routes
+  {
+    path: '/admission/sessions',
+    element: AdmissionSessionsPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/sessions/new',
+    element: AdmissionCreateSessionPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/sessions/:id/edit',
+    element: AdmissionEditSessionPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/programs',
+    element: AdmissionProgramsPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/programs/new',
+    element: AdmissionCreateProgramPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/programs/:id/edit',
+    element: AdmissionEditProgramPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/applicants',
+    element: AdmissionApplicantsPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/applicants/new',
+    element: AdmissionCreateApplicantPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/applicants/:id/edit',
+    element: AdmissionEditApplicantPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/enquiries',
+    element: AdmissionEnquiriesPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/enquiries/new',
+    element: AdmissionCreateEnquiryPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/enquiries/:id',
+    element: AdmissionEnquiryDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/enquiries/:id/edit',
+    element: AdmissionEditEnquiryPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/enquiries/:id/convert',
+    element: AdmissionConvertEnquiryPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/applications',
+    element: AdmissionApplicationsPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/applications/new',
+    element: AdmissionCreateApplicationPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/applications/:id',
+    element: AdmissionApplicationDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/applications/:id/edit',
+    element: AdmissionEditApplicationPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/tests',
+    element: AdmissionTestsPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/tests/new',
+    element: AdmissionCreateTestPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/tests/:id',
+    element: AdmissionTestDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/tests/:id/edit',
+    element: AdmissionEditTestPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/interviews',
+    element: AdmissionInterviewsPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/interviews/new',
+    element: AdmissionCreateInterviewPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/interviews/:id',
+    element: AdmissionInterviewDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/interviews/:id/edit',
+    element: AdmissionEditInterviewPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/merit-lists',
+    element: AdmissionMeritListsPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/merit-lists/new',
+    element: AdmissionCreateMeritListPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/merit-lists/:id',
+    element: AdmissionMeritListDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/merit-lists/:id/edit',
+    element: AdmissionEditMeritListPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/dashboard',
+    element: AdmissionDashboardPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/notifications',
+    element: AdmissionNotificationsPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/reports',
+    element: AdmissionReportsPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/confirmations',
+    element: AdmissionConfirmationsPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/confirmations/:id',
+    element: AdmissionConfirmationDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/payments',
+    element: AdmissionPaymentsPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/payments/:id',
+    element: AdmissionPaymentDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/offers',
+    element: AdmissionOffersPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/offers/:id',
+    element: AdmissionOfferDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/fee-structures',
+    element: AdmissionFeeStructuresPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/fee-structures/new',
+    element: AdmissionCreateFeeStructurePage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/fee-structures/:id/edit',
+    element: AdmissionEditFeeStructurePage,
+    isProtected: true,
+  },
+
+  // Admission Auth & RBAC Routes
+  {
+    path: '/admission/login',
+    element: AdmissionLoginPage,
+    isPublic: true,
+  },
+  {
+    path: '/admission/roles',
+    element: AdmissionRolesPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/roles/new',
+    element: AdmissionCreateRolePage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/roles/:id/edit',
+    element: AdmissionEditRolePage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/permissions',
+    element: AdmissionPermissionsPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/permissions/new',
+    element: AdmissionCreatePermissionPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/permissions/:id/edit',
+    element: AdmissionEditPermissionPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/users',
+    element: AdmissionUsersPage,
+    isProtected: true,
+  },
+  {
+    path: '/admission/users/new',
+    element: AdmissionCreateUserPage,
+    isProtected: true,
+  },
+
+  // Hostel Routes
+  {
+    path: '/hostel/blocks',
+    element: HostelBlocksPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/blocks/new',
+    element: HostelCreateBlockPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/blocks/:id',
+    element: HostelBlockDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/blocks/:id/edit',
+    element: HostelEditBlockPage,
+    isProtected: true,
+  },
+
+  {
+    path: '/hostel/rooms',
+    element: HostelRoomsPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/rooms/new',
+    element: HostelCreateRoomPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/rooms/:id',
+    element: HostelRoomDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/rooms/:id/edit',
+    element: HostelEditRoomPage,
+    isProtected: true,
+  },
+
+  {
+    path: '/hostel/beds',
+    element: HostelBedsPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/beds/new',
+    element: HostelCreateBedPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/beds/:id',
+    element: HostelBedDetailPage,
+    isProtected: true,
+  },
+
+  {
+    path: '/hostel/residents',
+    element: HostelResidentsPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/residents/new',
+    element: HostelCreateResidentPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/residents/:id',
+    element: HostelResidentDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/residents/:id/edit',
+    element: HostelEditResidentPage,
+    isProtected: true,
+  },
+
+  {
+    path: '/hostel/allotments',
+    element: HostelAllotmentsPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/allotments/:id',
+    element: HostelAllotmentDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/transfer-requests',
+    element: HostelTransferRequestsPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/transfer-requests/:id',
+    element: HostelTransferRequestDetailPage,
+    isProtected: true,
+  },
+
+  {
+    path: '/hostel/gate-passes',
+    element: HostelGatePassesPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/gate-passes/new',
+    element: HostelCreateGatePassPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/gate-passes/scan',
+    element: HostelGateScanPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/gate-passes/:id',
+    element: HostelGatePassDetailPage,
+    isProtected: true,
+  },
+
+  {
+    path: '/hostel/attendance',
+    element: HostelAttendancePage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/attendance/new',
+    element: HostelMarkAttendancePage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/attendance/roll-call',
+    element: HostelRollCallPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/attendance/:id',
+    element: HostelAttendanceDetailPage,
+    isProtected: true,
+  },
+
+  // Hostel Mess Menu & Visitors
+  {
+    path: '/hostel/mess-menu',
+    element: HostelMessMenuPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/mess-menu/new',
+    element: HostelCreateMenuEntryPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/mess-menu/:id/edit',
+    element: HostelEditMenuEntryPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/visitors',
+    element: HostelVisitorsPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/visitors/new',
+    element: HostelCreateVisitorPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/visitors/:id',
+    element: HostelVisitorDetailPage,
+    isProtected: true,
+  },
+
+  // Hostel Mess Attendance & Complaints
+  {
+    path: '/hostel/mess-attendance',
+    element: HostelMessAttendancePage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/mess-attendance/new',
+    element: HostelMarkMessAttendancePage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/mess-attendance/roll-call',
+    element: HostelMessRollCallPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/complaints',
+    element: HostelComplaintsPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/complaints/new',
+    element: HostelCreateComplaintPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/complaints/:id',
+    element: HostelComplaintDetailPage,
+    isProtected: true,
+  },
+
+  // Hostel Fee Plans & Invoices
+  {
+    path: '/hostel/fee-plans',
+    element: HostelFeePlansPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/fee-plans/new',
+    element: HostelCreateFeePlanPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/fee-plans/:id/edit',
+    element: HostelEditFeePlanPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/invoices',
+    element: HostelInvoicesPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/invoices/new',
+    element: HostelCreateInvoicePage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/invoices/:id',
+    element: HostelInvoiceDetailPage,
+    isProtected: true,
+  },
+
+  // Hostel Payments, Discipline, Alerts, Dashboard, Reports & Notifications
+  {
+    path: '/hostel/payments',
+    element: HostelPaymentsPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/payments/:id',
+    element: HostelPaymentDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/discipline',
+    element: HostelDisciplinePage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/discipline/new',
+    element: HostelCreateDisciplinePage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/discipline/:id',
+    element: HostelDisciplineDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/alerts',
+    element: HostelAlertsPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/dashboard',
+    element: HostelDashboardPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/reports',
+    element: HostelReportsPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/notifications',
+    element: HostelNotificationsPage,
+    isProtected: true,
+  },
+
+  // Hostel RBAC Routes
+  {
+    path: '/hostel/permissions',
+    element: HostelPermissionsPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/permissions/new',
+    element: HostelCreatePermissionPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/permissions/:id/edit',
+    element: HostelEditPermissionPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/roles',
+    element: HostelRolesPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/roles/new',
+    element: HostelCreateRolePage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/roles/:id/edit',
+    element: HostelEditRolePage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/users',
+    element: HostelUsersPage,
+    isProtected: true,
+  },
+  {
+    path: '/hostel/users/new',
+    element: HostelCreateUserPage,
+    isProtected: true,
+  },
+
+  // Alumni RBAC Routes
+  {
+    path: '/alumni/permissions',
+    element: AlumniPermissionsPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/permissions/new',
+    element: AlumniCreatePermissionPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/permissions/:id/edit',
+    element: AlumniEditPermissionPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/roles',
+    element: AlumniRolesPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/roles/new',
+    element: AlumniCreateRolePage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/roles/:id/edit',
+    element: AlumniEditRolePage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/users',
+    element: AlumniUsersPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/users/new',
+    element: AlumniCreateUserPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/register',
+    element: AlumniRegisterPage,
+    isProtected: true,
+  },
+
+  // Alumni Directory Routes
+  {
+    path: '/alumni/profiles',
+    element: AlumniProfilesPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/profiles/new',
+    element: AlumniCreateProfilePage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/profiles/:id',
+    element: AlumniProfileDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/profiles/:id/edit',
+    element: AlumniEditProfilePage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/public-directory',
+    element: AlumniPublicDirectoryPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/me',
+    element: AlumniMyProfilePage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/me/verification',
+    element: AlumniMyVerificationPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/me/notifications',
+    element: AlumniMyNotificationsPage,
+    isProtected: true,
+  },
+
+  // Alumni Groups Routes
+  {
+    path: '/alumni/groups',
+    element: AlumniGroupsPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/groups/new',
+    element: AlumniCreateGroupPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/groups/:id',
+    element: AlumniGroupDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/groups/:id/edit',
+    element: AlumniEditGroupPage,
+    isProtected: true,
+  },
+
+  // Alumni Events Routes
+  {
+    path: '/alumni/events',
+    element: AlumniEventsPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/events/new',
+    element: AlumniCreateEventPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/events/:id',
+    element: AlumniEventDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/events/:id/edit',
+    element: AlumniEditEventPage,
+    isProtected: true,
+  },
+
+  // Alumni Event Registrations & Payments Routes
+  {
+    path: '/alumni/event-registrations',
+    element: AlumniEventRegistrationsPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/event-registrations/:id',
+    element: AlumniEventRegistrationDetailPage,
+    isProtected: true,
+  },
+
+  // Alumni Job Board Routes
+  {
+    path: '/alumni/jobs',
+    element: AlumniJobsPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/jobs/new',
+    element: AlumniCreateJobPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/jobs/:id',
+    element: AlumniJobDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/jobs/:id/edit',
+    element: AlumniEditJobPage,
+    isProtected: true,
+  },
+
+  // Alumni Job Applications Routes
+  {
+    path: '/alumni/job-applications',
+    element: AlumniJobApplicationsPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/job-applications/:id',
+    element: AlumniJobApplicationDetailPage,
+    isProtected: true,
+  },
+
+  // Alumni Mentorship Programs Routes
+  {
+    path: '/alumni/mentorship-programs',
+    element: AlumniMentorshipProgramsPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/mentorship-programs/new',
+    element: AlumniCreateMentorshipProgramPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/mentorship-programs/:id',
+    element: AlumniMentorshipProgramDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/mentorship-programs/:id/edit',
+    element: AlumniEditMentorshipProgramPage,
+    isProtected: true,
+  },
+
+  // Alumni Mentors Routes
+  {
+    path: '/alumni/mentors',
+    element: AlumniMentorsPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/mentors/new',
+    element: AlumniCreateMentorPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/mentors/:id/edit',
+    element: AlumniEditMentorPage,
+    isProtected: true,
+  },
+
+  // Alumni Mentorship Matches Routes
+  {
+    path: '/alumni/mentorship-matches',
+    element: AlumniMentorshipMatchesPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/mentorship-matches/:id',
+    element: AlumniMentorshipMatchDetailPage,
+    isProtected: true,
+  },
+
+  // Alumni Fundraising Campaigns Routes
+  {
+    path: '/alumni/campaigns',
+    element: AlumniCampaignsPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/campaigns/new',
+    element: AlumniCreateCampaignPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/campaigns/:id',
+    element: AlumniCampaignDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/campaigns/:id/edit',
+    element: AlumniEditCampaignPage,
+    isProtected: true,
+  },
+
+  // Alumni Donations & Receipts Routes
+  {
+    path: '/alumni/donations',
+    element: AlumniDonationsPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/donations/new',
+    element: AlumniCreateDonationPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/donations/:id',
+    element: AlumniDonationDetailPage,
+    isProtected: true,
+  },
+
+  // Alumni Newsletters Routes
+  {
+    path: '/alumni/newsletters',
+    element: AlumniNewslettersPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/newsletters/new',
+    element: AlumniCreateNewsletterPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/newsletters/:id',
+    element: AlumniNewsletterDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/newsletters/:id/edit',
+    element: AlumniEditNewsletterPage,
+    isProtected: true,
+  },
+
+  // Alumni Communication, Dashboard, Reports & Notifications Routes
+  {
+    path: '/alumni/communication-logs',
+    element: AlumniCommunicationLogsPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/dashboard',
+    element: AlumniDashboardPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/reports',
+    element: AlumniReportsPage,
+    isProtected: true,
+  },
+  {
+    path: '/alumni/notifications',
+    element: AlumniNotificationsPage,
     isProtected: true,
   },
 

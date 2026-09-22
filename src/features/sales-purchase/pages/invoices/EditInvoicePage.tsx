@@ -25,14 +25,24 @@ export default function EditInvoicePage() {
       setLoading(true);
       const data = await getInvoice(invoiceId);
       setDefaultValues({
-        invoiceType: data.invoiceType,
-        customerId: data.customerId,
-        vendorId: data.vendorId,
-        invoiceDate: data.invoiceDate,
-        dueDate: data.dueDate,
-        warehouseId: data.warehouseId,
-        discount: data.discount,
-        items: data.items,
+        vendor_invoice_number: data.vendor_invoice_number,
+        vendor_id: data.vendor_id,
+        purchase_order_id: data.purchase_order_id || undefined,
+        grn_id: data.grn_id || undefined,
+        invoice_date: data.invoice_date,
+        due_date: data.due_date || undefined,
+        discount: Number(data.discount) || 0,
+        items: (data.items || []).map((item) => ({
+          item_id: item.item_id,
+          po_item_id: item.po_item_id || undefined,
+          grn_item_id: item.grn_item_id || undefined,
+          quantity: Number(item.quantity),
+          unit_price: Number(item.unit_price),
+          // The API doesn't return the original tax_code_id on read (only the resulting
+          // cgst/sgst/igst rates), so the tax code must be re-selected when editing a line.
+          tax_code_id: 0,
+          line_discount: Number(item.line_discount) || 0,
+        })),
       });
     } catch (error: any) {
       console.error('Failed to load data:', error);
@@ -55,7 +65,7 @@ export default function EditInvoicePage() {
       if (error.response?.status === 401) {
         return;
       }
-      alert(error instanceof Error ? error.message : 'Failed to update invoice');
+      alert(error.response?.data?.error?.message || error.message || 'Failed to update invoice');
     } finally {
       setIsSubmitting(false);
     }

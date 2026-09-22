@@ -4,7 +4,6 @@ import { cn } from '../../../../utils/cn';
 import type { TaxCodeFormData } from '../../types/sales-purchase.types';
 
 interface TaxCodeFormProps {
-  defaultValues?: TaxCodeFormData;
   onSubmit?: (data: TaxCodeFormData) => void;
   submitText?: string;
   isSubmitting?: boolean;
@@ -12,7 +11,6 @@ interface TaxCodeFormProps {
 }
 
 export default function TaxCodeForm({
-  defaultValues,
   onSubmit,
   submitText = 'Save',
   isSubmitting = false,
@@ -23,10 +21,10 @@ export default function TaxCodeForm({
     const formData = new FormData(e.currentTarget as HTMLFormElement);
     const data: TaxCodeFormData = {
       name: formData.get('name') as string,
-      cgstPct: parseFloat(formData.get('cgstPct') as string),
-      sgstPct: parseFloat(formData.get('sgstPct') as string),
-      igstPct: parseFloat(formData.get('igstPct') as string),
-      effectiveFrom: formData.get('effectiveFrom') as string,
+      cgst_pct: parseFloat(formData.get('cgst_pct') as string),
+      sgst_pct: parseFloat(formData.get('sgst_pct') as string),
+      igst_pct: parseFloat(formData.get('igst_pct') as string),
+      effective_from: formData.get('effective_from') as string,
     };
     onSubmit?.(data);
   };
@@ -37,64 +35,37 @@ export default function TaxCodeForm({
         <label className="block text-sm font-medium text-slate-700 mb-1">
           Tax Name <span className="text-red-500">*</span>
         </label>
-        <Input
-          name="name"
-          defaultValue={defaultValues?.name}
-          placeholder="Enter tax name (e.g., GST 18%)"
-          required
-        />
+        <Input name="name" placeholder="Enter tax name (e.g., GST 18%)" required />
+      </div>
+      <div className="text-sm text-slate-600 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+        Tax rates and the effective-from date can't be edited once created, since that would change the rate
+        used by historical invoices. To change a rate, create a new tax code instead.
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">
             CGST % <span className="text-red-500">*</span>
           </label>
-          <Input
-            name="cgstPct"
-            type="number"
-            step="0.01"
-            defaultValue={defaultValues?.cgstPct}
-            placeholder="e.g., 9"
-            required
-          />
+          <Input name="cgst_pct" type="number" step="0.01" placeholder="e.g., 9" required />
         </div>
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">
             SGST % <span className="text-red-500">*</span>
           </label>
-          <Input
-            name="sgstPct"
-            type="number"
-            step="0.01"
-            defaultValue={defaultValues?.sgstPct}
-            placeholder="e.g., 9"
-            required
-          />
+          <Input name="sgst_pct" type="number" step="0.01" placeholder="e.g., 9" required />
         </div>
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">
             IGST % <span className="text-red-500">*</span>
           </label>
-          <Input
-            name="igstPct"
-            type="number"
-            step="0.01"
-            defaultValue={defaultValues?.igstPct}
-            placeholder="e.g., 18"
-            required
-          />
+          <Input name="igst_pct" type="number" step="0.01" placeholder="e.g., 18" required />
         </div>
       </div>
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-1">
           Effective From <span className="text-red-500">*</span>
         </label>
-        <Input
-          name="effectiveFrom"
-          type="datetime-local"
-          defaultValue={defaultValues?.effectiveFrom}
-          required
-        />
+        <Input name="effective_from" type="date" required />
       </div>
       <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4">
         <Button variant="secondary" type="button" className="w-full sm:w-auto">

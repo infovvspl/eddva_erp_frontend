@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import UOMTable from '../../components/uom/UOMTable';
-import { getUOMs } from '../../api/sales-purchase.api';
+import { getUOMs, deleteUOM } from '../../api/sales-purchase.api';
+import { getApiErrorMessage } from '../../utils/errors';
 import type { UOM } from '../../types/sales-purchase.types';
 
 export default function UOMPage() {
@@ -25,9 +26,24 @@ export default function UOMPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err instanceof Error ? err.message : 'Failed to load UOMs');
+      setError(getApiErrorMessage(err, 'Failed to load UOMs'));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('Are you sure you want to delete this UOM?')) {
+      return;
+    }
+    try {
+      await deleteUOM(id);
+      setUOMs(uoms.filter((u) => u.uom_id !== id));
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        return;
+      }
+      alert(getApiErrorMessage(err, 'Failed to delete UOM'));
     }
   };
 
@@ -53,7 +69,7 @@ export default function UOMPage() {
           ) : error ? (
             <div className="text-center py-8 text-red-500">{error}</div>
           ) : (
-            <UOMTable uoms={uoms} />
+            <UOMTable uoms={uoms} onDelete={handleDelete} />
           )}
         </div>
       </Card>

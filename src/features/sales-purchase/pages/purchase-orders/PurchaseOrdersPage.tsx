@@ -6,6 +6,7 @@ import Card from '../../../../components/ui/Card';
 import PurchaseOrderTable from '../../components/purchase-orders/PurchaseOrderTable';
 import { getPurchaseOrders, deletePurchaseOrder } from '../../api/sales-purchase.api';
 import type { PurchaseOrder } from '../../types/sales-purchase.types';
+import { getApiErrorMessage } from '../../utils/errors';
 
 export default function PurchaseOrdersPage() {
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
@@ -25,24 +26,24 @@ export default function PurchaseOrdersPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err instanceof Error ? err.message : 'Failed to load purchase orders');
+      setError(getApiErrorMessage(err, 'Failed to load purchase orders'));
     } finally {
       setLoading(false);
     }
   }
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     if (!window.confirm('Are you sure you want to delete this purchase order?')) {
       return;
     }
     try {
       await deletePurchaseOrder(id);
-      setPurchaseOrders(purchaseOrders.filter((po) => po.id !== id));
+      setPurchaseOrders(purchaseOrders.filter((po) => po.po_id !== id));
     } catch (err: any) {
       if (err.response?.status === 401) {
         return;
       }
-      alert(err instanceof Error ? err.message : 'Failed to delete purchase order');
+      alert(getApiErrorMessage(err, 'Failed to delete purchase order'));
     }
   };
 
