@@ -1,9 +1,15 @@
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
+import { useAuthStore } from '../../stores/auth.store';
+import { config } from '../../config/env';
+import { findModuleAuth } from '../../lib/moduleAuth';
 
 export default function Breadcrumbs() {
   const location = useLocation();
   const pathnames = location.pathname.split('/').filter((x) => x);
+  const isCoreAuthenticated = useAuthStore((state) => state.isAuthenticated) || !!config.apiToken;
+  // Module staff have no all-modules page: their "Home" is their module.
+  const homeTo = isCoreAuthenticated ? '/' : (findModuleAuth(location.pathname)?.basePath ?? '/');
 
   const formatBreadcrumbName = (name: string) => {
     return name
@@ -14,7 +20,7 @@ export default function Breadcrumbs() {
 
   return (
     <nav className="flex items-center gap-2 text-sm">
-      <Link to="/" className="text-slate-500 hover:text-slate-700 transition-colors">
+      <Link to={homeTo} className="text-slate-500 hover:text-slate-700 transition-colors">
         Home
       </Link>
       {pathnames.length > 0 && <ChevronRight className="h-4 w-4 text-slate-400" />}

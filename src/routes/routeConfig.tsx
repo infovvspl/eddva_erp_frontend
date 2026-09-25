@@ -1,6 +1,11 @@
 import { ROUTES } from '../constants/routes';
 import LoginPage from '../features/auth/pages/LoginPage';
 import DashboardPage from '../features/dashboard/pages/DashboardPage';
+import ModuleHomePage from '../features/module-home/ModuleHomePage';
+import ModuleRootRedirect from '../features/module-home/ModuleRootRedirect';
+import ModuleLoginPage from '../features/module-auth/pages/ModuleLoginPage';
+import { moduleAuthList } from '../lib/moduleAuth';
+import LibraryDashboardPage from '../features/library/pages/dashboard/LibraryDashboardPage';
 
 import FrontOfficeDashboardPage from '../features/front-office/pages/FrontOfficeDashboardPage';
 import VisitorsPage from '../features/front-office/pages/visitors/VisitorsPage';
@@ -3158,6 +3163,62 @@ export const routeConfig = [
   {
     path: '/transport/users/new',
     element: TransportCreateUserPage,
+    isProtected: true,
+  },
+
+  // Separate sign-in page for each module's staff (username + password from their school)
+  ...moduleAuthList.map((m) => ({
+    path: m.basePath + '/login',
+    element: ModuleLoginPage,
+    isPublic: true,
+  })),
+
+  // Bare module URLs forward to the module's existing dashboard page
+  {
+    path: '/hostel',
+    element: ModuleRootRedirect,
+    isProtected: true,
+  },
+  {
+    path: '/alumni',
+    element: ModuleRootRedirect,
+    isProtected: true,
+  },
+  {
+    path: '/sales-purchase',
+    element: ModuleRootRedirect,
+    isProtected: true,
+  },
+  {
+    path: '/admission',
+    element: ModuleRootRedirect,
+    isProtected: true,
+  },
+
+  // Module home pages (modules without a dashboard of their own)
+  {
+    path: '/library',
+    element: LibraryDashboardPage,
+    isProtected: true,
+  },
+  {
+    path: '/sports',
+    element: ModuleHomePage,
+    isProtected: true,
+  },
+  {
+    path: '/transport',
+    element: ModuleHomePage,
+    isProtected: true,
+  },
+  {
+    path: '/accounts',
+    element: ModuleHomePage,
+    isProtected: true,
+  },
+  {
+    path: '/canteen',
+    element: ModuleHomePage,
     isProtected: true,
   },
 

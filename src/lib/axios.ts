@@ -5,6 +5,7 @@ import { getCanteenToken, clearCanteenSession } from '../features/canteen/utils/
 import { getAdmissionToken, clearAdmissionSession } from '../features/admission/utils/ssoSession';
 import { getHostelToken, clearHostelSession } from '../features/hostel/utils/ssoSession';
 import { getAlumniToken, clearAlumniSession } from '../features/alumni/utils/ssoSession';
+import { moduleSessions } from './moduleAuth';
 import { notifyAuthError } from './apiAuthEvents';
 
 const axiosInstance = axios.create({
@@ -29,7 +30,23 @@ function islandUrl(prefix: string, excluded: string[]) {
     !!url && url.includes(prefix) && !excluded.some((path) => url.includes(path));
 }
 
+function moduleIsland(prefix: string, session: { getToken: () => Promise<string>; clear: () => void }, retryFlag: string): TokenIsland {
+  return {
+    // Anchored so '/library' never matches e.g. '/sales-purchase/library-report'.
+    matches: (url) => !!url && (url === prefix || url.startsWith(prefix + '/')) && !url.startsWith(prefix + '/auth/'),
+    getToken: session.getToken,
+    clear: session.clear,
+    retryFlag,
+  };
+}
+
 const tokenIslands: TokenIsland[] = [
+  moduleIsland('/library', moduleSessions.library, '_libraryRetried'),
+  moduleIsland('/sports', moduleSessions.sports, '_sportsRetried'),
+  moduleIsland('/accounts', moduleSessions.accounts, '_accountsRetried'),
+  moduleIsland('/transport', moduleSessions.transport, '_transportRetried'),
+  moduleIsland('/inventory', moduleSessions.inventory, '_inventoryRetried'),
+  moduleIsland('/front-office', moduleSessions.frontOffice, '_frontOfficeRetried'),
   {
     matches: islandUrl('/sales-purchase', ['/sales-purchase/auth/sso']),
     getToken: getSalesPurchaseToken,

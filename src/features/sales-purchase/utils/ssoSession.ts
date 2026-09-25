@@ -2,6 +2,7 @@ import { config } from '../../../config/env';
 
 const SP_TOKEN_KEY = 'sp_session_token';
 const SP_TOKEN_SOURCE_KEY = 'sp_session_source_token';
+const SP_USER_KEY = 'sp_session_user';
 const EXPIRY_SKEW_MS = 60_000;
 
 interface DecodedTokenPayload {
@@ -45,7 +46,15 @@ function readCachedToken(): string | null {
   const baseToken = getBaseToken();
   const cachedToken = localStorage.getItem(SP_TOKEN_KEY);
   const cachedSource = localStorage.getItem(SP_TOKEN_SOURCE_KEY);
-  if (!cachedToken || !baseToken || cachedSource !== baseToken) return null;
+  if (!cachedToken || !cachedSource) return null;
+
+  // A staff direct login has no core token behind it: it is recorded as its own source.
+  const isDirectStaffSession = cachedSource === cachedToken;
+  if (isDirectStaffSession) {
+    if (config.apiToken?.trim()) return null;
+  } else if (!baseToken || cachedSource !== baseToken) {
+    return null;
+  }
 
   if (isExpired(decodeToken(cachedToken))) return null;
   return cachedToken;
@@ -99,6 +108,28 @@ export async function getSalesPurchaseToken(): Promise<string> {
 export function clearSalesPurchaseToken(): void {
   localStorage.removeItem(SP_TOKEN_KEY);
   localStorage.removeItem(SP_TOKEN_SOURCE_KEY);
+  localStorage.removeItem(SP_USER_KEY);
+}
+
+// Used by the staff direct-login flow, where the login response already hands us a
+// ready-to-use Sales & Purchase token.
+export function setSalesPurchaseSession(spToken: string, user: unknown): void {
+  cacheToken(spToken, spToken);
+  localStorage.setItem(SP_USER_KEY, JSON.stringify(user));
+}
+
+export function isSalesPurchaseAuthenticated(): boolean {
+  return readCachedToken() !== null;
+}
+
+export function getCachedSalesPurchaseUser(): Record<string, unknown> | null {
+  if (!readCachedToken()) return null;
+  try {
+    const raw = localStorage.getItem(SP_USER_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, unknown>) : null;
+  } catch {
+    return null;
+  }
 }
 
 export function getCachedIsInstituteAdmin(): boolean {

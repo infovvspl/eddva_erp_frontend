@@ -1,3 +1,4 @@
+import { moduleSessions } from '../../../../lib/moduleAuth';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../../../../components/ui/Button';
@@ -113,7 +114,7 @@ export default function CreateRolePage() {
 
       <Card className="border-slate-200">
         <div className="p-6">
-          {!config.apiToken?.trim() && (
+          {!config.apiToken?.trim() && !localStorage.getItem('accessToken') && !moduleSessions.library.isAuthenticated() && (
             <div className="mb-4 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-lg text-sm">
               Set `VITE_API_TOKEN` in `.env` with a valid bearer token, then restart `npm run dev`.
               The dummy login token cannot create library roles.

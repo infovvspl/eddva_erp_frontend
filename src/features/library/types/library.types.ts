@@ -353,3 +353,25 @@ export interface Reservation {
 export interface ReservationFormData {
   member_id: number;
 }
+
+export interface LibraryDashboardSummary {
+  totals: {
+    titles: number;
+    copies: number;
+    available_copies: number;
+    issued_now: number;
+    overdue: number;
+    active_members: number;
+    pending_reservations: number;
+    unpaid_fines: number;
+  };
+  due_soon: Array<{ issue_id: number; title: string; member_name: string; due_date: string }>;
+  recent_issues: Array<{
+    issue_id: number;
+    title: string;
+    member_name: string;
+    issue_date: string;
+    return_date: string | null;
+    status: string;
+  }>;
+}

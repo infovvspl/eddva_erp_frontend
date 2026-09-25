@@ -33,6 +33,7 @@ import type {
   BookIssueRenewData,
   LibraryNotification,
   MemberSearchParams,
+  LibraryDashboardSummary,
 } from '../types/library.types';
 import { sanitizeRolePermissions } from '../utils/rbac.utils';
 
@@ -355,3 +356,8 @@ export async function getNotifications(): Promise<LibraryNotification[]> {
 }
 
 // Book Issue Management Endpoints have moved to ./issues.api.ts
+
+export async function getLibraryDashboardSummary(): Promise<LibraryDashboardSummary> {
+  const response = await axiosInstance.get('/library/dashboard/summary');
+  return response.data.data;
+}
