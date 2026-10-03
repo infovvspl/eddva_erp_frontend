@@ -440,3 +440,25 @@ export interface PaymentFormData {
   amount: number;
   transactionRef?: string;
 }
+
+// Dashboard Types
+export interface CanteenDashboardSummary {
+  totals: {
+    orders_today: number;
+    revenue_today: number;
+    unpaid_orders: number;
+    active_members: number;
+    open_shifts: number;
+    wallet_balance_total: number;
+  };
+  top_items_today: Array<{ item_id: string; name: string; quantity_sold: number }>;
+  recent_orders: Array<{
+    order_id: string;
+    order_number: string;
+    member_name: string | null;
+    total_amount: number;
+    status: string;
+    payment_status: string;
+    created_at: string;
+  }>;
+}

@@ -422,3 +422,24 @@ export interface IssueAwardFormData {
   award_type: string;
   issued_date: string;
 }
+
+// Dashboard Types
+export interface SportsDashboardSummary {
+  totals: {
+    sports: number;
+    participants: number;
+    houses: number;
+    upcoming_tournaments: number;
+    ongoing_tournaments: number;
+    fixtures_scheduled: number;
+    fixtures_completed: number;
+  };
+  house_standings: Array<{ house_id: number; name: string; total_points: number; rank: number | null }>;
+  upcoming_fixtures: Array<{
+    fixture_id: number;
+    tournament_name: string;
+    team_a: string;
+    team_b: string;
+    scheduled_date: string;
+  }>;
+}

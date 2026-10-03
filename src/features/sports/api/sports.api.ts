@@ -39,6 +39,7 @@ import type {
   SportsRecordFormData,
   SportsAward,
   IssueAwardFormData,
+  SportsDashboardSummary,
 } from '../types/sports.types';
 import { sanitizeRolePermissions } from '../utils/rbac.utils';
 
@@ -371,5 +372,10 @@ export async function resetUserAssignmentPassword(
   data: ResetPasswordFormData
 ): Promise<ResetPasswordResponse> {
   const response = await axiosInstance.patch(`/sports/roles/user-assignments/${id}/password`, data);
+  return response.data.data;
+}
+
+export async function getSportsDashboardSummary(): Promise<SportsDashboardSummary> {
+  const response = await axiosInstance.get('/sports/dashboard/summary');
   return response.data.data;
 }

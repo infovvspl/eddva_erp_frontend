@@ -1,11 +1,14 @@
 import { ROUTES } from '../constants/routes';
 import LoginPage from '../features/auth/pages/LoginPage';
 import DashboardPage from '../features/dashboard/pages/DashboardPage';
-import ModuleHomePage from '../features/module-home/ModuleHomePage';
+import CanteenDashboardPage from '../features/canteen/pages/dashboard/CanteenDashboardPage';
+import AccountsDashboardPage from '../features/accounts/pages/dashboard/AccountsDashboardPage';
+import TransportDashboardPage from '../features/transport/pages/dashboard/TransportDashboardPage';
 import ModuleRootRedirect from '../features/module-home/ModuleRootRedirect';
 import ModuleLoginPage from '../features/module-auth/pages/ModuleLoginPage';
 import { moduleAuthList } from '../lib/moduleAuth';
 import LibraryDashboardPage from '../features/library/pages/dashboard/LibraryDashboardPage';
+import SportsDashboardPage from '../features/sports/pages/dashboard/SportsDashboardPage';
 
 import FrontOfficeDashboardPage from '../features/front-office/pages/FrontOfficeDashboardPage';
 import VisitorsPage from '../features/front-office/pages/visitors/VisitorsPage';
@@ -3203,22 +3206,22 @@ export const routeConfig = [
   },
   {
     path: '/sports',
-    element: ModuleHomePage,
+    element: SportsDashboardPage,
     isProtected: true,
   },
   {
     path: '/transport',
-    element: ModuleHomePage,
+    element: TransportDashboardPage,
     isProtected: true,
   },
   {
     path: '/accounts',
-    element: ModuleHomePage,
+    element: AccountsDashboardPage,
     isProtected: true,
   },
   {
     path: '/canteen',
-    element: ModuleHomePage,
+    element: CanteenDashboardPage,
     isProtected: true,
   },
 

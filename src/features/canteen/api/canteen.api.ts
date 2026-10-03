@@ -34,6 +34,7 @@ import type {
   CategorySalesReport,
   PaymentSummaryReport,
   ShiftsReport,
+  CanteenDashboardSummary,
 } from '../types/canteen.types';
 
 // Menu Category Endpoints
@@ -366,5 +367,11 @@ export async function getPaymentSummaryReport(params?: ReportParams): Promise<Pa
 // GET /api/canteen/reports/shifts
 export async function getShiftsReport(params?: ReportParams): Promise<ShiftsReport> {
   const response = await axiosInstance.get('/canteen/reports/shifts', { params });
+  return response.data.data ?? response.data;
+}
+
+// GET /api/canteen/dashboard/summary
+export async function getCanteenDashboardSummary(): Promise<CanteenDashboardSummary> {
+  const response = await axiosInstance.get('/canteen/dashboard/summary');
   return response.data.data ?? response.data;
 }
