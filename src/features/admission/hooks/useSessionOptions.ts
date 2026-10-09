@@ -30,7 +30,9 @@ export function useSessionOptions() {
     sessions.find((session) => session.session_id === sessionId)?.name;
 
   // Admissions normally run against the open cycle, so forms start there.
-  const activeId = sessions.find((session) => session.status === 'active')?.session_id;
+  const activeId =
+    sessions.find((session) => session.status === 'active')?.session_id ??
+    sessions[0]?.session_id;
 
   return { sessions, status, nameOf, activeId };
 }

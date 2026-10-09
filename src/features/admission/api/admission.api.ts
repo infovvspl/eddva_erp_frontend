@@ -751,8 +751,8 @@ export async function getNotifications(
   return { data: Array.isArray(rows) ? rows : [], pagination: response.data.pagination };
 }
 
-export async function getDashboardSummary(): Promise<unknown> {
-  const response = await axiosInstance.get('/admission/dashboard/summary');
+export async function getDashboardSummary(params: { session_id?: number; program_id?: number } = {}): Promise<unknown> {
+  const response = await axiosInstance.get('/admission/dashboard/summary', { params: cleanParams(params) });
   return response.data.data ?? response.data;
 }
 
