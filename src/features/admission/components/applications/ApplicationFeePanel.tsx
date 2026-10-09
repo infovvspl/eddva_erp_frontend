@@ -20,7 +20,7 @@ import {
 } from '../../types/admission.types';
 
 // RBAC resource the fee endpoints are checked against.
-const FEES_RESOURCE = 'fees';
+const FEES_RESOURCE = 'application_fees';
 
 interface ApplicationFeePanelProps {
   applicationId: number;

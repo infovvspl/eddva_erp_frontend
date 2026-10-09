@@ -73,7 +73,7 @@ export default function InterviewsPage() {
           <h1 className="text-2xl font-bold text-slate-900">Interviews</h1>
           <p className="text-slate-600 mt-1">Schedule interviews, track their status and record evaluations</p>
         </div>
-        {can('create') && (
+        {can('schedule') && (
           <Link to="/admission/interviews/new">
             <Button variant="primary">
               <Plus className="h-4 w-4 mr-2" />
@@ -83,7 +83,7 @@ export default function InterviewsPage() {
         )}
       </div>
 
-      {ready && !can('create') && <AccessNotice isViewOnlyAdmin={isViewOnlyAdmin} />}
+      {ready && !can('schedule') && <AccessNotice isViewOnlyAdmin={isViewOnlyAdmin} />}
 
       <Card className="border-slate-200">
         <div className="p-4 border-b border-slate-200 flex flex-col lg:flex-row gap-3">
@@ -193,7 +193,7 @@ export default function InterviewsPage() {
                                   <Eye className="h-4 w-4" />
                                 </Button>
                               </Link>
-                              {can('update') && (
+                              {can('reschedule') && (
                                 <Link to={`/admission/interviews/${interview.interview_id}/edit`}>
                                   <Button variant="ghost" size="sm" title="Reschedule / edit">
                                     <Pencil className="h-4 w-4" />

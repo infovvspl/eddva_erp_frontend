@@ -75,7 +75,7 @@ export const navItems: NavItem[] = [
       { path: '/admission/applications', label: 'Applications', icon: ClipboardList },
       { path: '/admission/tests', label: 'Entrance Tests', icon: ClipboardCheck },
       { path: '/admission/interviews', label: 'Interviews', icon: UserCheck },
-      { path: '/admission/merit-lists', label: 'Merit Lists', icon: Medal },
+      // { path: '/admission/merit-lists', label: 'Merit Lists', icon: Medal },
       { path: '/admission/offers', label: 'Offers', icon: Award },
       { path: '/admission/payments', label: 'Admission Payments', icon: CreditCard },
       { path: '/admission/confirmations', label: 'Confirmations', icon: BadgeCheck },

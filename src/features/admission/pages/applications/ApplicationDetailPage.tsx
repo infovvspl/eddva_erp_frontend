@@ -12,7 +12,7 @@ import DocumentsPanel from '../../components/applications/DocumentsPanel';
 import ApplicationOfferPanel from '../../components/offers/ApplicationOfferPanel';
 import ApplicationConfirmationPanel from '../../components/confirmations/ApplicationConfirmationPanel';
 import AdmissionFeePanel from '../../components/payments/AdmissionFeePanel';
-import { deleteApplication, getApplication } from '../../api/admission.api';
+import { deleteApplication, getApplication, getApplicationStatus } from '../../api/admission.api';
 import { useProgramOptions } from '../../hooks/useProgramOptions';
 import { useResourceAccess } from '../../hooks/useResourceAccess';
 import { useSessionOptions } from '../../hooks/useSessionOptions';
@@ -20,7 +20,7 @@ import { useToast } from '../../../../hooks/useToast';
 import { getApiErrorMessage, isAuthError } from '../../utils/errors';
 import { formatDate, formatLabel } from '../../utils/format';
 import { INTERVIEWS_RESOURCE } from '../../utils/interviews';
-import type { Application } from '../../types/admission.types';
+import type { Application, ApplicationStatusInfo, ApplicationStatusSupporting } from '../../types/admission.types';
 
 function Detail({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -30,6 +30,27 @@ function Detail({ label, children }: { label: string; children: React.ReactNode 
     </div>
   );
 }
+
+// The supporting values may be plain strings or small objects; never hand an object to React.
+function displayValue(value: unknown): string {
+  if (value === null || value === undefined || value === '') return '—';
+  if (typeof value === 'object') {
+    return Object.entries(value as Record<string, unknown>)
+      .map(([k, v]) => `${formatLabel(k)}: ${typeof v === 'object' && v !== null ? JSON.stringify(v) : String(v)}`)
+      .join(', ');
+  }
+  return formatLabel(String(value));
+}
+
+const PIPELINE_FIELDS: Array<[keyof ApplicationStatusSupporting, string]> = [
+  ['application_fee_status', 'Application Fee'],
+  ['document_status', 'Documents'],
+  ['test_status', 'Test'],
+  ['interview_status', 'Interview'],
+  ['offer_status', 'Offer'],
+  ['admission_fee', 'Admission Fee'],
+  ['confirmation_status', 'Confirmation'],
+];
 
 export default function ApplicationDetailPage() {
   const navigate = useNavigate();
@@ -41,6 +62,8 @@ export default function ApplicationDetailPage() {
   const { nameOf: sessionName } = useSessionOptions();
   const [application, setApplication] = useState<Application | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [statusInfo, setStatusInfo] = useState<ApplicationStatusInfo | null>(null);
+  const [statusError, setStatusError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
@@ -54,6 +77,26 @@ export default function ApplicationDetailPage() {
       })
       .catch((err) => {
         if (!cancelled) setLoadError(getApiErrorMessage(err, 'Failed to load application'));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [id, reloadKey]);
+
+  // Refetched with the application after every change: allowed_transitions depends on the status.
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+    getApplicationStatus(id)
+      .then((data) => {
+        if (cancelled) return;
+        setStatusInfo(data);
+        setStatusError(null);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setStatusInfo(null);
+        setStatusError(getApiErrorMessage(err, 'Failed to load status'));
       });
     return () => {
       cancelled = true;
@@ -116,7 +159,7 @@ export default function ApplicationDetailPage() {
           <ApplicationStatusBadge status={application.status} />
         </div>
         <div className="flex flex-wrap gap-2">
-          {interviewAccess.can('create') && (
+          {interviewAccess.can('schedule') && (
             <Link to={`/admission/interviews/new?application_id=${application.application_id}`}>
               <Button variant="secondary">
                 <CalendarClock className="h-4 w-4 mr-2" />
@@ -185,17 +228,54 @@ export default function ApplicationDetailPage() {
             </div>
           </Card>
 
-          <ApplicationStatusPanel
-            key={application.status}
-            application={application}
-            canUpdate={canUpdate}
-            onChanged={() => setReloadKey((key) => key + 1)}
-          />
+          {statusError && (
+            <Card className="border-slate-200">
+              <div className="p-6 text-sm text-red-500">{statusError}</div>
+            </Card>
+          )}
+          {statusInfo && (
+            <>
+              <ApplicationStatusPanel
+                key={statusInfo.status}
+                info={statusInfo}
+                onChanged={() => setReloadKey((key) => key + 1)}
+              />
+              <Card className="border-slate-200">
+                <div className="p-6">
+                  <h2 className="text-lg font-semibold text-slate-900 mb-4">Pipeline</h2>
+                  <dl className="space-y-3">
+                    {PIPELINE_FIELDS.map(([key, label]) => {
+                      const value = statusInfo.supporting?.[key];
+                      return (
+                        <Detail key={key} label={label}>
+                          {key === 'admission_fee' && value && typeof value === 'object' ? (
+                            <span>
+                              {(value as any).is_paid ? 'Paid in full' : `Balance ${(value as any).balance ?? '—'}`}
+                              <span className="block text-sm text-slate-500">
+                                Paid {(value as any).paid ?? 0} of {(value as any).required ?? '—'}
+                                {(value as any).due_date ? ` · due ${formatDate((value as any).due_date)}` : ''}
+                              </span>
+                            </span>
+                          ) : (
+                            <span className="capitalize">{displayValue(value)}</span>
+                          )}
+                          {key === 'document_status' && statusInfo.supporting?.document_summary && (
+                            <span className="block text-sm text-slate-500">{displayValue(statusInfo.supporting.document_summary)}</span>
+                          )}
+                        </Detail>
+                      );
+                    })}
+                  </dl>
+                </div>
+              </Card>
+            </>
+          )}
         </div>
 
         <div className="lg:col-span-2 space-y-6">
           <ApplicationOfferPanel
             applicationId={application.application_id}
+            applicationStatus={statusInfo?.status ?? application.status}
             onChanged={() => setReloadKey((key) => key + 1)}
           />
           <AdmissionFeePanel
@@ -205,6 +285,12 @@ export default function ApplicationDetailPage() {
           <ApplicationConfirmationPanel
             applicationId={application.application_id}
             applicantName={applicant?.name ?? `Applicant #${application.applicant_id}`}
+            offerStatus={statusInfo?.supporting?.offer_status}
+            feeConfigured={statusInfo?.supporting?.admission_fee_configured}
+            feePaid={statusInfo?.supporting?.admission_fee?.is_paid}
+            feeBalance={statusInfo?.supporting?.admission_fee?.balance}
+            programId={application.program_id}
+            sessionId={application.session_id}
             onChanged={() => setReloadKey((key) => key + 1)}
           />
           <ApplicationFeePanel

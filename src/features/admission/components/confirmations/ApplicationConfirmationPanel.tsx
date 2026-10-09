@@ -16,6 +16,15 @@ import type { Confirmation } from '../../types/admission.types';
 interface ApplicationConfirmationPanelProps {
   applicationId: number;
   applicantName: string;
+  // From the status endpoint's supporting block. The backend only confirms an accepted offer.
+  offerStatus?: string | null;
+  // supporting.admission_fee_configured; undefined while the status is still loading.
+  feeConfigured?: boolean;
+  // supporting.admission_fee.is_paid / balance: confirmation needs the fee paid in full.
+  feePaid?: boolean;
+  feeBalance?: number | string | null;
+  programId?: number;
+  sessionId?: number;
   // Confirming or cancelling changes the application, so the page refreshes.
   onChanged: () => void;
 }
@@ -23,6 +32,12 @@ interface ApplicationConfirmationPanelProps {
 export default function ApplicationConfirmationPanel({
   applicationId,
   applicantName,
+  offerStatus,
+  feeConfigured,
+  feePaid,
+  feeBalance,
+  programId,
+  sessionId,
   onChanged,
 }: ApplicationConfirmationPanelProps) {
   const { toast } = useToast();
@@ -32,7 +47,9 @@ export default function ApplicationConfirmationPanel({
   const [loadError, setLoadError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [confirming, setConfirming] = useState(false);
-
+  // Set when the confirm call answers ADMISSION_FEE_NOT_CONFIGURED; carries the ids to prefill.
+  const [feeError, setFeeError] = useState<{ message: string; program_id?: number; session_id?: number } | null>(null);
+  const offerAccepted = offerStatus?.toLowerCase() === 'accepted';
   useEffect(() => {
     let cancelled = false;
     getApplicationConfirmation(applicationId)
@@ -60,13 +77,37 @@ export default function ApplicationConfirmationPanel({
       setConfirming(true);
       await confirmAdmission(applicationId);
       toast.success('Admission confirmed');
+      setFeeError(null);
       afterChange();
     } catch (err: any) {
-      if (!isAuthError(err)) toast.error(getApiErrorMessage(err, 'Failed to confirm admission'));
+      const apiError = err?.response?.data?.error;
+      if (apiError?.code === 'ADMISSION_FEE_NOT_CONFIGURED') {
+        setFeeError({
+          message: getApiErrorMessage(err, 'No admission fee is configured for this program and session.'),
+          program_id: apiError.details?.program_id,
+          session_id: apiError.details?.session_id,
+        });
+        // The status endpoint's admission_fee_configured is now known to be false.
+        onChanged();
+      } else if (!isAuthError(err)) {
+        toast.error(getApiErrorMessage(err, 'Failed to confirm admission'));
+      }
     } finally {
       setConfirming(false);
     }
   };
+
+  const feeUnpaid = feeConfigured !== false && feePaid === false;
+  const missingFee = feeConfigured === false || feeError !== null;
+  const feeProgramId = feeError?.program_id ?? programId;
+  const feeSessionId = feeError?.session_id ?? sessionId;
+  const createFeeLink =
+    `/admission/fee-structures/new?` +
+    new URLSearchParams({
+      ...(feeProgramId != null && { program_id: String(feeProgramId) }),
+      ...(feeSessionId != null && { session_id: String(feeSessionId) }),
+      return_to: `/admission/applications/${applicationId}`,
+    }).toString();
 
   return (
     <Card className="border-slate-200">
@@ -82,13 +123,29 @@ export default function ApplicationConfirmationPanel({
               <ExternalLink className="h-3.5 w-3.5" />
             </Link>
           )}
-          {ready && confirmation === null && can('create') && (
-            <Button variant="primary" size="sm" disabled={confirming} onClick={handleConfirm}>
+          {ready && confirmation === null && can('create') && offerAccepted && (
+            <Button variant="primary" size="sm" disabled={confirming || missingFee || feeUnpaid} onClick={handleConfirm}>
               <BadgeCheck className="h-4 w-4 mr-1" />
               {confirming ? 'Confirming...' : 'Confirm Admission'}
             </Button>
           )}
         </div>
+
+        {confirmation === null && missingFee && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 space-y-2">
+            <p>{feeError?.message ?? 'No admission fee is configured for this program and session.'}</p>
+            <Link to={createFeeLink} className="inline-block font-medium text-[#008BE9] hover:underline">
+              Create fee structure
+            </Link>
+          </div>
+        )}
+
+        {confirmation === null && feeUnpaid && !missingFee && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            The admission fee must be paid in full before confirming
+            {feeBalance != null ? ` (balance ${feeBalance})` : ''}. Record the payment in the Admission Fee section.
+          </div>
+        )}
 
         {/* View-only admins already get the page-level notice. */}
         {ready && !can('create') && !can('update') && !isViewOnlyAdmin && <AccessNotice isViewOnlyAdmin={false} />}
@@ -103,7 +160,12 @@ export default function ApplicationConfirmationPanel({
             <ConfirmationActions confirmation={confirmation} canUpdate={can('update')} onChanged={afterChange} />
           </div>
         ) : (
-          <div className="text-center text-slate-500 py-4">This admission hasn't been confirmed yet</div>
+          <div className="text-center text-slate-500 py-4">
+            This admission hasn't been confirmed yet
+            {!offerAccepted && (
+              <span className="block text-sm">It can be confirmed once the applicant's offer has been accepted.</span>
+            )}
+          </div>
         )}
       </div>
     </Card>

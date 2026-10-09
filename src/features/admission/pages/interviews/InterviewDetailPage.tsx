@@ -69,7 +69,10 @@ export default function InterviewDetailPage() {
     );
   }
 
-  const canUpdate = can('update');
+  // interviews resource actions: read / schedule / reschedule / evaluate.
+  const canReschedule = can('reschedule');
+  const canSchedule = can('schedule');
+  const canEvaluate = can('evaluate');
   const reload = () => setReloadKey((key) => key + 1);
 
   return (
@@ -81,7 +84,7 @@ export default function InterviewDetailPage() {
           <h1 className="text-2xl font-bold text-slate-900">{interviewApplicantName(interview)}</h1>
           <InterviewStatusBadge status={interview.status} />
         </div>
-        {canUpdate && (
+        {canReschedule && (
           <Link to={`/admission/interviews/${interview.interview_id}/edit`}>
             <Button variant="secondary">
               <Pencil className="h-4 w-4 mr-2" />
@@ -91,7 +94,7 @@ export default function InterviewDetailPage() {
         )}
       </div>
 
-      {!canUpdate && <AccessNotice isViewOnlyAdmin={isViewOnlyAdmin} />}
+      {!canReschedule && !canSchedule && !canEvaluate && <AccessNotice isViewOnlyAdmin={isViewOnlyAdmin} />}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="border-slate-200 self-start">
@@ -132,11 +135,11 @@ export default function InterviewDetailPage() {
         </Card>
 
         <div className="lg:col-span-2 space-y-6">
-          <InterviewStatusPanel key={interview.status} interview={interview} canUpdate={canUpdate} onChanged={reload} />
+          <InterviewStatusPanel key={interview.status} interview={interview} canUpdate={canSchedule} onChanged={reload} />
           <EvaluationPanel
             key={`${interview.updated_at}`}
             interview={interview}
-            canUpdate={canUpdate}
+            canUpdate={canEvaluate}
             onChanged={reload}
           />
         </div>

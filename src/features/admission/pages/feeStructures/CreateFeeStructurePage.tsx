@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Card from '../../../../components/ui/Card';
 import AccessNotice from '../../components/common/AccessNotice';
 import FeeStructureForm from '../../components/feeStructures/FeeStructureForm';
@@ -10,10 +10,21 @@ import { getApiErrorMessage, isAuthError } from '../../utils/errors';
 import { FEE_STRUCTURES_RESOURCE } from '../../utils/feeStructures';
 import type { FeeStructureFormData } from '../../types/admission.types';
 
-const EMPTY: FeeStructureFormData = { program_id: '', session_id: '', amount: '', due_date: '' };
 
 export default function CreateFeeStructurePage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // Linked from an application whose program/session has no fee yet: prefill both and come back after saving.
+  const programParam = Number(searchParams.get('program_id'));
+  const sessionParam = Number(searchParams.get('session_id'));
+  const initialValues: FeeStructureFormData = {
+    program_id: programParam > 0 ? programParam : '',
+    session_id: sessionParam > 0 ? sessionParam : '',
+    amount: '',
+    due_date: '',
+  };
+  const returnParam = searchParams.get('return_to');
+  const returnTo = returnParam && returnParam.startsWith('/admission/') ? returnParam : '/admission/fee-structures';
   const { toast } = useToast();
   const { can, isViewOnlyAdmin, ready } = useResourceAccess(FEE_STRUCTURES_RESOURCE);
   const [submitting, setSubmitting] = useState(false);
@@ -25,7 +36,7 @@ export default function CreateFeeStructurePage() {
       setError(null);
       await createFeeStructure(data);
       toast.success('Fee structure created');
-      navigate('/admission/fee-structures');
+      navigate(returnTo);
     } catch (err: any) {
       if (!isAuthError(err)) setError(getApiErrorMessage(err, 'Failed to create fee structure'));
     } finally {
@@ -49,13 +60,13 @@ export default function CreateFeeStructurePage() {
           ) : (
             <FeeStructureForm
               mode="create"
-              initialValues={EMPTY}
+              initialValues={initialValues}
               submitting={submitting}
               error={error}
               submitLabel="Create Fee Structure"
               submittingLabel="Creating..."
               onSubmit={handleSubmit}
-              onCancel={() => navigate('/admission/fee-structures')}
+              onCancel={() => navigate(returnTo)}
             />
           )}
         </div>

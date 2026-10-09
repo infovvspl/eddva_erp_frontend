@@ -87,7 +87,7 @@ export default function AdmissionFeePanel({ applicationId, onChanged }: Admissio
               </p>
             )}
           </div>
-          {ready && can('create') && idempotencyKey === null && (
+          {ready && can('record') && idempotencyKey === null && (
             <Button
               variant="secondary"
               size="sm"
@@ -103,7 +103,7 @@ export default function AdmissionFeePanel({ applicationId, onChanged }: Admissio
         </div>
 
         {/* View-only admins already get the page-level notice. */}
-        {ready && !can('create') && !isViewOnlyAdmin && <AccessNotice isViewOnlyAdmin={false} />}
+        {ready && !can('record') && !isViewOnlyAdmin && <AccessNotice isViewOnlyAdmin={false} />}
 
         {idempotencyKey !== null && (
           <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">

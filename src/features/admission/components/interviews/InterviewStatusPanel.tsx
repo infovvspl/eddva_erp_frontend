@@ -5,13 +5,16 @@ import { changeInterviewStatus } from '../../api/admission.api';
 import { useToast } from '../../../../hooks/useToast';
 import { getApiErrorMessage, isAuthError } from '../../utils/errors';
 import { formatLabel } from '../../utils/format';
-import { INTERVIEW_STATUSES, type Interview, type InterviewStatus } from '../../types/admission.types';
+import { type Interview, type InterviewStatus } from '../../types/admission.types';
 
 interface InterviewStatusPanelProps {
   interview: Interview;
   canUpdate: boolean;
   onChanged: () => void;
 }
+
+// The status endpoint only accepts completed / no_show; the current status is shown for context.
+const SETTABLE: InterviewStatus[] = ['completed', 'no_show'];
 
 // Mount with a key that changes with the status, so the select resets after a save.
 export default function InterviewStatusPanel({ interview, canUpdate, onChanged }: InterviewStatusPanelProps) {
@@ -44,7 +47,7 @@ export default function InterviewStatusPanel({ interview, canUpdate, onChanged }
             aria-label="Interview status"
             className="w-full px-3 py-2 border border-slate-300 rounded-lg capitalize focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
           >
-            {INTERVIEW_STATUSES.map((option) => (
+            {[interview.status, ...SETTABLE.filter((s) => s !== interview.status)].map((option) => (
               <option key={option} value={option}>{formatLabel(option)}</option>
             ))}
           </select>

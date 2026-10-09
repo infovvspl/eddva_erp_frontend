@@ -21,6 +21,10 @@ export default function IssueOfferForm({ submitting, error, onSubmit, onCancel }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.seat_category.trim()) {
+      setLocalError('Seat category is required.');
+      return;
+    }
     if (new Date(form.offer_expiry_date).getTime() <= Date.now()) {
       setLocalError('The offer must expire in the future.');
       return;
@@ -52,7 +56,7 @@ export default function IssueOfferForm({ submitting, error, onSubmit, onCancel }
         </div>
 
         <div>
-          <label htmlFor="seat_category" className={labelClass}>Seat Category</label>
+          <label htmlFor="seat_category" className={labelClass}>Seat Category *</label>
           <input
             id="seat_category"
             type="text"
@@ -60,6 +64,8 @@ export default function IssueOfferForm({ submitting, error, onSubmit, onCancel }
             value={form.seat_category}
             onChange={(e) => setForm({ ...form, seat_category: e.target.value })}
             placeholder="e.g. General"
+            maxLength={50}
+            required
             className={inputClass}
           />
           <datalist id="offer-seat-categories">

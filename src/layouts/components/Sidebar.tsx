@@ -44,7 +44,10 @@ export default function Sidebar() {
       return {
         ...item,
         children: item.children.filter(
-          (child) => child.path !== '/admission/roles' && child.path !== '/admission/users'
+          (child) =>
+            child.path !== '/admission/roles' &&
+            child.path !== '/admission/permissions' &&
+            child.path !== '/admission/users'
         ),
       };
     }

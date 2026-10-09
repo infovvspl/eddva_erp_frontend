@@ -64,7 +64,7 @@ export default function EditInterviewPage() {
             <div className="text-center text-red-500 py-4">{loadError}</div>
           ) : !ready || !interview ? (
             <div className="text-center text-slate-500 py-4">Loading...</div>
-          ) : !can('update') ? (
+          ) : !can('reschedule') ? (
             <AccessNotice isViewOnlyAdmin={isViewOnlyAdmin} />
           ) : (
             <InterviewForm
