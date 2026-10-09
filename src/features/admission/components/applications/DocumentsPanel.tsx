@@ -135,7 +135,10 @@ export default function DocumentsPanel({ applicationId }: DocumentsPanelProps) {
     }
   };
 
-  const canUpdate = can('update');
+  // documents resource actions: read / upload / verify / reject.
+  const canUpload = can('upload');
+  const canVerify = can('verify');
+  const canReject = can('reject');
 
   return (
     <Card className="border-slate-200">
@@ -144,7 +147,7 @@ export default function DocumentsPanel({ applicationId }: DocumentsPanelProps) {
           <h2 className="text-lg font-semibold text-slate-900">
             Documents{documents.length > 0 && <span className="ml-2 text-sm font-normal text-slate-500">({documents.length})</span>}
           </h2>
-          {ready && can('create') && !uploading && (
+          {ready && canUpload && !uploading && (
             <Button
               variant="secondary"
               size="sm"
@@ -160,7 +163,7 @@ export default function DocumentsPanel({ applicationId }: DocumentsPanelProps) {
         </div>
 
         {/* View-only admins already get the page-level notice. */}
-        {ready && !can('create') && !isViewOnlyAdmin && <AccessNotice isViewOnlyAdmin={false} />}
+        {ready && !canUpload && !canVerify && !canReject && !isViewOnlyAdmin && <AccessNotice isViewOnlyAdmin={false} />}
 
         {uploading && (
           <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
@@ -214,12 +217,12 @@ export default function DocumentsPanel({ applicationId }: DocumentsPanelProps) {
                     <Button variant="ghost" size="sm" title="Download" disabled={busy} onClick={() => handleDownload(document)}>
                       <Download className="h-4 w-4" />
                     </Button>
-                    {canUpdate && document.status !== 'verified' && (
+                    {canVerify && document.status !== 'verified' && (
                       <Button variant="ghost" size="sm" title="Verify" disabled={busy} onClick={() => handleVerify(document)}>
                         <CheckCircle2 className="h-4 w-4 text-green-600" />
                       </Button>
                     )}
-                    {canUpdate && document.status !== 'rejected' && (
+                    {canReject && document.status !== 'rejected' && (
                       <Button
                         variant="ghost"
                         size="sm"

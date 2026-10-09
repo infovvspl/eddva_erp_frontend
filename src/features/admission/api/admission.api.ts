@@ -14,6 +14,7 @@ import type {
   ApplicationListParams,
   ApplicationStatus,
   ApplicationStatusChange,
+  ApplicationStatusInfo,
   ApplicationUpdateData,
   Confirmation,
   ConfirmationListParams,
@@ -304,9 +305,19 @@ export async function changeApplicationStatus(
   return response.data.data;
 }
 
+// Current status, the transitions allowed from it, and the supporting pipeline state.
+export async function getApplicationStatus(id: string | number): Promise<ApplicationStatusInfo> {
+  const response = await axiosInstance.get(`/admission/applications/${id}/status`);
+  return response.data.data ?? response.data;
+}
+
+// The status endpoint now returns the current state, not a list; keep accepting
+// an array (or a nested history array) so the history tab still renders.
 export async function getApplicationStatusHistory(id: string | number): Promise<ApplicationStatusChange[]> {
   const response = await axiosInstance.get(`/admission/applications/${id}/status`);
-  return response.data.data;
+  const data = response.data.data ?? response.data;
+  if (Array.isArray(data)) return data;
+  return Array.isArray(data?.history) ? data.history : [];
 }
 
 export async function getApplicationActivity(id: string | number): Promise<ApplicationActivity[]> {
@@ -315,9 +326,16 @@ export async function getApplicationActivity(id: string | number): Promise<Appli
 }
 
 // Application Documents
+// The backend may name the review state `verification_status`; the UI reads `status`.
+function normalizeDocument(doc: any): ApplicationDocument {
+  return { ...doc, status: doc.status ?? doc.verification_status ?? 'pending' };
+}
+
 export async function getApplicationDocuments(applicationId: string | number): Promise<ApplicationDocument[]> {
   const response = await axiosInstance.get(`/admission/applications/${applicationId}/documents`);
-  return response.data.data;
+  const data = response.data.data;
+  const list = Array.isArray(data) ? data : data?.documents ?? [];
+  return list.map(normalizeDocument);
 }
 
 // Multipart upload: the file plus its document_type.
@@ -389,7 +407,8 @@ export function downloadApplicationDocument(
 // Application Fee
 export async function getApplicationFeePayments(applicationId: string | number): Promise<ApplicationFeePayment[]> {
   const response = await axiosInstance.get(`/admission/applications/${applicationId}/application-fee-payments`);
-  return response.data.data;
+  const data = response.data.data;
+  return Array.isArray(data) ? data : data?.payments ?? [];
 }
 
 // The caller supplies the idempotency key and must reuse it when retrying the
@@ -636,7 +655,8 @@ export async function getOffer(id: string | number): Promise<Offer> {
 export async function getApplicationOffer(applicationId: string | number): Promise<Offer | null> {
   try {
     const response = await axiosInstance.get(`/admission/applications/${applicationId}/offer`);
-    return response.data.data ?? null;
+    const offer = response.data?.data ?? response.data;
+    return offer?.offer_id ? offer : null;
   } catch (error: any) {
     if (error?.response?.status === 404) return null;
     throw error;
@@ -645,10 +665,9 @@ export async function getApplicationOffer(applicationId: string | number): Promi
 
 // offer_date is left to the server, which stamps it when the offer is issued.
 export async function issueOffer(applicationId: string | number, data: OfferFormData): Promise<Offer> {
-  const category = data.seat_category.trim();
   const response = await axiosInstance.post(`/admission/applications/${applicationId}/offer`, {
     offer_expiry_date: fromDateTimeInput(data.offer_expiry_date),
-    ...(category && { seat_category: category }),
+    seat_category: data.seat_category.trim(),
   });
   return response.data.data;
 }
@@ -658,9 +677,10 @@ export async function acceptOffer(applicationId: string | number): Promise<Offer
   return response.data.data;
 }
 
-export async function declineOffer(applicationId: string | number, reason: string): Promise<Offer> {
+export async function declineOffer(applicationId: string | number, reason?: string): Promise<Offer> {
+  const trimmed = reason?.trim();
   const response = await axiosInstance.post(`/admission/applications/${applicationId}/offer/decline`, {
-    reason: reason.trim(),
+    ...(trimmed && { reason: trimmed }),
   });
   return response.data.data;
 }
@@ -678,7 +698,8 @@ export async function getAdmissionPayment(id: string | number): Promise<Admissio
 
 export async function getApplicationAdmissionPayments(applicationId: string | number): Promise<AdmissionPayment[]> {
   const response = await axiosInstance.get(`/admission/applications/${applicationId}/admission-payments`);
-  return response.data.data;
+  const data = response.data.data;
+  return Array.isArray(data) ? data : data?.payments ?? [];
 }
 
 // Takes the same form data as the application fee (its status is not sent) and
@@ -702,7 +723,7 @@ export async function payAdmissionFee(
 // Confirmation
 export async function getConfirmations(params: ConfirmationListParams = {}): Promise<PaginatedResult<Confirmation>> {
   const response = await axiosInstance.get('/admission/confirmations', { params: cleanParams(params) });
-  return { data: response.data.data, pagination: response.data.pagination };
+  return { data: response.data.data ?? [], pagination: response.data.pagination };
 }
 
 export async function getConfirmation(id: string | number): Promise<Confirmation> {

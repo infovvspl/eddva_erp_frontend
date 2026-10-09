@@ -58,7 +58,8 @@ export default function OfferDetailPage() {
     );
   }
 
-  const canUpdate = can('update');
+  const canAccept = can('accept');
+  const canDecline = can('decline');
 
   return (
     <div className="space-y-6">
@@ -69,13 +70,14 @@ export default function OfferDetailPage() {
         <OfferStatusBadge status={offer.status} />
       </div>
 
-      {!canUpdate && awaitingResponse(offer) && <AccessNotice isViewOnlyAdmin={isViewOnlyAdmin} />}
+      {!canAccept && !canDecline && awaitingResponse(offer) && <AccessNotice isViewOnlyAdmin={isViewOnlyAdmin} />}
 
       <Card className="border-slate-200 max-w-2xl">
         <div className="p-6 space-y-6">
           <h2 className="text-lg font-semibold text-slate-900">Offer Details</h2>
           <OfferDetails offer={offer} linkToApplication />
-          <OfferActions offer={offer} canUpdate={canUpdate} onChanged={() => setReloadKey((key) => key + 1)} />
+          <OfferActions offer={offer} canAccept={canAccept}
+            canDecline={canDecline} onChanged={() => setReloadKey((key) => key + 1)} />
         </div>
       </Card>
     </div>

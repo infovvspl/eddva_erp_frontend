@@ -288,20 +288,58 @@ export type ApplicationStatus =
   | 'draft'
   | 'submitted'
   | 'under_review'
-  | 'approved'
-  | 'rejected'
+  | 'test_scheduled'
+  | 'shortlisted'
   | 'waitlisted'
-  | 'withdrawn';
+  | 'rejected'
+  | 'offered'
+  | 'admitted'
+  | 'cancelled';
 
+// Used only for list filters; the manual status-change UI is driven by the
+// backend's allowed_transitions instead.
 export const APPLICATION_STATUSES: ApplicationStatus[] = [
   'draft',
   'submitted',
   'under_review',
-  'approved',
-  'rejected',
+  'test_scheduled',
+  'shortlisted',
   'waitlisted',
-  'withdrawn',
+  'rejected',
+  'offered',
+  'admitted',
+  'cancelled',
 ];
+
+// GET /admission/applications/:id/status
+export interface ApplicationStatusSupporting {
+  applicant_profile_complete?: boolean;
+  applicant_profile_missing?: string[];
+  application_fee_status?: string | null;
+  document_status?: string | null;
+  document_summary?: string | null;
+  test_status?: string | null;
+  interview_status?: string | null;
+  offer_status?: string | null;
+  admission_fee?: {
+    required?: number | string | null;
+    paid?: number | string | null;
+    balance?: number | string | null;
+    due_date?: string | null;
+    fee_structure_configured?: boolean;
+    is_paid?: boolean;
+  } | null;
+  admission_fee_configured?: boolean;
+  confirmation_status?: string | null;
+}
+
+export interface ApplicationStatusInfo {
+  application_id: number;
+  application_number?: string | null;
+  status: ApplicationStatus;
+  allowed_transitions: ApplicationStatus[];
+  supporting: ApplicationStatusSupporting;
+}
 
 export interface Application {
   application_id: number;
@@ -645,9 +683,9 @@ export interface FeeStructureListParams extends ListParams {
 }
 
 // Offers
-export type OfferStatus = 'issued' | 'accepted' | 'declined' | 'expired';
+export type OfferStatus = 'offered' | 'accepted' | 'declined' | 'expired';
 
-export const OFFER_STATUSES: OfferStatus[] = ['issued', 'accepted', 'declined', 'expired'];
+export const OFFER_STATUSES: OfferStatus[] = ['offered', 'accepted', 'declined', 'expired'];
 
 export interface Offer {
   offer_id: number;
@@ -658,9 +696,18 @@ export interface Offer {
   seat_category: string | null;
   status: OfferStatus;
   decline_reason?: string | null;
+  issued_by?: string | null;
+  responded_by?: string | null;
   responded_at?: string | null;
+  response_note?: string | null;
+  // Backend-computed: null unless status is "offered". Never derive a countdown client-side.
+  seconds_until_expiry?: number | null;
+  // True once the expiry has passed but the hourly sweep hasn't marked it "expired" yet.
+  expiry_pending_sweep?: boolean;
   application?: {
     application_id: number;
+    application_number?: string | null;
+    status?: ApplicationStatus;
     applicant?: Pick<Applicant, 'applicant_id' | 'name'> | null;
     program?: Pick<AdmissionProgram, 'program_id' | 'name'> | null;
     session?: Pick<AdmissionSession, 'session_id' | 'name'> | null;

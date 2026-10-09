@@ -11,16 +11,18 @@ import { getApplicationOffer, issueOffer } from '../../api/admission.api';
 import { useResourceAccess } from '../../hooks/useResourceAccess';
 import { useToast } from '../../../../hooks/useToast';
 import { getApiErrorMessage, isAuthError } from '../../utils/errors';
-import { OFFERS_RESOURCE } from '../../utils/offers';
-import type { Offer, OfferFormData } from '../../types/admission.types';
+import { OFFERABLE_STATUSES, OFFERS_RESOURCE, offerErrorMessage } from '../../utils/offers';
+import type { ApplicationStatus, Offer, OfferFormData } from '../../types/admission.types';
 
 interface ApplicationOfferPanelProps {
   applicationId: number;
+  // Offers can only be issued while the application is shortlisted or waitlisted.
+  applicationStatus?: ApplicationStatus;
   // Accepting or declining can move the application forward, so the page refreshes.
   onChanged: () => void;
 }
 
-export default function ApplicationOfferPanel({ applicationId, onChanged }: ApplicationOfferPanelProps) {
+export default function ApplicationOfferPanel({ applicationId, applicationStatus, onChanged }: ApplicationOfferPanelProps) {
   const { toast } = useToast();
   const { can, isViewOnlyAdmin, ready } = useResourceAccess(OFFERS_RESOURCE);
   // undefined = still loading; null = no offer yet.
@@ -47,6 +49,8 @@ export default function ApplicationOfferPanel({ applicationId, onChanged }: Appl
     };
   }, [applicationId, reloadKey]);
 
+  const offerable = !!applicationStatus && OFFERABLE_STATUSES.includes(applicationStatus);
+
   const afterChange = () => {
     setReloadKey((key) => key + 1);
     onChanged();
@@ -61,7 +65,7 @@ export default function ApplicationOfferPanel({ applicationId, onChanged }: Appl
       setIssuing(false);
       afterChange();
     } catch (err: any) {
-      if (!isAuthError(err)) setError(getApiErrorMessage(err, 'Failed to issue offer'));
+      if (!isAuthError(err)) setError(offerErrorMessage(err, 'Failed to issue offer'));
     } finally {
       setSubmitting(false);
     }
@@ -81,7 +85,7 @@ export default function ApplicationOfferPanel({ applicationId, onChanged }: Appl
               <ExternalLink className="h-3.5 w-3.5" />
             </Link>
           )}
-          {ready && offer === null && can('create') && !issuing && (
+          {ready && offer === null && can('create') && offerable && !issuing && (
             <Button
               variant="secondary"
               size="sm"
@@ -97,7 +101,7 @@ export default function ApplicationOfferPanel({ applicationId, onChanged }: Appl
         </div>
 
         {/* View-only admins already get the page-level notice. */}
-        {ready && !can('create') && !can('update') && !isViewOnlyAdmin && <AccessNotice isViewOnlyAdmin={false} />}
+        {ready && !can('create') && !can('accept') && !can('decline') && !isViewOnlyAdmin && <AccessNotice isViewOnlyAdmin={false} />}
 
         {loadError ? (
           <div className="text-center text-red-500 py-4">{loadError}</div>
@@ -106,7 +110,12 @@ export default function ApplicationOfferPanel({ applicationId, onChanged }: Appl
         ) : offer ? (
           <div className="space-y-5">
             <OfferDetails offer={offer} />
-            <OfferActions offer={offer} canUpdate={can('update')} onChanged={afterChange} />
+            <OfferActions
+              offer={offer}
+              canAccept={can('accept')}
+              canDecline={can('decline')}
+              onChanged={afterChange}
+            />
           </div>
         ) : issuing ? (
           <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
@@ -118,7 +127,12 @@ export default function ApplicationOfferPanel({ applicationId, onChanged }: Appl
             />
           </div>
         ) : (
-          <div className="text-center text-slate-500 py-4">No offer has been issued for this application</div>
+          <div className="text-center text-slate-500 py-4">
+            No offer has been issued for this application
+            {!offerable && (
+              <span className="block text-sm">An offer can be issued once the application is shortlisted or waitlisted.</span>
+            )}
+          </div>
         )}
       </div>
     </Card>

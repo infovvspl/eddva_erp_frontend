@@ -72,7 +72,7 @@ export default function CreateInterviewPage() {
         <div className="p-6">
           {!ready || prefillLoading ? (
             <div className="text-center text-slate-500 py-4">Loading...</div>
-          ) : !can('create') ? (
+          ) : !can('schedule') ? (
             <AccessNotice isViewOnlyAdmin={isViewOnlyAdmin} />
           ) : (
             <InterviewForm
