@@ -777,3 +777,45 @@ export interface Confirmation {
 export interface ConfirmationListParams extends ListParams {
   status?: ConfirmationStatus | '';
 }
+
+// Shape of GET /admission/dashboard/summary — matches DashboardService#summary on the backend.
+export interface AdmissionDashboardSummary {
+  filters: {
+    session_id?: number;
+    program_id?: number;
+    from?: string | null;
+    to?: string | null;
+  };
+  kpis: {
+    total_enquiries: number;
+    new_enquiries: number;
+    enquiry_followups_due: number;
+    applications: number;
+    applications_under_review: number;
+    tests_scheduled: number;
+    interviews_scheduled: number;
+    shortlisted: number;
+    offers_issued: number;
+    offers_accepted: number;
+    admission_fees_paid: {
+      applications_fully_paid: number;
+      payments_recorded: number;
+      amount_collected: number | string;
+    };
+    confirmed_admissions: number;
+    available_seats: number;
+  };
+  funnel: { stage: string; count: number }[];
+  applications_by_status: Record<string, number>;
+  seats: {
+    total_seats: number;
+    offered: number;
+    accepted: number;
+    confirmed: number;
+    available: number;
+  };
+  recent: {
+    applications: unknown[];
+    confirmations: unknown[];
+  };
+}

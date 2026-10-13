@@ -1,11 +1,12 @@
 import axiosInstance from '../../../lib/axios';
+import type { AlumniDashboardSummary } from '../types/alumni.types';
 
 async function getSection(path: string): Promise<unknown> {
   const response = await axiosInstance.get(`/alumni/dashboard/${path}`);
   return response.data.data ?? response.data;
 }
 
-export const getDashboardSummary = () => getSection('summary');
+export const getDashboardSummary = () => getSection('summary') as Promise<AlumniDashboardSummary>;
 export const getDashboardDirectory = () => getSection('directory');
 export const getDashboardEvents = () => getSection('events');
 export const getDashboardJobs = () => getSection('jobs');

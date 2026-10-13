@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Package,
@@ -6,23 +6,26 @@ import {
   ClipboardCheck,
   Clock,
   IndianRupee,
-  Boxes,
   UserCheck,
   Archive,
-  Gauge,
+  Gauge as GaugeIcon,
   MapPin,
   Folder,
   Truck,
   BellRing,
 } from 'lucide-react';
-import Card from '../../../../components/ui/Card';
 import Input from '../../../../components/ui/Input';
-import DashboardStatCard from '../../components/dashboard/DashboardStatCard';
+import ErrorState from '../../../../components/feedback/ErrorState';
+import DashboardSkeleton from '../../../../components/premium/DashboardSkeleton';
+import KpiTile from '../../../../components/premium/KpiTile';
+import PageHero from '../../../../components/premium/PageHero';
+import SectionHeading from '../../../../components/premium/SectionHeading';
+import { ChartCard, Gauge, StockTreemap } from '../../../../components/premium/charts';
 import RankedBarList from '../../components/dashboard/RankedBarList';
 import { getDashboardSummary } from '../../api/dashboard.api';
 import { getApiErrorMessage } from '../../utils/errors';
 import type { InventoryDashboardSummary } from '../../types/dashboard.types';
-import { cn } from '../../../../utils/cn';
+import { rupees } from '../../../../utils/dashboardFormat';
 
 const ASSET_STATUS_COLOR: Record<string, string> = {
   in_store: '#22c55e',
@@ -32,71 +35,54 @@ const ASSET_STATUS_COLOR: Record<string, string> = {
   lost: '#ef4444',
 };
 
-interface SectionHeaderProps {
-  icon: React.ElementType;
-  title: string;
-  viewAllHref?: string;
-}
+const ACCENT = '#15936a';
 
-function SectionHeader({ icon: Icon, title, viewAllHref }: SectionHeaderProps) {
-  return (
-    <div className="flex items-center justify-between mb-4">
-      <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
-        <Icon className="h-5 w-5 text-[#008BE9]" />
-        {title}
-      </h2>
-      {viewAllHref && (
-        <Link to={viewAllHref} className="text-[#008BE9] hover:text-[#002C6D] text-sm font-medium">
-          View All
-        </Link>
-      )}
-    </div>
-  );
-}
-
-function formatCurrency(value: number): string {
-  return `₹${value.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
-}
+// Entrance stagger — capped so late cards don't wait noticeably.
+const stagger = (index: number) => ({ animationDelay: `${Math.min(index, 10) * 50}ms` });
 
 export default function InventoryDashboardPage() {
   const [summary, setSummary] = useState<InventoryDashboardSummary | null>(null);
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [updatedAt, setUpdatedAt] = useState(0);
 
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [from, to]);
-
-  async function load() {
+  const load = useCallback(async (isRefresh: boolean) => {
     try {
-      setLoading(true);
+      if (isRefresh) setRefreshing(true);
+      else setLoading(true);
       setError(null);
       const data = await getDashboardSummary({ from: from || undefined, to: to || undefined });
       setSummary(data);
+      setUpdatedAt(Date.now());
     } catch (err: any) {
       if (err.response?.status === 401) return;
       setError(getApiErrorMessage(err, 'Failed to load dashboard'));
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-  }
+  }, [from, to]);
+
+  useEffect(() => {
+    load(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [from, to]);
 
   if (loading) {
-    return <div className="text-center py-8 text-slate-500">Loading...</div>;
+    return <DashboardSkeleton />;
   }
 
   if (error) {
-    return <div className="text-center py-8 text-red-500">{error}</div>;
+    return <ErrorState message={error} onRetry={() => load(false)} />;
   }
 
   if (!summary) {
-    return <div className="text-center py-8 text-slate-500">No dashboard data available.</div>;
+    return <ErrorState message="No dashboard data available." onRetry={() => load(false)} />;
   }
 
-  const stockByLocation = summary.stock_by_location.map((l) => ({ label: l.location, count: l.quantity }));
   const categoryConsumption = summary.category_wise_consumption.map((c) => ({ label: c.category, count: c.issue_count }));
   const assetsByStatus = summary.assets.by_status.map((s) => ({
     label: s.status.replace('_', ' '),
@@ -104,119 +90,180 @@ export default function InventoryDashboardPage() {
     color: ASSET_STATUS_COLOR[s.status] ?? '#94a3b8',
   }));
 
+  const kpis = [
+    {
+      label: 'Stock valuation',
+      value: rupees(summary.stock_valuation),
+      icon: IndianRupee,
+      hint: `${summary.total_items} items tracked`,
+      accent: ACCENT,
+    },
+    {
+      label: 'Total items',
+      value: summary.total_items,
+      icon: Package,
+      hint: 'Tracked across locations',
+      accent: ACCENT,
+    },
+    {
+      label: 'Low-stock items',
+      value: summary.low_stock_items,
+      icon: AlertTriangle,
+      hint: summary.low_stock_items > 0 ? 'Needs reordering' : 'All stocked up',
+      accent: ACCENT,
+    },
+    {
+      label: 'Overdue returns',
+      value: summary.overdue_returns,
+      icon: Clock,
+      hint: summary.overdue_returns > 0 ? 'Awaiting return' : 'Nothing overdue',
+      accent: ACCENT,
+    },
+  ];
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Inventory Overview</h1>
-          <p className="text-slate-600 mt-1 text-sm sm:text-base">Stock levels, issues, assets, and valuation at a glance</p>
+    <div className="space-y-8">
+      <PageHero
+        eyebrow="Inventory"
+        title="Inventory Overview"
+        subtitle="Stock levels, issues, assets, and valuation at a glance"
+        highlights={[
+          { icon: AlertTriangle, label: `${summary.low_stock_items} low-stock item${summary.low_stock_items === 1 ? '' : 's'}` },
+          { icon: Clock, label: `${summary.overdue_returns} overdue return${summary.overdue_returns === 1 ? '' : 's'}` },
+          { icon: ClipboardCheck, label: `${summary.todays_issues} issue${summary.todays_issues === 1 ? '' : 's'} today` },
+        ]}
+        updatedAt={updatedAt}
+        refreshing={refreshing}
+        onRefresh={() => load(true)}
+      />
+
+      <div className="flex items-center justify-between">
+        <div className="grid flex-1 grid-cols-2 gap-4 xl:grid-cols-4">
+          {kpis.map((kpi, index) => (
+            <KpiTile key={kpi.label} {...kpi} style={stagger(index)} />
+          ))}
         </div>
-        <Link
-          to="/inventory/alerts"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-red-50 text-red-700 hover:bg-red-100 transition-colors"
+      </div>
+
+      <Link
+        to="/inventory/alerts"
+        className="inline-flex w-fit items-center gap-2 rounded-full bg-red-50 px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-100"
+      >
+        <BellRing className="h-4 w-4" />
+        View Alerts
+      </Link>
+
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
+        <SectionHeading eyebrow="Stock" title="Distribution & asset utilisation" />
+
+        <ChartCard
+          title="Stock by location"
+          subtitle={`${summary.total_items} items across ${summary.stock_by_location.length} location${summary.stock_by_location.length === 1 ? '' : 's'}`}
+          icon={MapPin}
+          className="lg:col-span-7"
+          style={stagger(0)}
         >
-          <BellRing className="h-4 w-4" />
-          View Alerts
-        </Link>
-      </div>
-
-      {/* Overview */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-        <DashboardStatCard label="Total Items" value={summary.total_items} icon={Package} color="blue" />
-        <Link to="/inventory/alerts">
-          <DashboardStatCard
-            label="Low Stock Items"
-            value={summary.low_stock_items}
-            icon={AlertTriangle}
-            color={summary.low_stock_items > 0 ? 'amber' : 'slate'}
-            className={cn(summary.low_stock_items > 0 && 'hover:border-amber-200 transition-colors cursor-pointer')}
+          <StockTreemap
+            rows={[...summary.stock_by_location]
+              .sort((a, b) => b.quantity - a.quantity)
+              .map((l) => ({ label: l.location, value: l.quantity }))}
           />
-        </Link>
-        <DashboardStatCard label="Today's Issues" value={summary.todays_issues} icon={ClipboardCheck} color="purple" />
-        <Link to="/inventory/alerts">
-          <DashboardStatCard
-            label="Overdue Returns"
-            value={summary.overdue_returns}
-            icon={Clock}
-            color={summary.overdue_returns > 0 ? 'red' : 'slate'}
-            className={cn(summary.overdue_returns > 0 && 'hover:border-red-200 transition-colors cursor-pointer')}
-          />
-        </Link>
-        <DashboardStatCard label="Stock Valuation" value={formatCurrency(summary.stock_valuation)} icon={IndianRupee} color="green" />
-      </div>
+        </ChartCard>
 
-      {/* Stock by Location */}
-      <Card className="border-slate-200">
-        <div className="p-6">
-          <SectionHeader icon={MapPin} title="Stock by Location" viewAllHref="/inventory/stock/balances" />
-          <RankedBarList items={stockByLocation} emptyText="No stock recorded yet." />
-        </div>
-      </Card>
-
-      {/* Assets */}
-      <Card className="border-slate-200">
-        <div className="p-6">
-          <SectionHeader icon={Boxes} title="Assets" viewAllHref="/inventory/assets" />
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-            <DashboardStatCard label="Total" value={summary.assets.total} icon={Archive} color="blue" />
-            <DashboardStatCard label="Issued" value={summary.assets.issued} icon={UserCheck} color="blue" />
-            <DashboardStatCard label="Idle" value={summary.assets.idle} icon={Archive} color="slate" />
-            <DashboardStatCard label="Utilization" value={`${summary.assets.utilization_pct}%`} icon={Gauge} color="purple" />
+        <ChartCard
+          title="Asset utilisation"
+          subtitle={`${summary.assets.issued} of ${summary.assets.total} assets issued`}
+          icon={GaugeIcon}
+          className="lg:col-span-5"
+          style={stagger(1)}
+        >
+          <div className="flex flex-col gap-3">
+            <Gauge
+              label="Asset utilisation"
+              value={summary.assets.issued}
+              max={summary.assets.total}
+              caption={`${summary.assets.issued} of ${summary.assets.total} issued · ${summary.assets.idle} idle`}
+              color={ACCENT}
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-2xl bg-slate-50/80 px-4 py-3 ring-1 ring-slate-100">
+                <p className="flex items-center gap-1.5 text-xs text-slate-500">
+                  <Archive className="h-3.5 w-3.5" /> Total
+                </p>
+                <p className="mt-1 text-lg font-semibold tracking-tight text-slate-900 tabular-nums">{summary.assets.total}</p>
+              </div>
+              <div className="rounded-2xl bg-slate-50/80 px-4 py-3 ring-1 ring-slate-100">
+                <p className="flex items-center gap-1.5 text-xs text-slate-500">
+                  <UserCheck className="h-3.5 w-3.5" /> Issued
+                </p>
+                <p className="mt-1 text-lg font-semibold tracking-tight text-slate-900 tabular-nums">{summary.assets.issued}</p>
+              </div>
+            </div>
+            <div>
+              <h3 className="mb-2 text-xs font-semibold text-slate-700">By status</h3>
+              <RankedBarList items={assetsByStatus} emptyText="No asset units yet." />
+            </div>
           </div>
-          <h3 className="text-sm font-semibold text-slate-700 mb-3">By Status</h3>
-          <RankedBarList items={assetsByStatus} emptyText="No asset units yet." />
-        </div>
-      </Card>
+        </ChartCard>
+      </div>
 
-      {/* Category-wise Consumption */}
-      <Card className="border-slate-200">
-        <div className="p-6">
-          <SectionHeader icon={Folder} title="Category-wise Consumption" viewAllHref="/inventory/categories" />
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
+        <SectionHeading eyebrow="Movement" title="Consumption & purchasing" />
+
+        <ChartCard
+          title="Category-wise consumption"
+          subtitle="Issues recorded by category"
+          icon={Folder}
+          className="lg:col-span-5"
+          style={stagger(2)}
+        >
           <RankedBarList items={categoryConsumption} emptyText="No issues recorded yet." />
-        </div>
-      </Card>
+        </ChartCard>
 
-      {/* Vendor-wise Purchases */}
-      <Card className="border-slate-200">
-        <div className="p-6">
-          <SectionHeader icon={Truck} title="Vendor-wise Purchases" viewAllHref="/inventory/stock/purchases" />
-          <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <ChartCard
+          title="Vendor-wise purchases"
+          subtitle="Filter purchases by date range"
+          icon={Truck}
+          className="lg:col-span-7"
+          style={stagger(3)}
+        >
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row">
             <div className="flex-1">
-              <label className="block text-xs font-medium text-slate-500 mb-1">From</label>
+              <label className="mb-1 block text-xs font-medium text-slate-500">From</label>
               <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
             </div>
             <div className="flex-1">
-              <label className="block text-xs font-medium text-slate-500 mb-1">To</label>
+              <label className="mb-1 block text-xs font-medium text-slate-500">To</label>
               <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
             </div>
           </div>
 
           {summary.vendor_wise_purchases.length === 0 ? (
-            <div className="text-sm text-slate-400 py-4 text-center">No purchases in this range.</div>
+            <div className="py-4 text-center text-sm text-slate-400">No purchases in this range.</div>
           ) : (
-            <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
               <table className="w-full min-w-[500px]">
                 <thead>
                   <tr className="border-b border-slate-200 bg-slate-50">
-                    <th className="text-left py-2 px-4 text-sm font-semibold text-slate-700">Vendor</th>
-                    <th className="text-left py-2 px-4 text-sm font-semibold text-slate-700">Purchases</th>
-                    <th className="text-left py-2 px-4 text-sm font-semibold text-slate-700">Total Amount</th>
+                    <th className="px-4 py-2 text-left text-sm font-semibold text-slate-700">Vendor</th>
+                    <th className="px-4 py-2 text-left text-sm font-semibold text-slate-700">Purchases</th>
+                    <th className="px-4 py-2 text-left text-sm font-semibold text-slate-700">Total Amount</th>
                   </tr>
                 </thead>
                 <tbody>
                   {summary.vendor_wise_purchases.map((v) => (
                     <tr key={v.vendor_id} className="border-b border-slate-100">
-                      <td className="py-2 px-4 text-sm text-slate-900">{v.vendor}</td>
-                      <td className="py-2 px-4 text-sm text-slate-600">{v.purchase_count}</td>
-                      <td className="py-2 px-4 text-sm font-medium text-slate-900">{formatCurrency(v.total_amount)}</td>
+                      <td className="px-4 py-2 text-sm text-slate-900">{v.vendor}</td>
+                      <td className="px-4 py-2 text-sm text-slate-600">{v.purchase_count}</td>
+                      <td className="px-4 py-2 text-sm font-medium text-slate-900">{rupees(v.total_amount)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           )}
-        </div>
-      </Card>
+        </ChartCard>
+      </div>
     </div>
   );
 }

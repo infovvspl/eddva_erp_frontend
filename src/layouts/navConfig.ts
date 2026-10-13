@@ -1,4 +1,4 @@
-import { ArrowRightLeft, BedDouble, Briefcase, Gift, GitBranch, Handshake, HeartHandshake, Mail, CalendarCheck, Gavel, DoorOpen, BadgeCheck, LayoutDashboard, GraduationCap, Building, ShoppingCart, Database, Shield, Key, Users, Utensils, Clock, UserPlus, Search, Monitor, PlayCircle, Receipt, CreditCard, Wallet, BarChart2, BookOpen, Folder, Settings, AlertTriangle, Trophy, Home, Swords, Award, Medal, Bell, Building2, UserCheck, LogIn, MessageSquare, Calendar, Boxes, Tag, MapPin, Truck, Package, ClipboardList, Tags, ClipboardCheck, Wrench, Contact, BellRing, Bus, Route } from 'lucide-react';
+import { ArrowRightLeft, BedDouble, Briefcase, Gift, GitBranch, Handshake, HeartHandshake, Mail, CalendarCheck, Gavel, DoorOpen, BadgeCheck, LayoutDashboard, GraduationCap, Building, ShoppingCart, Database, Shield, Key, Users, Utensils, Clock, UserPlus, Search, Monitor, PlayCircle, Receipt, CreditCard, Wallet, BarChart2, BookOpen, Folder, Settings, AlertTriangle, Trophy, Home, Swords, Award, Medal, Bell, Building2, UserCheck, LogIn, MessageSquare, Calendar, Boxes, Tag, MapPin, Truck, Package, ClipboardList, Tags, ClipboardCheck, Wrench, Contact, BellRing, Bus, Route, UserCog, DollarSign, CalendarDays, FileCheck } from 'lucide-react';
 
 export interface NavItem {
   path: string;
@@ -180,6 +180,21 @@ export const navItems: NavItem[] = [
       { path: '/front-office/enquiries', label: 'Enquiries', icon: MessageSquare },
       { path: '/front-office/appointments', label: 'Appointments', icon: Calendar },
       { path: '/front-office/complaints', label: 'Complaints', icon: AlertTriangle },
+    ]
+  },
+  {
+    path: '/staff',
+    label: 'Staff Management',
+    icon: UserCog,
+    children: [
+      { path: '/staff', label: 'Dashboard', icon: LayoutDashboard },
+      { path: '/staff/departments', label: 'Departments', icon: Building2 },
+      { path: '/staff/members', label: 'Staff Directory', icon: Users },
+      { path: '/staff/leave-types', label: 'Leave Types', icon: CalendarDays },
+      { path: '/staff/leave-balances', label: 'Leave Balances', icon: Clock },
+      { path: '/staff/leave-applications', label: 'Leave Applications', icon: FileCheck },
+      { path: '/staff/payroll-runs', label: 'Payroll', icon: DollarSign },
+      { path: '/staff/lms-teachers', label: 'LMS Teachers', icon: GraduationCap },
     ]
   },
   {

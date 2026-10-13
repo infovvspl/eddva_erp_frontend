@@ -1,142 +1,120 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ClipboardList, IndianRupee, PlayCircle, Receipt, TrendingUp, UserPlus, Utensils, Wallet } from 'lucide-react';
-import Card from '../../../../components/ui/Card';
-import LoadingState from '../../../../components/feedback/LoadingState';
+import { ClipboardList, IndianRupee, PlayCircle, Receipt, Users, Wallet } from 'lucide-react';
 import ErrorState from '../../../../components/feedback/ErrorState';
-import StatCard from '../../../../components/dashboard/StatCard';
+import DashboardSkeleton from '../../../../components/premium/DashboardSkeleton';
+import KpiTile from '../../../../components/premium/KpiTile';
+import PageHero from '../../../../components/premium/PageHero';
+import { ChartCard, Leaderboard } from '../../../../components/premium/charts';
 import ModuleSectionCards from '../../../../components/dashboard/ModuleSectionCards';
 import { navItems } from '../../../../layouts/navConfig';
 import { getCanteenDashboardSummary } from '../../api/canteen.api';
 import { getApiErrorMessage } from '../../utils/errors';
 import type { CanteenDashboardSummary } from '../../types/canteen.types';
+import { rupees } from '../../../../utils/dashboardFormat';
+import { formatDateTime } from '../../../../utils/formatDate';
 
 const CANTEEN_SECTIONS = (navItems.find((item) => item.path === '/canteen')?.children ?? []).filter(
   (child) => child.path !== '/canteen',
 );
 
+const ACCENT = '#c98500';
+
 const STATUS_STYLE: Record<string, string> = {
-  PLACED: 'bg-blue-100 text-blue-700',
-  PREPARING: 'bg-amber-100 text-amber-700',
   COMPLETED: 'bg-green-100 text-green-700',
-  CANCELLED: 'bg-slate-200 text-slate-700',
+  CANCELLED: 'bg-red-100 text-red-700',
+  PENDING: 'bg-amber-100 text-amber-700',
 };
 
-function formatDate(value: string): string {
-  return new Date(value).toLocaleString();
-}
-
-function formatRupees(value: number): string {
-  return `₹${value.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
-}
+// Entrance stagger — capped so late cards don't wait noticeably.
+const stagger = (index: number) => ({ animationDelay: `${Math.min(index, 10) * 50}ms` });
 
 export default function CanteenDashboardPage() {
   const [summary, setSummary] = useState<CanteenDashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [updatedAt, setUpdatedAt] = useState(0);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (isRefresh: boolean) => {
+    if (isRefresh) setRefreshing(true);
+    else setLoading(true);
     setError(null);
     try {
       setSummary(await getCanteenDashboardSummary());
+      setUpdatedAt(Date.now());
     } catch (err) {
       setError(getApiErrorMessage(err, 'Failed to load the canteen dashboard'));
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, []);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- initial fetch on mount
-    void load();
+    void load(false);
   }, [load]);
 
-  if (loading) return <LoadingState message="Loading dashboard..." />;
-  if (error || !summary) return <ErrorState message={error ?? 'No dashboard data available.'} onRetry={load} />;
+  if (loading) return <DashboardSkeleton />;
+  if (error || !summary) return <ErrorState message={error ?? 'No dashboard data available.'} onRetry={() => load(false)} />;
 
   const { totals, top_items_today, recent_orders } = summary;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Utensils className="h-7 w-7 text-[#008BE9]" />
-        <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">Canteen</h1>
+    <div className="space-y-8">
+      <PageHero
+        eyebrow="Canteen"
+        title="Canteen dashboard"
+        subtitle="Orders, wallets and POS shifts at a glance"
+        highlights={[{ icon: PlayCircle, label: `${totals.open_shifts} open POS shift${totals.open_shifts === 1 ? '' : 's'}` }]}
+        updatedAt={updatedAt}
+        refreshing={refreshing}
+        onRefresh={() => load(true)}
+      />
+
+      <div className="grid gap-4 grid-cols-2 xl:grid-cols-4">
+        <KpiTile label="Orders today" value={totals.orders_today} icon={Receipt} accent={ACCENT} style={stagger(0)} />
+        <KpiTile label="Revenue today" value={rupees(totals.revenue_today)} icon={IndianRupee} accent={ACCENT} style={stagger(1)} />
+        <KpiTile
+          label="Wallet balance (total)"
+          value={rupees(totals.wallet_balance_total)}
+          icon={Wallet}
+          hint={`${totals.active_members} members`}
+          accent={ACCENT}
+          style={stagger(2)}
+        />
+        <KpiTile label="Unpaid orders" value={totals.unpaid_orders} icon={ClipboardList} accent={ACCENT} style={stagger(3)} />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard label="Orders today" value={totals.orders_today} icon={Receipt} />
-        <StatCard label="Revenue today" value={formatRupees(totals.revenue_today)} icon={IndianRupee} color="green" />
-        <StatCard label="Unpaid orders" value={totals.unpaid_orders} icon={ClipboardList} color={totals.unpaid_orders > 0 ? 'amber' : 'slate'} />
-        <StatCard label="Active members" value={totals.active_members} icon={UserPlus} color="purple" />
-        <StatCard label="Open shifts" value={totals.open_shifts} icon={PlayCircle} color="blue" />
-        <StatCard label="Wallet balance (total)" value={formatRupees(totals.wallet_balance_total)} icon={Wallet} color="green" />
-      </div>
+      <div className="grid gap-5 grid-cols-1 lg:grid-cols-12">
+        <ChartCard title="Top items today" subtitle="By quantity sold" icon={Users} className="lg:col-span-5" style={stagger(4)}>
+          <Leaderboard rows={top_items_today.map((i) => ({ label: i.name, value: i.quantity_sold }))} />
+        </ChartCard>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="border-slate-200">
-          <div className="p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
-                <TrendingUp className="h-5 w-5 text-[#008BE9]" />
-                Top items today
-              </h2>
-              <Link to="/canteen/reports" className="text-sm font-medium text-[#008BE9] hover:text-[#002C6D]">
-                View all
-              </Link>
-            </div>
-            {top_items_today.length === 0 ? (
-              <p className="py-6 text-center text-sm text-slate-500">No sales recorded yet today.</p>
-            ) : (
-              <ul className="divide-y divide-slate-100">
-                {top_items_today.map((item) => (
-                  <li key={item.item_id} className="flex items-center justify-between gap-3 py-3">
-                    <p className="truncate text-sm font-medium text-slate-900">{item.name}</p>
-                    <span className="shrink-0 text-sm font-semibold text-slate-600">{item.quantity_sold} sold</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </Card>
-
-        <Card className="border-slate-200">
-          <div className="p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
-                <Receipt className="h-5 w-5 text-[#008BE9]" />
-                Recent orders
-              </h2>
-              <Link to="/canteen/orders" className="text-sm font-medium text-[#008BE9] hover:text-[#002C6D]">
-                View all
-              </Link>
-            </div>
-            {recent_orders.length === 0 ? (
-              <p className="py-6 text-center text-sm text-slate-500">No orders placed yet.</p>
-            ) : (
-              <ul className="divide-y divide-slate-100">
-                {recent_orders.map((order) => (
-                  <li key={order.order_id} className="flex items-center justify-between gap-3 py-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-slate-900">{order.order_number}</p>
-                      <p className="truncate text-xs text-slate-500">
-                        {order.member_name ?? 'Walk-in'} · {formatDate(order.created_at)}
-                      </p>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-2">
-                      <span className="text-sm font-semibold text-slate-700">{formatRupees(order.total_amount)}</span>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLE[order.status] ?? STATUS_STYLE.CANCELLED}`}
-                      >
-                        {order.status.toLowerCase()}
-                      </span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </Card>
+        <ChartCard title="Recent orders" subtitle="Latest activity" icon={Receipt} className="lg:col-span-7" style={stagger(5)}>
+          {recent_orders.length === 0 ? (
+            <p className="py-6 text-center text-sm text-slate-500">No orders recorded yet.</p>
+          ) : (
+            <ul className="divide-y divide-slate-100">
+              {recent_orders.map((o) => (
+                <li key={o.order_id} className="flex items-center justify-between gap-3 py-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-slate-900">{o.order_number}</p>
+                    <p className="truncate text-xs text-slate-500">
+                      {o.member_name ?? 'Walk-in'} · {formatDateTime(o.created_at)}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <span className="text-sm font-semibold text-slate-700">{rupees(o.total_amount)}</span>
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLE[o.status] ?? STATUS_STYLE.PENDING}`}>
+                      {o.status.toLowerCase()}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </ChartCard>
       </div>
 
       <div>

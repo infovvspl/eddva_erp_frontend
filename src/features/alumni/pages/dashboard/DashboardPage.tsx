@@ -1,6 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { Briefcase, CalendarDays, HeartHandshake, UserCheck, Users } from 'lucide-react';
 import Card from '../../../../components/ui/Card';
 import ReportData from '../../components/reports/ReportData';
+import PageHero from '../../../../components/premium/PageHero';
+import KpiTile from '../../../../components/premium/KpiTile';
+import DashboardSkeleton from '../../../../components/premium/DashboardSkeleton';
 import {
   getDashboardCommunication,
   getDashboardDirectory,
@@ -10,10 +14,16 @@ import {
   getDashboardMentorship,
   getDashboardSummary,
 } from '../../api/dashboard.api';
+import type { AlumniDashboardSummary } from '../../types/alumni.types';
 import { cn } from '../../../../utils/cn';
 import { getApiErrorMessage } from '../../utils/errors';
 
 type Tab = 'directory' | 'events' | 'jobs' | 'mentorship' | 'donations' | 'communication';
+
+const ACCENT = '#008300';
+
+// Entrance stagger — capped so late tiles don't wait noticeably.
+const stagger = (index: number) => ({ animationDelay: `${Math.min(index, 10) * 50}ms` });
 
 const TABS: { key: Tab; label: string; load: () => Promise<unknown> }[] = [
   { key: 'directory', label: 'Directory', load: getDashboardDirectory },
@@ -30,24 +40,41 @@ interface SectionState {
   error?: string;
 }
 
+interface SummaryState {
+  data?: AlumniDashboardSummary;
+  error?: string;
+}
+
 export default function DashboardPage() {
-  const [summary, setSummary] = useState<SectionState | null>(null);
+  const [summary, setSummary] = useState<SummaryState | null>(null);
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [summaryUpdatedAt, setSummaryUpdatedAt] = useState(0);
   const [tab, setTab] = useState<Tab>('directory');
   const [section, setSection] = useState<SectionState | null>(null);
 
-  useEffect(() => {
+  const loadSummary = useCallback(() => {
     let cancelled = false;
+    setSummaryLoading(true);
     getDashboardSummary()
       .then((data) => {
-        if (!cancelled) setSummary({ key: 'summary', data });
+        if (cancelled) return;
+        setSummary({ data });
+        setSummaryUpdatedAt(Date.now());
       })
       .catch((err) => {
-        if (!cancelled) setSummary({ key: 'summary', error: getApiErrorMessage(err, 'Failed to load summary') });
+        if (cancelled) return;
+        setSummary({ error: getApiErrorMessage(err, 'Failed to load summary') });
+        setSummaryUpdatedAt(Date.now());
+      })
+      .finally(() => {
+        if (!cancelled) setSummaryLoading(false);
       });
     return () => {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => loadSummary(), [loadSummary]);
 
   useEffect(() => {
     const current = TABS.find((t) => t.key === tab)!;
@@ -66,27 +93,51 @@ export default function DashboardPage() {
     };
   }, [tab]);
 
+  const s = summary?.data;
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Alumni Dashboard</h1>
-        <p className="text-slate-600 mt-1">A snapshot of the alumni program</p>
-      </div>
-
-      <Card className="border-slate-200">
-        <div className="px-6 py-3 border-b border-slate-200">
-          <h2 className="text-sm font-semibold text-slate-900">Summary</h2>
+      {!summary ? (
+        <DashboardSkeleton />
+      ) : summary.error ? (
+        <Card className="border-slate-200">
+          <div className="p-6 text-center text-red-500">{summary.error}</div>
+        </Card>
+      ) : s ? (
+        <div className="space-y-5">
+          <PageHero
+            eyebrow="Alumni"
+            title="Alumni"
+            subtitle="A snapshot of the alumni program"
+            highlights={[
+              { icon: UserCheck, label: `${s.alumni.pending_verification} pending verification` },
+              { icon: Briefcase, label: `${s.jobs.open} open jobs` },
+            ]}
+            updatedAt={summaryUpdatedAt}
+            refreshing={summaryLoading}
+            onRefresh={loadSummary}
+          />
+          <div className="grid gap-4 grid-cols-2 xl:grid-cols-5">
+            <KpiTile label="Total alumni" value={s.alumni.total} icon={Users} accent={ACCENT} style={stagger(0)} />
+            <KpiTile
+              label="Pending verification"
+              value={s.alumni.pending_verification}
+              icon={UserCheck}
+              accent={ACCENT}
+              style={stagger(1)}
+            />
+            <KpiTile label="Upcoming events" value={s.events.upcoming} icon={CalendarDays} accent={ACCENT} style={stagger(2)} />
+            <KpiTile label="Open jobs" value={s.jobs.open} icon={Briefcase} accent={ACCENT} style={stagger(3)} />
+            <KpiTile
+              label="Active campaigns"
+              value={s.donations.active_campaigns}
+              icon={HeartHandshake}
+              accent={ACCENT}
+              style={stagger(4)}
+            />
+          </div>
         </div>
-        <div className="p-6">
-          {!summary ? (
-            <div className="text-center text-slate-500 py-4">Loading...</div>
-          ) : summary.error ? (
-            <div className="text-center text-red-500 py-4">{summary.error}</div>
-          ) : (
-            <ReportData data={summary.data} />
-          )}
-        </div>
-      </Card>
+      ) : null}
 
       <Card className="border-slate-200">
         <div className="flex gap-1 border-b border-slate-200 px-4 overflow-x-auto">

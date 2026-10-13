@@ -346,3 +346,73 @@ export interface DisciplineFormData {
   fine_amount: string;
   gate_pass_id: string;
 }
+
+// Shape of GET /hostel/dashboard/summary — matches DashboardService#summary on the backend.
+export interface HostelDashboardSummary {
+  occupancy: {
+    total_blocks: number;
+    active_blocks: number;
+    total_rooms: number;
+    rooms_available: number;
+    rooms_full: number;
+    rooms_under_maintenance: number;
+    total_capacity: number;
+    occupied_places: number;
+    vacant_places: number;
+    occupancy_percentage: number;
+    beds: {
+      total_beds: number;
+      occupied_beds: number;
+      vacant_beds: number;
+    };
+    residents: {
+      total_residents: number;
+      active: number;
+      vacated: number;
+      suspended: number;
+    };
+  };
+  gate: {
+    currently_out: number;
+    expected_returns_today: number;
+    overdue_passes: number;
+    todays_outings: number;
+    todays_returns: number;
+    pending_approvals: number;
+  };
+  attendance: {
+    date: string;
+    present: number;
+    absent: number;
+    on_leave: number;
+    unaccounted_absences: number;
+    by_session: unknown;
+    unmarked: Record<string, number>;
+  };
+  complaints: {
+    open: number;
+    in_progress: number;
+    urgent: number;
+    unassigned: number;
+    resolved: number;
+    closed: number;
+  };
+  fees: {
+    total_invoices: number;
+    total_due: string;
+    total_paid: string;
+    outstanding: string;
+    outstanding_invoices: number;
+    overdue_invoices: number;
+    overdue_amount: string;
+  };
+  mess: {
+    date: string;
+    expected_meals: number;
+    opted_in: number;
+    opted_out: number;
+    consumed: number;
+    missed: number;
+    by_meal: { meal_type: string; expected_meals: number; opted_in: number; opted_out: number }[];
+  };
+}

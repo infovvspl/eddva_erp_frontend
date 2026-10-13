@@ -50,6 +50,20 @@ import FrontOfficeAvailableEmployeesPage from '../features/front-office/pages/em
 import FrontOfficeVisitorLogsPage from '../features/front-office/pages/visitor-logs/VisitorLogsPage';
 import FrontOfficeVisitorLogDetailPage from '../features/front-office/pages/visitor-logs/VisitorLogDetailPage';
 import FrontOfficeKioskLandingPage from '../features/front-office/pages/kiosk/KioskLandingPage';
+// Staff Management
+import StaffDashboardPage from '../features/staff/pages/StaffDashboardPage';
+import StaffDepartmentsPage from '../features/staff/pages/departments/DepartmentsPage';
+import StaffCreateDepartmentPage from '../features/staff/pages/departments/CreateDepartmentPage';
+import StaffMembersPage from '../features/staff/pages/members/MembersPage';
+import StaffCreateMemberPage from '../features/staff/pages/members/CreateMemberPage';
+import StaffMemberDetailPage from '../features/staff/pages/members/MemberDetailPage';
+import StaffLeaveTypesPage from '../features/staff/pages/leave-types/LeaveTypesPage';
+import StaffLeaveBalancesPage from '../features/staff/pages/leave-balances/LeaveBalancesPage';
+import StaffLeaveApplicationsPage from '../features/staff/pages/leave-applications/LeaveApplicationsPage';
+import StaffCreateLeaveApplicationPage from '../features/staff/pages/leave-applications/CreateLeaveApplicationPage';
+import StaffPayrollRunsPage from '../features/staff/pages/payroll-runs/PayrollRunsPage';
+import StaffPayrollRunDetailPage from '../features/staff/pages/payroll-runs/PayrollRunDetailPage';
+import StaffLmsTeachersPage from '../features/staff/pages/lms-teachers/LmsTeachersPage';
 import FrontOfficeKioskCheckInPage from '../features/front-office/pages/kiosk/KioskCheckInPage';
 // Sales & Purchase Routes
 import SalesPurchaseDashboardPage from '../features/sales-purchase/pages/dashboard/SalesPurchaseDashboardPage';
@@ -179,6 +193,7 @@ import WalletsPage from '../features/canteen/pages/wallet/WalletsPage';
 import CanteenReportsPage from '../features/canteen/pages/reports/CanteenReportsPage';
 // Admission Auth & RBAC
 import AdmissionLoginPage from '../features/admission/pages/auth/AdmissionLoginPage';
+import AdmissionPayFeePage from '../features/admission/pages/public/PayFeePage';
 import AdmissionSessionsPage from '../features/admission/pages/sessions/SessionsPage';
 import AdmissionCreateSessionPage from '../features/admission/pages/sessions/CreateSessionPage';
 import AdmissionEditSessionPage from '../features/admission/pages/sessions/EditSessionPage';
@@ -758,6 +773,73 @@ export const routeConfig = [
   {
     path: '/front-office/visitor-logs/:id',
     element: FrontOfficeVisitorLogDetailPage,
+    isProtected: true,
+  },
+
+  // Staff Management Routes
+  {
+    path: '/staff',
+    element: StaffDashboardPage,
+    isProtected: true,
+  },
+  {
+    path: '/staff/departments',
+    element: StaffDepartmentsPage,
+    isProtected: true,
+  },
+  {
+    path: '/staff/departments/new',
+    element: StaffCreateDepartmentPage,
+    isProtected: true,
+  },
+  {
+    path: '/staff/members',
+    element: StaffMembersPage,
+    isProtected: true,
+  },
+  {
+    path: '/staff/members/new',
+    element: StaffCreateMemberPage,
+    isProtected: true,
+  },
+  {
+    path: '/staff/members/:id',
+    element: StaffMemberDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/staff/leave-types',
+    element: StaffLeaveTypesPage,
+    isProtected: true,
+  },
+  {
+    path: '/staff/leave-balances',
+    element: StaffLeaveBalancesPage,
+    isProtected: true,
+  },
+  {
+    path: '/staff/leave-applications',
+    element: StaffLeaveApplicationsPage,
+    isProtected: true,
+  },
+  {
+    path: '/staff/leave-applications/new',
+    element: StaffCreateLeaveApplicationPage,
+    isProtected: true,
+  },
+  {
+    path: '/staff/payroll-runs',
+    element: StaffPayrollRunsPage,
+    isProtected: true,
+  },
+  {
+    path: '/staff/payroll-runs/:id',
+    element: StaffPayrollRunDetailPage,
+    isProtected: true,
+  },
+  {
+    path: '/staff/lms-teachers',
+    element: StaffLmsTeachersPage,
     isProtected: true,
   },
 
@@ -1575,6 +1657,12 @@ export const routeConfig = [
     path: '/admission/fee-structures/:id/edit',
     element: AdmissionEditFeeStructurePage,
     isProtected: true,
+  },
+
+  // Admission: parent fee payment (public, unauthenticated — no isProtected/isPublic flag)
+  {
+    path: '/admission/pay/:applicationId',
+    element: AdmissionPayFeePage,
   },
 
   // Admission Auth & RBAC Routes

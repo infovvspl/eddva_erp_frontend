@@ -1,5 +1,6 @@
 import axiosInstance from '../../../lib/axios';
 import type {
+  AdmissionDashboardSummary,
   AdmissionPayment,
   AdmissionPaymentListParams,
   AdmissionSession,
@@ -772,7 +773,9 @@ export async function getNotifications(
   return { data: Array.isArray(rows) ? rows : [], pagination: response.data.pagination };
 }
 
-export async function getDashboardSummary(params: { session_id?: number; program_id?: number } = {}): Promise<unknown> {
+export async function getDashboardSummary(
+  params: { session_id?: number; program_id?: number } = {}
+): Promise<AdmissionDashboardSummary> {
   const response = await axiosInstance.get('/admission/dashboard/summary', { params: cleanParams(params) });
   return response.data.data ?? response.data;
 }

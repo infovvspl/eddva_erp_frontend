@@ -103,3 +103,36 @@ export interface AlumniChangePasswordFormData {
   current_password: string;
   new_password: string;
 }
+
+// Shape of GET /alumni/dashboard/summary — matches DashboardService#summary on the backend.
+export interface AlumniDashboardSummary {
+  alumni: {
+    total: number;
+    verified: number;
+    pending_verification: number;
+  };
+  events: {
+    upcoming: number;
+    registrations_for_upcoming: number;
+    revenue: number | string;
+  };
+  jobs: {
+    open: number;
+    applications: number;
+    hired: number;
+  };
+  mentorship: {
+    active_programs: number;
+    available_mentors: number;
+    active_matches: number;
+  };
+  donations: {
+    active_campaigns: number;
+    total: number | string;
+    donors: number;
+  };
+  communication: {
+    newsletters_sent: number;
+    failed_deliveries: number;
+  };
+}

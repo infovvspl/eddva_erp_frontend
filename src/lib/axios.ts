@@ -47,6 +47,7 @@ const tokenIslands: TokenIsland[] = [
   moduleIsland('/transport', moduleSessions.transport, '_transportRetried'),
   moduleIsland('/inventory', moduleSessions.inventory, '_inventoryRetried'),
   moduleIsland('/front-office', moduleSessions.frontOffice, '_frontOfficeRetried'),
+  moduleIsland('/staff', moduleSessions.staff, '_staffRetried'),
   {
     matches: islandUrl('/sales-purchase', ['/sales-purchase/auth/sso']),
     getToken: getSalesPurchaseToken,

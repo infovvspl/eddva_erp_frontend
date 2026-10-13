@@ -30,6 +30,7 @@ export const moduleSessions = {
   transport: createModuleSession({ name: 'transport', ssoPath: '/transport/auth/sso', tokenField: 'transport_token' }),
   inventory: createModuleSession({ name: 'inventory', ssoPath: '/inventory/auth/sso', tokenField: 'inventory_token' }),
   frontOffice: createModuleSession({ name: 'front_office', ssoPath: '/front-office/auth/sso', tokenField: 'front_office_token' }),
+  staff: createModuleSession({ name: 'staff', ssoPath: '/staff/auth/sso', tokenField: 'staff_token' }),
 };
 
 /** What the shared login page and route guards need to know about one module. */
@@ -67,6 +68,7 @@ export const moduleAuthList: ModuleAuth[] = [
   fromSession('Transport', '/transport', 'transport', 'transport_token', moduleSessions.transport),
   fromSession('Inventory', '/inventory', 'inventory', 'inventory_token', moduleSessions.inventory),
   fromSession('Front Office', '/front-office', 'front-office', 'front_office_token', moduleSessions.frontOffice),
+  fromSession('Staff', '/staff', 'staff', 'staff_token', moduleSessions.staff),
   {
     label: 'Hostel',
     basePath: '/hostel',
