@@ -26,6 +26,8 @@ interface ActionModalProps {
   submitLabel: string;
   fields: ActionField[];
   withRoomBed?: boolean;
+  // Restricts the RoomBedPicker's block list when withRoomBed is set.
+  residentGender?: string;
   // Pick just a bed within a known room (submitted as bed_id).
   bedPicker?: { roomId: string; defaultBedId?: string };
   onClose: () => void;
@@ -41,6 +43,7 @@ function ActionForm({
   submitLabel,
   fields,
   withRoomBed,
+  residentGender,
   bedPicker,
   onClose,
   onSubmit,
@@ -78,7 +81,9 @@ function ActionForm({
         <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">{error}</div>
       )}
 
-      {withRoomBed && <RoomBedPicker roomId={pick.roomId} bedId={pick.bedId} onChange={setPick} />}
+      {withRoomBed && (
+        <RoomBedPicker roomId={pick.roomId} bedId={pick.bedId} onChange={setPick} residentGender={residentGender} />
+      )}
 
       {bedPicker && (
         <div>

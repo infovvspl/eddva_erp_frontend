@@ -9,6 +9,8 @@ interface RoomBedPickerProps {
   roomId: string;
   bedId: string;
   onChange: (value: { roomId: string; bedId: string }) => void;
+  // Restricts the block list to blocks this resident's gender may live in.
+  residentGender?: string;
 }
 
 const inputClass =
@@ -17,9 +19,20 @@ const inputClass =
 // Rooms and beds are fetched as one generous page each.
 const PAGE_LIMIT = 200;
 
+// male/female residents may live in a same-gender or mixed block; any other
+// gender value is only offered mixed blocks, matching the server-side rule.
+function blockAllowsGender(blockGenderType: string, residentGender?: string): boolean {
+  if (!residentGender) return true;
+  if (blockGenderType === 'mixed') return true;
+  if (residentGender === 'male') return blockGenderType === 'boys';
+  if (residentGender === 'female') return blockGenderType === 'girls';
+  return false;
+}
+
 // Block -> room -> bed. Beds already reported as occupied are left out.
-export default function RoomBedPicker({ roomId, bedId, onChange }: RoomBedPickerProps) {
-  const { blocks, loaded } = useBlockOptions();
+export default function RoomBedPicker({ roomId, bedId, onChange, residentGender }: RoomBedPickerProps) {
+  const { blocks: allBlocks, loaded } = useBlockOptions();
+  const blocks = allBlocks.filter((block) => blockAllowsGender(block.gender_type, residentGender));
   const [blockId, setBlockId] = useState('');
   const [rooms, setRooms] = useState<HostelRoom[] | null>([]);
   const [beds, setBeds] = useState<HostelBed[] | null>([]);

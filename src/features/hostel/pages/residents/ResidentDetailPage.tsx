@@ -535,6 +535,7 @@ export default function ResidentDetailPage() {
           isOpen
           onClose={() => setModal(null)}
           onSubmit={submitModal}
+          residentGender={resident.gender}
           {...modalConfig(modal)}
         />
       )}

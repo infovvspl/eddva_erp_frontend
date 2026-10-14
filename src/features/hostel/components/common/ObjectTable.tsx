@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { flattenRecord, formatValue, humanizeKey, isPrimitive } from '../../utils/format';
+import { HIDDEN_KEY, displayLabel, flattenRecord, formatValue, hasResolvedName, isPrimitive } from '../../utils/format';
 import type { GenericRecord } from '../../types/hostel.types';
 
 interface ObjectTableProps {
@@ -12,7 +12,6 @@ interface ObjectTableProps {
 }
 
 const MAX_COLUMNS = 8;
-const HIDDEN_KEY = /(^id$|_id$|^institute|created_at|updated_at|deleted_at)/;
 // Most useful fields first. A nested field such as resident_student_name
 // ranks with student_name.
 const PREFERRED_KEYS = [
@@ -58,7 +57,8 @@ function pickColumns(rows: GenericRecord[]): string[] {
     });
   });
   const all = [...keys];
-  const visible = all.filter((key) => !HIDDEN_KEY.test(key));
+  const sample = rows[0] ?? {};
+  const visible = all.filter((key) => !HIDDEN_KEY.test(key) && !hasResolvedName(key, sample));
   const base = visible.length > 0 ? visible : all;
   // Array.prototype.sort is stable, so unranked keys keep the API's order.
   return [...base].sort((a, b) => preferredRank(a) - preferredRank(b)).slice(0, MAX_COLUMNS);
@@ -73,6 +73,7 @@ export default function ObjectTable({ rows, emptyMessage, rowHref, rowActions }:
 
   const flatRows = rows.map(flattenRecord);
   const columns = pickColumns(flatRows);
+  const sample = flatRows[0] ?? {};
 
   return (
     <div className="overflow-x-auto">
@@ -81,7 +82,7 @@ export default function ObjectTable({ rows, emptyMessage, rowHref, rowActions }:
           <tr className="border-b border-slate-200 bg-slate-50">
             {columns.map((column) => (
               <th key={column} className="text-left py-3 px-4 font-semibold text-slate-700 whitespace-nowrap">
-                {humanizeKey(column)}
+                {displayLabel(column, sample)}
               </th>
             ))}
             {rowActions && <th className="text-right py-3 px-4 font-semibold text-slate-700">Actions</th>}

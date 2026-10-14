@@ -16,7 +16,7 @@ interface BlockFormProps {
 const inputClass =
   'w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent';
 
-const GENDER_SUGGESTIONS = ['boys', 'girls', 'mixed'];
+const GENDER_TYPE_OPTIONS = ['boys', 'girls', 'mixed'];
 
 export default function BlockForm({
   initialValues,
@@ -60,21 +60,22 @@ export default function BlockForm({
           <label htmlFor="gender_type" className="block text-sm font-medium text-slate-700 mb-1">
             Gender Type *
           </label>
-          <input
+          <select
             id="gender_type"
-            type="text"
-            list="block-gender-types"
             value={form.gender_type}
             onChange={(e) => setForm({ ...form, gender_type: e.target.value })}
-            placeholder="e.g. boys"
             className={inputClass}
             required
-          />
-          <datalist id="block-gender-types">
-            {GENDER_SUGGESTIONS.map((gender) => (
-              <option key={gender} value={gender} />
+          >
+            <option value="" disabled>
+              Select gender type
+            </option>
+            {GENDER_TYPE_OPTIONS.map((gender) => (
+              <option key={gender} value={gender}>
+                {gender}
+              </option>
             ))}
-          </datalist>
+          </select>
         </div>
 
         <div>

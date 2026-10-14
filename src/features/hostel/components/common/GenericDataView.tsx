@@ -1,5 +1,13 @@
 import ObjectTable from './ObjectTable';
-import { flattenRecord, formatValue, humanizeKey, isPrimitive } from '../../utils/format';
+import {
+  HIDDEN_KEY,
+  displayLabel,
+  flattenRecord,
+  formatValue,
+  hasResolvedName,
+  humanizeKey,
+  isPrimitive,
+} from '../../utils/format';
 import type { GenericRecord } from '../../types/hostel.types';
 
 interface GenericDataViewProps {
@@ -18,7 +26,10 @@ export default function GenericDataView({ data, emptyMessage, rowHref, rowAction
     return <ObjectTable rows={data} emptyMessage={emptyMessage} rowHref={rowHref} rowActions={rowActions} />;
   }
 
-  const tiles = Object.entries(flattenRecord(data)).filter(([, value]) => isPrimitive(value) && value !== null);
+  const flat = flattenRecord(data);
+  const tiles = Object.entries(flat).filter(
+    ([key, value]) => isPrimitive(value) && value !== null && !HIDDEN_KEY.test(key) && !hasResolvedName(key, flat)
+  );
   const tables = Object.entries(data).filter(
     (entry): entry is [string, GenericRecord[]] =>
       Array.isArray(entry[1]) && entry[1].length > 0 && typeof entry[1][0] === 'object'
@@ -34,7 +45,7 @@ export default function GenericDataView({ data, emptyMessage, rowHref, rowAction
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {tiles.map(([key, value]) => (
             <div key={key} className="rounded-lg border border-slate-200 p-4">
-              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{humanizeKey(key)}</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{displayLabel(key, flat)}</p>
               <p className="mt-1 text-2xl font-semibold text-slate-900 break-words">{formatValue(key, value)}</p>
             </div>
           ))}

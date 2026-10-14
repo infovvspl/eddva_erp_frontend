@@ -17,7 +17,7 @@ interface ResidentFormProps {
 const inputClass =
   'w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent disabled:bg-slate-50 disabled:text-slate-500';
 
-const GENDER_SUGGESTIONS = ['male', 'female', 'other'];
+const GENDER_OPTIONS = ['male', 'female', 'other'];
 
 export default function ResidentForm({
   initialValues,
@@ -74,12 +74,22 @@ export default function ResidentForm({
             <label htmlFor="gender" className="block text-sm font-medium text-slate-700 mb-1">
               Gender *
             </label>
-            <input {...field('gender')} type="text" list="resident-genders" placeholder="e.g. male" required />
-            <datalist id="resident-genders">
-              {GENDER_SUGGESTIONS.map((gender) => (
-                <option key={gender} value={gender} />
+            <select
+              id="gender"
+              value={form.gender}
+              onChange={(e) => setForm({ ...form, gender: e.target.value })}
+              className={inputClass}
+              required
+            >
+              <option value="" disabled>
+                Select gender
+              </option>
+              {GENDER_OPTIONS.map((gender) => (
+                <option key={gender} value={gender}>
+                  {gender}
+                </option>
               ))}
-            </datalist>
+            </select>
           </div>
           <div>
             <label htmlFor="grade" className="block text-sm font-medium text-slate-700 mb-1">

@@ -19,7 +19,7 @@ interface RoomFormProps {
 const inputClass =
   'w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent';
 
-const ROOM_TYPE_SUGGESTIONS = ['single', 'double', 'triple', 'dormitory'];
+const ROOM_TYPE_OPTIONS = ['single', 'double', 'triple', 'dormitory'];
 
 export default function RoomForm({
   initialValues,
@@ -101,21 +101,22 @@ export default function RoomForm({
           <label htmlFor="room_type" className="block text-sm font-medium text-slate-700 mb-1">
             Room Type *
           </label>
-          <input
+          <select
             id="room_type"
-            type="text"
-            list="room-types"
             value={form.room_type}
             onChange={(e) => setForm({ ...form, room_type: e.target.value })}
-            placeholder="e.g. double"
             className={inputClass}
             required
-          />
-          <datalist id="room-types">
-            {ROOM_TYPE_SUGGESTIONS.map((type) => (
-              <option key={type} value={type} />
+          >
+            <option value="" disabled>
+              Select room type
+            </option>
+            {ROOM_TYPE_OPTIONS.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
             ))}
-          </datalist>
+          </select>
         </div>
 
         <div>

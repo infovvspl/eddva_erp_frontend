@@ -90,7 +90,14 @@ export default function TransferRequestDetailPage() {
   const status = recordStatus(request);
   // Only pending requests can be processed; an unknown status lets the backend decide.
   const isOpen = status === null || status === 'pending';
-  const canProcess = (action: string) => can(action) || can('transfer', 'allotments');
+  // The backend gates both /approve and /reject behind the 'approve' permission
+  // (there is no separate 'reject' action in the permission catalog), so the
+  // Reject button must check the same permission as Approve, not a 'reject'
+  // action that no role can ever be granted.
+  const canProcess = (action: string) => {
+    const permissionAction = action === 'reject' ? 'approve' : action;
+    return can(permissionAction) || can('transfer', 'allotments');
+  };
   const residentId = relatedId(request, 'resident', 'resident_id');
 
   return (
