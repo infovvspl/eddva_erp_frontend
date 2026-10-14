@@ -1,0 +1,14 @@
+# ERP frontend. VITE_API_URL is baked in at build time:
+#   VITE_API_URL=https://erp-api.example.com/api docker compose up -d --build
+services:
+  erp-frontend:
+    build:
+      context: .
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3001/api}
+        TYPECHECK: ${TYPECHECK:-false}
+    image: eddva/erp-frontend:latest
+    container_name: eddva-erp-frontend
+    ports:
+      - "${ERP_FRONTEND_PORT:-8081}:80"
+    restart: unless-stopped

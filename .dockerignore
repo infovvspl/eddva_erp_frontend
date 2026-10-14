@@ -1,0 +1,19 @@
+node_modules
+dist
+dist-ssr
+.git
+.github
+.vscode
+.idea
+# Vite auto-loads .env* at build time, so these MUST stay out of the build
+# context: they can hold VITE_API_TOKEN, which would be baked into the bundle.
+.env
+.env.*
+!.env.example
+env
+*.log
+Progress.txt
+README.md
+Dockerfile
+.dockerignore
+docker-compose*.yml
