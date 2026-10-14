@@ -35,6 +35,29 @@ export default function VoucherEntriesEditor({ entries, onChange, accounts, cost
     onChange(next);
   };
 
+  // Each ledger line is either a debit or a credit, never both — mirrors how the
+  // amount is actually posted. Switching the type keeps the amount but moves it
+  // to the other column, and zeroes the one that's no longer in use.
+  const updateEntryAmount = (index: number, amount: number) => {
+    const entry = entries[index];
+    const isCredit = Number(entry.debitAmount) === 0 && Number(entry.creditAmount) > 0;
+    const next = [...entries];
+    next[index] = isCredit
+      ? { ...entry, debitAmount: 0, creditAmount: amount }
+      : { ...entry, debitAmount: amount, creditAmount: 0 };
+    onChange(next);
+  };
+
+  const updateEntryType = (index: number, type: 'debit' | 'credit') => {
+    const entry = entries[index];
+    const amount = Number(entry.debitAmount) || Number(entry.creditAmount) || 0;
+    const next = [...entries];
+    next[index] = type === 'debit'
+      ? { ...entry, debitAmount: amount, creditAmount: 0 }
+      : { ...entry, debitAmount: 0, creditAmount: amount };
+    onChange(next);
+  };
+
   const totalDebit = entries.reduce((sum, e) => sum + (Number(e.debitAmount) || 0), 0);
   const totalCredit = entries.reduce((sum, e) => sum + (Number(e.creditAmount) || 0), 0);
   const difference = totalDebit - totalCredit;
@@ -69,24 +92,24 @@ export default function VoucherEntriesEditor({ entries, onChange, accounts, cost
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-500 mb-1">Debit</label>
-              <input
-                type="number"
-                min={0}
-                step="0.01"
-                value={entry.debitAmount || ''}
-                onChange={(e) => updateEntry(index, 'debitAmount', Number(e.target.value))}
+              <label className="block text-xs font-medium text-slate-500 mb-1">Type</label>
+              <select
+                value={Number(entry.creditAmount) > 0 && Number(entry.debitAmount) === 0 ? 'credit' : 'debit'}
+                onChange={(e) => updateEntryType(index, e.target.value as 'debit' | 'credit')}
                 className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-[#008BE9]"
-              />
+              >
+                <option value="debit">Debit</option>
+                <option value="credit">Credit</option>
+              </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-500 mb-1">Credit</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1">Amount</label>
               <input
                 type="number"
                 min={0}
                 step="0.01"
-                value={entry.creditAmount || ''}
-                onChange={(e) => updateEntry(index, 'creditAmount', Number(e.target.value))}
+                value={(Number(entry.debitAmount) || Number(entry.creditAmount)) || ''}
+                onChange={(e) => updateEntryAmount(index, Number(e.target.value))}
                 className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-[#008BE9]"
               />
             </div>

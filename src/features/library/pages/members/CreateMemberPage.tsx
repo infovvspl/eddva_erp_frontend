@@ -92,9 +92,8 @@ export default function CreateMemberPage() {
               >
                 <option value="">Select member type</option>
                 <option value="student">Student</option>
-                <option value="teacher">Teacher</option>
+                <option value="faculty">Teacher</option>
                 <option value="staff">Staff</option>
-                <option value="guest">Guest</option>
               </select>
             </div>
 
