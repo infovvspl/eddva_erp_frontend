@@ -5,6 +5,8 @@ import Card from '../../../../components/ui/Card';
 import { createMenuItem, getMenuCategories } from '../../api/canteen.api';
 import type { MenuCategory } from '../../types/canteen.types';
 
+const DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'] as const;
+
 export default function CreateMenuItemPage() {
   const navigate = useNavigate();
   const [categories, setCategories] = useState<MenuCategory[]>([]);
@@ -44,6 +46,10 @@ export default function CreateMenuItemPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.availableDays) {
+      setError('Select at least one available day');
+      return;
+    }
     try {
       setSubmitting(true);
       setError(null);
@@ -199,19 +205,40 @@ export default function CreateMenuItemPage() {
                 />
               </div>
 
-              <div>
-                <label htmlFor="availableDays" className="block text-sm font-medium text-slate-700 mb-1">
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-slate-700 mb-2">
                   Available Days *
                 </label>
-                <input
-                  type="text"
-                  id="availableDays"
-                  value={formData.availableDays}
-                  onChange={(e) => setFormData({ ...formData, availableDays: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
-                  placeholder="MON,TUE,WED,THU,FRI,SAT,SUN"
-                  required
-                />
+                <div className="flex flex-wrap gap-2">
+                  {DAYS.map((day) => {
+                    const selectedDays = formData.availableDays ? formData.availableDays.split(',') : [];
+                    const isSelected = selectedDays.includes(day);
+                    return (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => {
+                          const next = isSelected
+                            ? selectedDays.filter((d) => d !== day)
+                            : [...selectedDays, day];
+                          // Keep chip order matching the week, not click order.
+                          const ordered = DAYS.filter((d) => next.includes(d));
+                          setFormData({ ...formData, availableDays: ordered.join(',') });
+                        }}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium border-2 transition-all ${
+                          isSelected
+                            ? 'border-[#008BE9] bg-[#008BE9]/5 text-[#008BE9]'
+                            : 'border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                        }`}
+                      >
+                        {day}
+                      </button>
+                    );
+                  })}
+                </div>
+                {!formData.availableDays && (
+                  <p className="mt-1 text-xs text-red-500">Select at least one day</p>
+                )}
               </div>
 
               <div className="flex items-center gap-2">

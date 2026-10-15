@@ -5,9 +5,10 @@ import type {
   BookCopy, 
   BookCopyFormData, 
   BookCopyUpdateData, 
-  BookVendor, 
-  BookVendorFormData, 
-  BookVendorUpdateData, 
+  BookVendor,
+  BookVendorFormData,
+  BookVendorUpdateData,
+  VendorMaster,
   Fine, 
   FineWaiveFormData, 
   FinePayFormData, 
@@ -304,6 +305,11 @@ export async function updateBookCopy(id: string | number, data: BookCopyUpdateDa
 }
 
 // Book Vendor Management Endpoints
+export async function getVendorMasterList(): Promise<VendorMaster[]> {
+  const response = await axiosInstance.get('/library/vendors');
+  return response.data.data || response.data || [];
+}
+
 export async function getBookVendors(bookId: string | number): Promise<BookVendor[]> {
   const response = await axiosInstance.get(`/library/books/${bookId}/vendors`);
   return response.data.data || response.data || [];

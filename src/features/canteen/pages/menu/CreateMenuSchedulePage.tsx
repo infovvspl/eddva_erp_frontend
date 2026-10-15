@@ -56,7 +56,8 @@ export default function CreateMenuSchedulePage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err.response?.data?.message || 'Failed to create schedule');
+      const msg = err.response?.data?.error?.message || err.response?.data?.message || 'Failed to create schedule';
+      setError(typeof msg === 'string' ? msg : 'Failed to create schedule');
     } finally {
       setSubmitting(false);
     }

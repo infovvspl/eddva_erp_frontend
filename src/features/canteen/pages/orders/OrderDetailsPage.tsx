@@ -144,13 +144,13 @@ export default function OrderDetailsPage() {
     );
   }
 
-  const subtotal = order.items.reduce((sum, item) => {
-    const price = getMenuItemPrice(item.itemId);
-    return sum + (price * item.quantity);
-  }, 0);
-
-  const discount = order.discountAmount || 0;
-  const total = subtotal - discount;
+  // Use the backend's authoritative totals (set at order creation from the
+  // prices/tax rates at that time) rather than recomputing from current menu
+  // item prices, which can drift from what the order actually charged.
+  const subtotal = Number(order.subtotal ?? 0);
+  const tax = Number(order.taxAmount ?? 0);
+  const discount = Number(order.discountAmount || 0);
+  const total = Number(order.totalAmount ?? subtotal + tax - discount);
 
   return (
     <div className="space-y-6">
@@ -273,18 +273,24 @@ export default function OrderDetailsPage() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-slate-600">Subtotal</span>
-                  <span className="font-medium text-slate-900">₹{subtotal}</span>
+                  <span className="font-medium text-slate-900">₹{subtotal.toFixed(2)}</span>
                 </div>
+                {tax > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-slate-600">Tax</span>
+                    <span className="font-medium text-slate-900">₹{tax.toFixed(2)}</span>
+                  </div>
+                )}
                 {discount > 0 && (
                   <div className="flex justify-between">
                     <span className="text-slate-600">Discount</span>
-                    <span className="font-medium text-red-600">-₹{discount}</span>
+                    <span className="font-medium text-red-600">-₹{discount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="border-t border-slate-200 pt-3">
                   <div className="flex justify-between">
                     <span className="font-semibold text-slate-900">Total</span>
-                    <span className="font-bold text-lg text-slate-900">₹{total}</span>
+                    <span className="font-bold text-lg text-slate-900">₹{total.toFixed(2)}</span>
                   </div>
                 </div>
               </div>

@@ -357,8 +357,12 @@ function SalesReportView({ data }: { data: SalesReport }) {
             </thead>
             <tbody>
               {salesChannels.map((ch) => {
-                const gross = Number(r.grossSales ?? 0);
-                const share = gross > 0 ? (Number(ch.value) / gross) * 100 : 0;
+                // Channel amounts are actual tax-inclusive payments, so they're
+                // shared against netSales (tax-inclusive), not the pre-tax
+                // grossSales — comparing against gross would make the shares
+                // not sum to 100%.
+                const net = Number(r.netSales ?? 0);
+                const share = net > 0 ? (Number(ch.value) / net) * 100 : 0;
                 return (
                   <tr key={ch.label} className="border-b border-slate-100 hover:bg-slate-50">
                     <td className="py-2.5 px-3">
@@ -383,8 +387,8 @@ function SalesReportView({ data }: { data: SalesReport }) {
             </tbody>
             <tfoot>
               <tr className="border-t-2 border-slate-200 bg-slate-50">
-                <td className="py-2.5 px-3 text-xs font-semibold text-slate-600 uppercase">Gross Total</td>
-                <td className="py-2.5 px-3 text-right font-bold text-slate-900">₹{Number(r.grossSales ?? 0).toFixed(2)}</td>
+                <td className="py-2.5 px-3 text-xs font-semibold text-slate-600 uppercase">Net Total</td>
+                <td className="py-2.5 px-3 text-right font-bold text-slate-900">₹{Number(r.netSales ?? 0).toFixed(2)}</td>
                 <td className="py-2.5 px-3 text-right font-bold text-slate-900">100%</td>
               </tr>
             </tfoot>
@@ -427,15 +431,15 @@ function ItemSalesReportView({ data }: { data: ItemSalesReport }) {
       ?? Object.values(data as any).find((v) => Array.isArray(v))
       ?? [];
 
-  // API fields: categoryName, totalItemsSold, totalSales
-  const totalRevenue  = (data as any).totalRevenue  ?? items.reduce((s: number, r: any) => s + Number(r.totalSales    ?? r.revenue     ?? 0), 0);
-  const totalQuantity = (data as any).totalQuantity ?? items.reduce((s: number, r: any) => s + Number(r.totalItemsSold ?? r.quantitySold ?? 0), 0);
+  // API fields (per item, not per category): itemId, itemName, categoryName, quantitySold, totalSales
+  const totalRevenue  = (data as any).totalRevenue  ?? items.reduce((s: number, r: any) => s + Number(r.totalSales ?? 0), 0);
+  const totalQuantity = (data as any).totalQuantity ?? items.reduce((s: number, r: any) => s + Number(r.quantitySold ?? 0), 0);
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <StatCard label="Total Categories" value={items.length}                          icon={ShoppingBag} color="blue"  />
-        <StatCard label="Total Items Sold"  value={totalQuantity}                        icon={TrendingUp}  color="green" />
+        <StatCard label="Items Sold"        value={items.length}                          icon={ShoppingBag} color="blue"  />
+        <StatCard label="Total Quantity Sold" value={totalQuantity}                        icon={TrendingUp}  color="green" />
         <StatCard label="Total Sales"       value={`₹${Number(totalRevenue).toFixed(2)}`} icon={IndianRupee} color="amber" />
       </div>
 
@@ -445,21 +449,23 @@ function ItemSalesReportView({ data }: { data: ItemSalesReport }) {
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50">
                 <th className="text-left py-3 px-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">#</th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Item</th>
                 <th className="text-left py-3 px-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Category</th>
-                <th className="text-right py-3 px-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Items Sold</th>
+                <th className="text-right py-3 px-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Quantity Sold</th>
                 <th className="text-right py-3 px-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Total Sales</th>
               </tr>
             </thead>
             <tbody>
               {items.length === 0 ? (
-                <tr><td colSpan={4} className="py-8 text-center text-slate-400">No item sales data</td></tr>
+                <tr><td colSpan={5} className="py-8 text-center text-slate-400">No item sales data</td></tr>
               ) : (
                 items.map((row: any, i: number) => (
-                  <tr key={row.itemId ?? row.categoryName ?? i} className="border-b border-slate-100 hover:bg-slate-50">
+                  <tr key={row.itemId ?? i} className="border-b border-slate-100 hover:bg-slate-50">
                     <td className="py-3 px-4 text-sm text-slate-500">{i + 1}</td>
-                    <td className="py-3 px-4 font-medium text-slate-900">{row.categoryName ?? row.itemName ?? row.name ?? '—'}</td>
-                    <td className="py-3 px-4 text-right text-slate-700">{row.totalItemsSold ?? row.quantitySold ?? 0}</td>
-                    <td className="py-3 px-4 text-right font-semibold text-slate-900">₹{Number(row.totalSales ?? row.revenue ?? 0).toFixed(2)}</td>
+                    <td className="py-3 px-4 font-medium text-slate-900">{row.itemName ?? '—'}</td>
+                    <td className="py-3 px-4 text-slate-600">{row.categoryName ?? '—'}</td>
+                    <td className="py-3 px-4 text-right text-slate-700">{row.quantitySold ?? 0}</td>
+                    <td className="py-3 px-4 text-right font-semibold text-slate-900">₹{Number(row.totalSales ?? 0).toFixed(2)}</td>
                   </tr>
                 ))
               )}
@@ -467,7 +473,7 @@ function ItemSalesReportView({ data }: { data: ItemSalesReport }) {
             <tfoot>
               {items.length > 0 && (
                 <tr className="border-t-2 border-slate-200 bg-slate-50">
-                  <td colSpan={2} className="py-2.5 px-4 text-xs font-semibold text-slate-600 uppercase">Total</td>
+                  <td colSpan={3} className="py-2.5 px-4 text-xs font-semibold text-slate-600 uppercase">Total</td>
                   <td className="py-2.5 px-4 text-right font-bold text-slate-900">{totalQuantity}</td>
                   <td className="py-2.5 px-4 text-right font-bold text-slate-900">₹{Number(totalRevenue).toFixed(2)}</td>
                 </tr>

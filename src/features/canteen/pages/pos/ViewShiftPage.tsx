@@ -137,11 +137,11 @@ export default function ViewShiftPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-500 mb-1">Opened At</label>
-              <p className="text-slate-900">{new Date(shift.openedAt).toLocaleString()}</p>
+              <p className="text-slate-900">{new Date(shift.shiftStart).toLocaleString()}</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-500 mb-1">Closed At</label>
-              <p className="text-slate-900">{shift.closedAt ? new Date(shift.closedAt).toLocaleString() : '-'}</p>
+              <p className="text-slate-900">{shift.shiftEnd ? new Date(shift.shiftEnd).toLocaleString() : '-'}</p>
             </div>
           </div>
 

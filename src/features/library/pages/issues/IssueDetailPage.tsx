@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Calendar, Clock, User, RotateCcw } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import { useToast } from '../../../../hooks/useToast';
@@ -13,6 +14,8 @@ import FineTable from '../../components/fines/FineTable';
 import type { IssueDetail, BookIssueReturnData, BookIssueRenewData } from '../../types/library.types';
 
 export default function IssueDetailPage() {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
   const [issue, setIssue] = useState<IssueDetail | null>(null);
@@ -33,7 +36,7 @@ export default function IssueDetailPage() {
       setIssue(data);
     } catch (err: any) {
       if (err.response?.status === 401) return;
-      toast.error(getApiErrorMessage(err, 'Failed to load issue'));
+      toast.error(getApiErrorMessage(err, t('issues.detailPage.failedToLoad')));
     } finally {
       setLoading(false);
     }
@@ -45,7 +48,7 @@ export default function IssueDetailPage() {
       const result = await returnIssue(issueId, data);
       await load();
       setIsReturnModalOpen(false);
-      toast.success(result.fine ? `Returned. Fine of ₹${result.fine.amount} created.` : 'Returned. No fine.');
+      toast.success(result.fine ? t('issues.activeListPage.returnedWithFine', { amount: result.fine.amount }) : t('issues.activeListPage.returnedNoFine'));
     } finally {
       setIsSubmitting(false);
     }
@@ -57,18 +60,18 @@ export default function IssueDetailPage() {
       await renewIssue(issueId, data);
       await load();
       setIsRenewModalOpen(false);
-      toast.success('Issue renewed.');
+      toast.success(t('issues.activeListPage.issueRenewed'));
     } finally {
       setIsSubmitting(false);
     }
   }
 
   if (loading) {
-    return <div className="text-center py-8 text-slate-500">Loading...</div>;
+    return <div className="text-center py-8 text-slate-500">{tc('status.loading')}</div>;
   }
 
   if (!issue) {
-    return <div className="text-center py-8 text-slate-500">Issue not found.</div>;
+    return <div className="text-center py-8 text-slate-500">{t('issues.detailPage.notFound')}</div>;
   }
 
   const isActive = !issue.return_date;
@@ -76,14 +79,14 @@ export default function IssueDetailPage() {
   return (
     <div className="space-y-6">
       <Link to="/library/issues" className="inline-flex items-center gap-1 text-sm text-slate-600 hover:text-slate-900">
-        <ArrowLeft className="h-4 w-4" /> Back to Issues
+        <ArrowLeft className="h-4 w-4" /> {t('issues.detailPage.backToIssues')}
       </Link>
 
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-            Issue #{issue.issue_id}
-            <IssueStatusBadge status={issue.status} />
+            {t('issues.detailPage.issueHeading', { id: issue.issue_id })}
+            <IssueStatusBadge status={issue.status} dueDate={issue.due_date} returnDate={issue.return_date} />
           </h1>
           <p className="text-slate-600 mt-1">{issue.copy?.book?.title ?? issue.book_title}</p>
         </div>
@@ -91,9 +94,9 @@ export default function IssueDetailPage() {
           <div className="flex gap-2">
             <Button variant="secondary" onClick={() => setIsRenewModalOpen(true)}>
               <RotateCcw className="h-4 w-4 mr-2" />
-              Renew
+              {t('issues.detailPage.renew')}
             </Button>
-            <Button onClick={() => setIsReturnModalOpen(true)}>Return Book</Button>
+            <Button onClick={() => setIsReturnModalOpen(true)}>{t('issues.detailPage.returnBook')}</Button>
           </div>
         )}
       </div>
@@ -103,13 +106,13 @@ export default function IssueDetailPage() {
           <div className="p-6 space-y-3">
             <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
               <BookOpen className="h-5 w-5 text-blue-600" />
-              Copy & Book
+              {t('issues.detailPage.copyAndBook')}
             </h3>
             <div className="text-sm text-slate-600 space-y-1">
-              <p><span className="font-medium text-slate-900">Title:</span> {issue.copy?.book?.title ?? issue.book_title}</p>
-              <p><span className="font-medium text-slate-900">Author:</span> {issue.copy?.book?.author ?? '—'}</p>
-              <p><span className="font-medium text-slate-900">Copy ID:</span> {issue.copy_id}</p>
-              <p><span className="font-medium text-slate-900">Barcode:</span> {issue.copy?.barcode ?? '—'}</p>
+              <p><span className="font-medium text-slate-900">{t('issues.detailPage.titleLabel')}</span> {issue.copy?.book?.title ?? issue.book_title}</p>
+              <p><span className="font-medium text-slate-900">{t('issues.detailPage.authorLabel')}</span> {issue.copy?.book?.author ?? '—'}</p>
+              <p><span className="font-medium text-slate-900">{t('issues.detailPage.copyIdLabel')}</span> {issue.copy_id}</p>
+              <p><span className="font-medium text-slate-900">{t('issues.detailPage.barcodeLabel')}</span> {issue.copy?.barcode ?? '—'}</p>
             </div>
           </div>
         </Card>
@@ -118,15 +121,15 @@ export default function IssueDetailPage() {
           <div className="p-6 space-y-3">
             <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
               <User className="h-5 w-5 text-blue-600" />
-              Member
+              {t('issues.detailPage.member')}
             </h3>
             <div className="text-sm text-slate-600 space-y-1">
-              <p><span className="font-medium text-slate-900">Name:</span> {issue.member?.name ?? `#${issue.member_id}`}</p>
-              <p><span className="font-medium text-slate-900">Card:</span> {issue.member?.library_card_number ?? '—'}</p>
-              <p><span className="font-medium text-slate-900">Type:</span> {issue.member?.member_type ?? '—'}</p>
+              <p><span className="font-medium text-slate-900">{t('issues.detailPage.nameLabel')}</span> {issue.member?.name ?? t('issues.detailPage.memberFallback', { id: issue.member_id })}</p>
+              <p><span className="font-medium text-slate-900">{t('issues.detailPage.cardLabel')}</span> {issue.member?.library_card_number ?? '—'}</p>
+              <p><span className="font-medium text-slate-900">{t('issues.detailPage.typeLabel')}</span> {issue.member?.member_type ?? '—'}</p>
               {issue.member && (
                 <Link to={`/library/members/${issue.member_id}`} className="text-blue-600 hover:underline text-sm">
-                  View member profile →
+                  {t('issues.detailPage.viewMemberProfile')}
                 </Link>
               )}
             </div>
@@ -137,23 +140,23 @@ export default function IssueDetailPage() {
           <div className="p-6 space-y-3">
             <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
               <Calendar className="h-5 w-5 text-blue-600" />
-              Loan Timeline
+              {t('issues.detailPage.loanTimeline')}
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
               <div>
-                <p className="text-slate-500">Issued</p>
+                <p className="text-slate-500">{t('issues.detailPage.issued')}</p>
                 <p className="font-medium text-slate-900">{new Date(issue.issue_date).toLocaleDateString()}</p>
               </div>
               <div>
-                <p className="text-slate-500 flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> Due</p>
+                <p className="text-slate-500 flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {t('issues.detailPage.due')}</p>
                 <p className="font-medium text-slate-900">{new Date(issue.due_date).toLocaleDateString()}</p>
               </div>
               <div>
-                <p className="text-slate-500">Returned</p>
+                <p className="text-slate-500">{t('issues.detailPage.returned')}</p>
                 <p className="font-medium text-slate-900">{issue.return_date ? new Date(issue.return_date).toLocaleDateString() : '—'}</p>
               </div>
               <div>
-                <p className="text-slate-500">Renewals</p>
+                <p className="text-slate-500">{t('issues.detailPage.renewals')}</p>
                 <p className="font-medium text-slate-900">{issue.renewal_count ?? 0}</p>
               </div>
             </div>
@@ -162,7 +165,7 @@ export default function IssueDetailPage() {
 
         <Card className="border-slate-200 lg:col-span-2">
           <div className="p-6 space-y-3">
-            <h3 className="text-lg font-semibold text-slate-900">Fine History</h3>
+            <h3 className="text-lg font-semibold text-slate-900">{t('issues.detailPage.fineHistory')}</h3>
             <FineTable fines={issue.fines ?? []} />
           </div>
         </Card>

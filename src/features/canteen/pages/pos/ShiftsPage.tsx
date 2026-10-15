@@ -100,7 +100,7 @@ export default function ShiftsPage() {
                           {shift.status}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-slate-600">{new Date(shift.openedAt).toLocaleString()}</td>
+                      <td className="py-3 px-4 text-slate-600">{new Date(shift.shiftStart).toLocaleString()}</td>
                       <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <Link to={`/canteen/pos/shifts/${shift.id}`}>

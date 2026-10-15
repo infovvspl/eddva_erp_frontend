@@ -282,6 +282,8 @@ export interface BookCopy {
   updated_at: string;
   accession_number?: string;
   current_issue_id?: number | null;
+  // Present on a barcode-scan result (BarcodeService.resolve), not on a plain copy row.
+  book?: { book_id: number; title: string; author: string; isbn: string | null };
 }
 
 export interface BookCopyFormData {
@@ -305,6 +307,7 @@ export interface BookCopyUpdateData {
 export interface BookVendor {
   book_vendor_id: number;
   book_id: number;
+  vendor_id?: number | null;
   vendor_name: string;
   name: string;
   contact_person: string;
@@ -316,7 +319,19 @@ export interface BookVendor {
   updated_at: string;
 }
 
+// An institute-wide vendor master record — pick one instead of retyping the
+// same contact details on every book.
+export interface VendorMaster {
+  vendor_id: number;
+  vendor_name: string;
+  contact_person: string | null;
+  phone: string | null;
+  email: string | null;
+  address: string | null;
+}
+
 export interface BookVendorFormData {
+  vendor_id?: number;
   vendor_name: string;
   name: string;
   contact_person: string;

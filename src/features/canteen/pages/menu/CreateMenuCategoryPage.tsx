@@ -21,7 +21,8 @@ export default function CreateMenuCategoryPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err.response?.data?.message || 'Failed to create category');
+      const msg = err.response?.data?.error?.message || err.response?.data?.message || 'Failed to create category';
+      setError(typeof msg === 'string' ? msg : 'Failed to create category');
     } finally {
       setSubmitting(false);
     }

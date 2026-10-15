@@ -290,11 +290,9 @@ export interface Shift {
   terminalName?: string;
   openingCash: number;
   closingCash?: number;
-  openedAt: string;
-  closedAt?: string;
+  shiftStart: string;
+  shiftEnd?: string;
   status: 'OPEN' | 'CLOSED';
-  openedBy?: string;
-  closedBy?: string;
 }
 
 export interface OpenShiftFormData {
@@ -346,6 +344,8 @@ export interface Order {
   id: string;
   memberId: string;
   terminalId: string;
+  subtotal: number;
+  taxAmount: number;
   discountAmount: number;
   items: OrderItem[];
   totalAmount?: number;
@@ -414,12 +414,12 @@ export interface WalletTransaction {
   walletId: string;
   type: WalletTransactionType;
   amount: number;
-  balanceBefore: number;
+  // The API doesn't return a balanceBefore column — derive it from
+  // balanceAfter and amount/type (see WalletTransactionsPage).
   balanceAfter: number;
   description?: string;
   referenceId?: string;
-  createdAt: string;
-  updatedAt?: string;
+  transactedAt: string;
 }
 
 // Payment Types

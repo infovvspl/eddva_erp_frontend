@@ -256,7 +256,7 @@ export default function WalletTopupsPage() {
                         <td className="py-3 px-4">
                           <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${modeStyles[topup.paymentMode] ?? 'bg-slate-100 text-slate-700'}`}>
                             <ModeIcon className="h-3.5 w-3.5" />
-                            {topup.paymentMode.replace('_', ' ')}
+                            {topup.paymentMode?.replace('_', ' ') ?? 'UNKNOWN'}
                           </span>
                         </td>
                         <td className="py-3 px-4 text-slate-600 font-mono text-sm">

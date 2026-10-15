@@ -4,7 +4,7 @@ import { Download } from 'lucide-react';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import ReportData from '../../components/reports/ReportData';
-import { exportReport, getReport, REPORT_SUGGESTIONS } from '../../api/reports.api';
+import { exportReport, getReport, REPORT_NAMES } from '../../api/reports.api';
 import { useToast } from '../../../../hooks/useToast';
 import { extensionForMime, saveBlob } from '../../utils/download';
 import { getApiErrorMessage } from '../../utils/errors';
@@ -18,10 +18,13 @@ interface ReportResult {
 const inputClass =
   'px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent';
 
+const reportLabel = (name: string) =>
+  name.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+
 export default function ReportsPage() {
   const { toast } = useToast();
   const [params, setParams] = useSearchParams();
-  const report = params.get('report') || 'summary';
+  const report = params.get('report') || REPORT_NAMES[0];
   const [result, setResult] = useState<ReportResult | null>(null);
   const [exporting, setExporting] = useState(false);
 
@@ -60,7 +63,7 @@ export default function ReportsPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Reports</h1>
           <p className="text-slate-600 mt-1">
-            The available report names aren't documented — try one of the suggestions or type your own.
+            Pick a report to view its data or export it.
           </p>
         </div>
         <Button variant="secondary" disabled={exporting} onClick={handleExport}>
@@ -71,19 +74,17 @@ export default function ReportsPage() {
 
       <Card className="border-slate-200">
         <div className="px-6 pt-4 pb-3 border-b border-slate-200">
-          <input
-            type="text"
-            list="alumni-report-suggestions"
+          <select
             value={report}
             onChange={(e) => setParams({ report: e.target.value })}
-            placeholder="e.g. summary"
             className={`${inputClass} md:w-64`}
-          />
-          <datalist id="alumni-report-suggestions">
-            {REPORT_SUGGESTIONS.map((suggestion) => (
-              <option key={suggestion} value={suggestion} />
+          >
+            {REPORT_NAMES.map((name) => (
+              <option key={name} value={name}>
+                {reportLabel(name)}
+              </option>
             ))}
-          </datalist>
+          </select>
         </div>
 
         <div className="p-6">

@@ -1,6 +1,31 @@
 import axiosInstance from '../../../lib/axios';
 
-export const REPORT_SUGGESTIONS = ['summary', 'directory', 'events', 'jobs', 'mentorship', 'donations', 'communication'];
+// Must match REPORT_NAMES in eddva_erp_backend/src/alumni/reports/dto/report-query.dto.ts —
+// the backend rejects any other value with "Unknown report '<name>'".
+export const REPORT_NAMES = [
+  'alumni-directory',
+  'alumni-by-batch',
+  'alumni-by-program',
+  'alumni-employment',
+  'alumni-location',
+  'event-registrations',
+  'event-attendance',
+  'event-revenue',
+  'job-postings',
+  'job-applications',
+  'hiring',
+  'mentors',
+  'mentees',
+  'mentorship-matches',
+  'campaigns',
+  'donations',
+  'donor-history',
+  'donation-totals',
+  'payment-modes',
+  'newsletters',
+  'delivery-statistics',
+  'engagement',
+] as const;
 
 export async function getReport(report: string, params: Record<string, unknown> = {}): Promise<unknown> {
   const response = await axiosInstance.get(`/alumni/reports/${report}`, { params });

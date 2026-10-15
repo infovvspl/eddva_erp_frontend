@@ -224,7 +224,7 @@ export default function WalletTransactionsPage() {
                         {tx.type === 'CREDIT' ? '+' : '-'}₹{Number(tx.amount).toFixed(2)}
                       </td>
                       <td className="py-3 px-4 text-right text-slate-600 text-sm">
-                        ₹{Number(tx.balanceBefore).toFixed(2)}
+                        ₹{(tx.type === 'CREDIT' ? Number(tx.balanceAfter) - Number(tx.amount) : Number(tx.balanceAfter) + Number(tx.amount)).toFixed(2)}
                       </td>
                       <td className="py-3 px-4 text-right text-slate-800 font-medium text-sm">
                         ₹{Number(tx.balanceAfter).toFixed(2)}
@@ -240,7 +240,7 @@ export default function WalletTransactionsPage() {
                         )}
                       </td>
                       <td className="py-3 px-4 text-slate-600 text-sm whitespace-nowrap">
-                        {new Date(tx.createdAt).toLocaleString()}
+                        {new Date(tx.transactedAt).toLocaleString()}
                       </td>
                     </tr>
                   ))

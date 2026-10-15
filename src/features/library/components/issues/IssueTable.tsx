@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Calendar, Clock, RotateCcw, ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { BookIssue } from '../../types/library.types';
 import { cn } from '../../../../utils/cn';
 import IssueStatusBadge from './IssueStatusBadge';
@@ -12,6 +13,7 @@ interface IssueTableProps {
 }
 
 export default function IssueTable({ issues, className, onReturn, onRenew }: IssueTableProps) {
+  const { t } = useTranslation('library');
   const navigate = useNavigate();
   const issuesArray = Array.isArray(issues) ? issues : [];
 
@@ -20,20 +22,20 @@ export default function IssueTable({ issues, className, onReturn, onRenew }: Iss
       <table className="w-full min-w-[700px]">
         <thead>
           <tr className="border-b border-slate-200 bg-slate-50">
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Book</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Member ID</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Issued</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Due</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Returned</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Status</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Actions</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('issues.table.book')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('issues.table.memberId')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('issues.table.issued')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('issues.table.due')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('issues.table.returned')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('issues.table.status')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('issues.table.actions')}</th>
           </tr>
         </thead>
         <tbody>
           {issuesArray.length === 0 ? (
             <tr key="no-issues">
               <td colSpan={7} className="py-8 text-center text-slate-500">
-                No issues found.
+                {t('issues.table.noIssuesFound')}
               </td>
             </tr>
           ) : (
@@ -48,7 +50,7 @@ export default function IssueTable({ issues, className, onReturn, onRenew }: Iss
                     <BookOpen className="h-4 w-4 text-slate-400" />
                     <div>
                       <div className="font-medium text-slate-900">{issue.book_title}</div>
-                      <div className="text-xs text-slate-500">Copy ID: {issue.copy_id}</div>
+                      <div className="text-xs text-slate-500">{t('issues.table.copyId', { id: issue.copy_id })}</div>
                     </div>
                   </div>
                 </td>
@@ -78,7 +80,7 @@ export default function IssueTable({ issues, className, onReturn, onRenew }: Iss
                   )}
                 </td>
                 <td className="py-3 px-4">
-                  <IssueStatusBadge status={issue.status} />
+                  <IssueStatusBadge status={issue.status} dueDate={issue.due_date} returnDate={issue.return_date} />
                 </td>
                 <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
                   <div className="flex items-center gap-2">
@@ -87,16 +89,16 @@ export default function IssueTable({ issues, className, onReturn, onRenew }: Iss
                         <button
                           onClick={() => onRenew?.(issue)}
                           className="px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
-                          title="Renew Issue"
+                          title={t('issues.table.renewTitle')}
                         >
                           <RotateCcw className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => onReturn?.(issue)}
                           className="px-3 py-1.5 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg"
-                          title="Return Book"
+                          title={t('issues.table.returnTitle')}
                         >
-                          Return
+                          {t('issues.table.return')}
                         </button>
                       </>
                     )}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Barcode, Search, BookOpen, User, X, BookmarkPlus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Card from '../../../../components/ui/Card';
 import Button from '../../../../components/ui/Button';
 import Input from '../../../../components/ui/Input';
@@ -15,6 +16,7 @@ import { getApiErrorMessage } from '../../utils/apiError';
 import type { Book, BookCopy, Member } from '../../types/library.types';
 
 export default function IssuesDeskPage() {
+  const { t } = useTranslation('library');
   const { toast } = useToast();
   const { librarianId } = useLibrarianStore();
 
@@ -77,7 +79,10 @@ export default function IssuesDeskPage() {
 
   async function handleScan(barcode: string) {
     const copy = await scanCopyByBarcode(barcode);
-    setSelectedCopy(copy);
+    // The scan endpoint nests the book as `copy.book`, not a flat `book_title`
+    // like the search path sets — normalize so the summary card below and the
+    // issue toast don't show the "book is undefined" fallback.
+    setSelectedCopy({ ...copy, book_title: copy.book?.title });
     return copy;
   }
 
@@ -105,12 +110,12 @@ export default function IssuesDeskPage() {
         member_id: selectedMember.member_id,
         issued_by: librarianId,
       });
-      toast.success(`Issued "${selectedCopy.book_title ?? 'book'}" to ${selectedMember.name}`);
+      toast.success(t('issues.deskPage.issuedToast', { title: selectedCopy.book_title ?? t('issues.deskPage.bookFallback'), name: selectedMember.name }));
       resetCopySelection();
       resetMemberSelection();
     } catch (err: any) {
       if (err.response?.status === 401) return;
-      setError(getApiErrorMessage(err, 'Failed to issue book'));
+      setError(getApiErrorMessage(err, t('issues.deskPage.failedToIssue')));
     } finally {
       setIsSubmitting(false);
     }
@@ -119,8 +124,8 @@ export default function IssuesDeskPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Issues Desk</h1>
-        <p className="text-slate-600 mt-1">Issue a book to a member</p>
+        <h1 className="text-2xl font-bold text-slate-900">{t('issues.deskPage.title')}</h1>
+        <p className="text-slate-600 mt-1">{t('issues.deskPage.subtitle')}</p>
       </div>
 
       <IssuesTabs />
@@ -136,11 +141,11 @@ export default function IssuesDeskPage() {
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
                 <BookOpen className="h-5 w-5 text-blue-600" />
-                Copy
+                {t('issues.deskPage.copy')}
               </h3>
               {selectedCopy ? (
                 <button onClick={resetCopySelection} className="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1">
-                  <X className="h-3.5 w-3.5" /> Change
+                  <X className="h-3.5 w-3.5" /> {t('issues.deskPage.change')}
                 </button>
               ) : (
                 <div className="flex gap-1 text-sm">
@@ -148,13 +153,13 @@ export default function IssuesDeskPage() {
                     onClick={() => setCopyMode('scan')}
                     className={cn('px-3 py-1 rounded-md', copyMode === 'scan' ? 'bg-blue-100 text-blue-700' : 'text-slate-500')}
                   >
-                    Scan
+                    {t('issues.deskPage.scan')}
                   </button>
                   <button
                     onClick={() => setCopyMode('search')}
                     className={cn('px-3 py-1 rounded-md', copyMode === 'search' ? 'bg-blue-100 text-blue-700' : 'text-slate-500')}
                   >
-                    Search
+                    {t('issues.deskPage.search')}
                   </button>
                 </div>
               )}
@@ -162,9 +167,9 @@ export default function IssuesDeskPage() {
 
             {selectedCopy ? (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <p className="font-medium text-green-900">{selectedCopy.book_title ?? `Book #${selectedCopy.book_id}`}</p>
+                <p className="font-medium text-green-900">{selectedCopy.book_title ?? t('reservations.table.bookFallback', { id: selectedCopy.book_id })}</p>
                 <p className="text-sm text-green-700 mt-1">
-                  Barcode: {selectedCopy.barcode} | Copy ID: {selectedCopy.copy_id} | Location: {selectedCopy.rack_location}
+                  {t('issues.deskPage.copySummary', { barcode: selectedCopy.barcode, copyId: selectedCopy.copy_id, location: selectedCopy.rack_location })}
                 </p>
               </div>
             ) : copyMode === 'scan' ? (
@@ -175,7 +180,7 @@ export default function IssuesDeskPage() {
                   <Input
                     value={bookQuery}
                     onChange={(e) => setBookQuery(e.target.value)}
-                    placeholder="Search by title, author, ISBN..."
+                    placeholder={t('issues.deskPage.bookSearchPlaceholder')}
                     className="flex-1"
                   />
                   <Button type="submit" variant="secondary">
@@ -203,15 +208,15 @@ export default function IssuesDeskPage() {
                     <div className="flex items-center justify-between text-sm">
                       <span className="font-medium text-slate-900">{activeBook.title}</span>
                       <button onClick={() => { setActiveBook(null); setAvailableCopies([]); }} className="text-slate-500 hover:text-slate-700">
-                        Back
+                        {t('issues.deskPage.back')}
                       </button>
                     </div>
                     {availableCopies.length === 0 ? (
                       <div className="py-2 space-y-2">
-                        <p className="text-sm text-slate-500">No available copies for this book.</p>
+                        <p className="text-sm text-slate-500">{t('issues.deskPage.noAvailableCopies')}</p>
                         <Button variant="secondary" size="sm" onClick={() => setIsReserveModalOpen(true)}>
                           <BookmarkPlus className="h-4 w-4 mr-2" />
-                          Reserve Instead
+                          {t('issues.deskPage.reserveInstead')}
                         </Button>
                       </div>
                     ) : (
@@ -222,7 +227,7 @@ export default function IssuesDeskPage() {
                             onClick={() => handlePickCopy(copy, activeBook.title)}
                             className="w-full text-left px-3 py-2 hover:bg-slate-50 text-sm"
                           >
-                            Copy #{copy.copy_id} — {copy.barcode} — {copy.rack_location}
+                            {t('issues.deskPage.copyOption', { copyId: copy.copy_id, barcode: copy.barcode, location: copy.rack_location })}
                           </button>
                         ))}
                       </div>
@@ -240,11 +245,11 @@ export default function IssuesDeskPage() {
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
                 <User className="h-5 w-5 text-blue-600" />
-                Member
+                {t('issues.deskPage.member')}
               </h3>
               {selectedMember && (
                 <button onClick={resetMemberSelection} className="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1">
-                  <X className="h-3.5 w-3.5" /> Change
+                  <X className="h-3.5 w-3.5" /> {t('issues.deskPage.change')}
                 </button>
               )}
             </div>
@@ -253,7 +258,7 @@ export default function IssuesDeskPage() {
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <p className="font-medium text-green-900">{selectedMember.name}</p>
                 <p className="text-sm text-green-700 mt-1">
-                  Card: {selectedMember.library_card_number} | {selectedMember.member_type} | {selectedMember.status}
+                  {t('issues.deskPage.memberSummary', { card: selectedMember.library_card_number, type: selectedMember.member_type, status: selectedMember.status })}
                 </p>
               </div>
             ) : (
@@ -261,7 +266,7 @@ export default function IssuesDeskPage() {
                 <Input
                   value={memberQuery}
                   onChange={(e) => setMemberQuery(e.target.value)}
-                  placeholder="Search by name or card number..."
+                  placeholder={t('issues.deskPage.memberSearchPlaceholder')}
                 />
                 {memberResults.length > 0 && (
                   <div className="border border-slate-200 rounded-lg divide-y divide-slate-100 max-h-56 overflow-y-auto">
@@ -290,7 +295,7 @@ export default function IssuesDeskPage() {
           size="lg"
         >
           <Barcode className="h-4 w-4 mr-2" />
-          {isSubmitting ? 'Issuing...' : 'Issue Book'}
+          {isSubmitting ? t('issues.deskPage.issuing') : t('issues.deskPage.issueBook')}
         </Button>
       </div>
 

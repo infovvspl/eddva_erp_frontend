@@ -119,7 +119,7 @@ export default function OrdersPage() {
                       </td>
                       <td className="py-3 px-4 text-slate-600">{order.memberId.slice(0, 8)}...</td>
                       <td className="py-3 px-4 text-slate-600">{order.terminalId.slice(0, 8)}...</td>
-                      <td className="py-3 px-4 text-slate-600">{order.items.length} items</td>
+                      <td className="py-3 px-4 text-slate-600">{order.items.length} item{order.items.length === 1 ? '' : 's'}</td>
                       <td className="py-3 px-4 text-slate-600">₹{Number(order.totalAmount || 0).toFixed(2)}</td>
                       <td className="py-3 px-4">
                         <select
