@@ -1,4 +1,5 @@
 import { Edit, Trash2, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { BookCopy } from '../../types/library.types';
 import { cn } from '../../../../utils/cn';
 
@@ -36,6 +37,7 @@ const statusIcons = {
 };
 
 export default function CopyTable({ copies, className, onEdit, onDelete }: CopyTableProps) {
+  const { t } = useTranslation('library');
   const copiesArray = Array.isArray(copies) ? copies : [];
 
   return (
@@ -43,20 +45,20 @@ export default function CopyTable({ copies, className, onEdit, onDelete }: CopyT
       <table className="w-full min-w-[700px]">
         <thead>
           <tr className="border-b border-slate-200 bg-slate-50">
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Barcode</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Location</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 hidden md:table-cell">Condition</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 hidden lg:table-cell">Acquired</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 hidden xl:table-cell">Price</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Status</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Actions</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('copies.table.barcode')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('copies.table.location')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 hidden md:table-cell">{t('copies.table.condition')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 hidden lg:table-cell">{t('copies.table.acquired')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 hidden xl:table-cell">{t('copies.table.price')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('copies.table.status')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('copies.table.actions')}</th>
           </tr>
         </thead>
         <tbody>
           {copiesArray.length === 0 ? (
             <tr key="no-copies">
               <td colSpan={7} className="py-8 text-center text-slate-500">
-                No copies found. Add your first copy to this book.
+                {t('copies.table.noCopiesFound')}
               </td>
             </tr>
           ) : (
@@ -92,14 +94,14 @@ export default function CopyTable({ copies, className, onEdit, onDelete }: CopyT
                       <button
                         onClick={() => onEdit?.(copy)}
                         className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-600"
-                        title="Edit"
+                        title={t('copies.table.editTitle')}
                       >
                         <Edit className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => onDelete?.(copy.copy_id)}
                         className="p-1.5 hover:bg-red-50 rounded-lg text-red-600"
-                        title="Delete"
+                        title={t('copies.table.deleteTitle')}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>

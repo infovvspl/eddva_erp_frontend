@@ -1,0 +1,30 @@
+{
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete",
+    "update": "Update",
+    "submit": "Submit",
+    "back": "Back",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "close": "Close",
+    "confirm": "Confirm",
+    "view": "View"
+  },
+  "status": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "creating": "Creating...",
+    "noData": "No data found",
+    "success": "Success",
+    "error": "Something went wrong"
+  },
+  "nav": {
+    "allModules": "All modules",
+    "dashboard": "Dashboard"
+  }
+}

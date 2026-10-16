@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Modal from '../../../../components/ui/Modal';
 import Button from '../../../../components/ui/Button';
 import type { Fine, FineWaiveFormData } from '../../types/library.types';
@@ -12,6 +13,8 @@ interface WaiveFineModalProps {
 }
 
 export default function WaiveFineModal({ isOpen, onClose, fine, onSubmit, isLoading }: WaiveFineModalProps) {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const [formData, setFormData] = useState<FineWaiveFormData>({
     reason: '',
   });
@@ -26,12 +29,12 @@ export default function WaiveFineModal({ isOpen, onClose, fine, onSubmit, isLoad
       setFormData({ reason: '' });
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Failed to waive fine');
+      setError(err.message || t('fines.waiveModal.failedToWaive'));
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Waive Fine" size="lg">
+    <Modal isOpen={isOpen} onClose={onClose} title={t('fines.waiveModal.title')} size="lg">
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
@@ -41,31 +44,31 @@ export default function WaiveFineModal({ isOpen, onClose, fine, onSubmit, isLoad
         {fine && (
           <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
             <div className="text-sm text-slate-600">
-              <span className="font-medium">Fine Amount:</span> ₹{fine.amount.toFixed(2)}
+              <span className="font-medium">{t('fines.waiveModal.fineAmount')}</span> ₹{fine.amount.toFixed(2)}
             </div>
             <div className="text-sm text-slate-600 mt-1">
-              <span className="font-medium">Reason:</span> {fine.reason}
+              <span className="font-medium">{t('fines.waiveModal.reason')}</span> {fine.reason}
             </div>
           </div>
         )}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Waive Reason</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('fines.waiveModal.waiveReason')}</label>
           <textarea
             required
             value={formData.reason}
             onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g., Financial hardship approved by principal"
+            placeholder={t('fines.waiveModal.waiveReasonPlaceholder')}
             rows={3}
           />
         </div>
 
         <div className="flex justify-end gap-3 pt-4">
           <Button type="button" variant="ghost" onClick={onClose} disabled={isLoading}>
-            Cancel
+            {tc('actions.cancel')}
           </Button>
           <Button type="submit" variant="primary" disabled={isLoading}>
-            {isLoading ? 'Waiving...' : 'Waive Fine'}
+            {isLoading ? t('fines.waiveModal.waiving') : t('fines.waiveModal.submit')}
           </Button>
         </div>
       </form>

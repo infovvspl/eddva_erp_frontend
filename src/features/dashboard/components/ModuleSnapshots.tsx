@@ -24,6 +24,9 @@ interface Snapshot {
   accent: string;
   to: string;
   lines: [string, string | number][];
+  // True when the module has no real activity yet, not just a zero reading
+  // today (e.g. "0 overdue" is real data) — rendered muted with a setup nudge.
+  empty: boolean;
 }
 
 function buildSnapshots(data: DashboardData): Snapshot[] {
@@ -34,6 +37,7 @@ function buildSnapshots(data: DashboardData): Snapshot[] {
       accent: '#008BE9',
       icon: Calculator,
       to: '/accounts/dashboard',
+      empty: accounts.vouchers.by_status.length === 0 && accounts.overview.active_ledger_accounts === 0,
       lines: [
         ['Financial year', accounts.overview.open_financial_year ? `FY ${accounts.overview.open_financial_year.fyLabel}` : 'None open'],
         ['Vouchers posted', accounts.vouchers.by_status.find((s) => s.status === 'POSTED')?.count ?? 0],
@@ -46,6 +50,7 @@ function buildSnapshots(data: DashboardData): Snapshot[] {
       accent: '#eb6834',
       icon: ShoppingCart,
       to: '/sales-purchase/dashboard',
+      empty: sp.customer_count === 0 && sp.vendor_count === 0,
       lines: [
         ['Open sales orders', sp.sales.sales_orders.open_count],
         ['Open purchase orders', sp.purchase.purchase_orders.open_count],
@@ -58,6 +63,7 @@ function buildSnapshots(data: DashboardData): Snapshot[] {
       accent: '#15936a',
       icon: Boxes,
       to: '/inventory',
+      empty: inventory.total_items === 0,
       lines: [
         ['Items', inventory.total_items],
         ['Low stock', inventory.low_stock_items],
@@ -70,6 +76,7 @@ function buildSnapshots(data: DashboardData): Snapshot[] {
       accent: '#4a3aa7',
       icon: School,
       to: '/admission/dashboard',
+      empty: admission.seats.total_seats === 0,
       lines: [
         ['Enquiries', admission.kpis.total_enquiries],
         ['Applications', admission.kpis.applications],
@@ -82,6 +89,7 @@ function buildSnapshots(data: DashboardData): Snapshot[] {
       accent: '#d55181',
       icon: BedDouble,
       to: '/hostel/dashboard',
+      empty: hostel.occupancy.total_capacity === 0,
       lines: [
         ['Occupancy', `${hostel.occupancy.occupancy_percentage}%`],
         ['Active residents', hostel.occupancy.residents.active],
@@ -94,6 +102,7 @@ function buildSnapshots(data: DashboardData): Snapshot[] {
       accent: '#c98500',
       icon: UtensilsCrossed,
       to: '/canteen/dashboard',
+      empty: canteen.members.total_members === 0,
       lines: [
         ["Today's orders", canteen.today.order_count],
         ["Today's revenue", rupees(canteen.today.revenue)],
@@ -106,6 +115,7 @@ function buildSnapshots(data: DashboardData): Snapshot[] {
       accent: '#0a55a4',
       icon: BookOpen,
       to: '/library/dashboard',
+      empty: library.catalog.total_books === 0,
       lines: [
         ['Titles', library.catalog.total_books],
         ['On the shelf', `${library.catalog.available_copies} of ${library.catalog.total_copies}`],
@@ -118,6 +128,7 @@ function buildSnapshots(data: DashboardData): Snapshot[] {
       accent: '#0891b2',
       icon: Bus,
       to: '/transport/dashboard',
+      empty: transport.totals.vehicles === 0,
       lines: [
         ['Active vehicles', transport.totals.active_vehicles],
         ['Routes', transport.totals.routes],
@@ -130,6 +141,7 @@ function buildSnapshots(data: DashboardData): Snapshot[] {
       accent: '#e34948',
       icon: Trophy,
       to: '/sports/dashboard',
+      empty: sports.houses.total === 0 && sports.participants.total === 0,
       lines: [
         ['Ongoing tournaments', sports.tournaments.ongoing],
         ['Upcoming tournaments', sports.tournaments.upcoming],
@@ -142,6 +154,7 @@ function buildSnapshots(data: DashboardData): Snapshot[] {
       accent: '#7c3aed',
       icon: ClipboardList,
       to: '/front-office',
+      empty: fo.enquiries.total === 0 && fo.complaints.total === 0,
       lines: [
         ['Enquiries in progress', fo.enquiries.in_progress],
         ["Today's appointments", fo.appointments.today],
@@ -154,6 +167,7 @@ function buildSnapshots(data: DashboardData): Snapshot[] {
       accent: '#008300',
       icon: GraduationCap,
       to: '/alumni/dashboard',
+      empty: alumni.alumni.total === 0,
       lines: [
         ['Alumni', alumni.alumni.total],
         ['Upcoming events', alumni.events.upcoming],
@@ -169,6 +183,9 @@ export default function ModuleSnapshots({ data }: { data: DashboardData }) {
   const snapshots = buildSnapshots(data);
   if (snapshots.length === 0) return null;
 
+  const active = snapshots.filter((s) => !s.empty);
+  const inactive = snapshots.filter((s) => s.empty);
+
   return (
     <section className="space-y-4">
       <div className="flex items-end justify-between">
@@ -176,53 +193,79 @@ export default function ModuleSnapshots({ data }: { data: DashboardData }) {
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">Modules</p>
           <h2 className="mt-1 text-lg font-semibold tracking-tight text-slate-900">Everything at a glance</h2>
         </div>
-        <p className="text-xs text-slate-500">{snapshots.length} modules</p>
+        <p className="text-xs text-slate-500">
+          {active.length} of {snapshots.length} modules in use
+        </p>
       </div>
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
-        {snapshots.map(({ title, icon: Icon, accent, to, lines }, index) => (
-          <Link
-            key={title}
-            to={to}
-            className="animate-rise group relative flex flex-col overflow-hidden rounded-3xl bg-white p-5 shadow-soft ring-1 ring-slate-200/70 transition-all duration-300 hover:-translate-y-1 hover:shadow-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-            style={{ animationDelay: `${Math.min(index, 11) * 40}ms` }}
-          >
-            {/* Accent wash across the top that deepens on hover. */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-x-0 top-0 h-24 opacity-60 transition-opacity duration-300 group-hover:opacity-100"
-              style={{ background: `linear-gradient(180deg, ${accent}1f, transparent)` }}
-            />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full blur-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-50"
-              style={{ background: accent }}
-            />
-            <div className="relative flex items-center gap-3 mb-4">
+
+      {active.length > 0 && (
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
+          {active.map(({ title, icon: Icon, accent, to, lines }, index) => (
+            <Link
+              key={title}
+              to={to}
+              className="animate-rise group relative flex flex-col overflow-hidden rounded-3xl bg-white p-5 shadow-soft ring-1 ring-slate-200/70 transition-all duration-300 hover:-translate-y-1 hover:shadow-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              style={{ animationDelay: `${Math.min(index, 11) * 40}ms` }}
+            >
+              {/* Accent wash across the top that deepens on hover. */}
               <div
-                className="flex h-10 w-10 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:rotate-[-6deg] group-hover:scale-110"
-                style={{ background: `linear-gradient(135deg, ${accent}, ${accent}b3)`, boxShadow: `0 8px 18px -8px ${accent}` }}
-              >
-                <Icon className="h-5 w-5 text-white" />
-              </div>
-              <h3 className="font-semibold tracking-tight text-slate-900">{title}</h3>
-              <span
-                className="ml-auto flex h-7 w-7 items-center justify-center rounded-full bg-white/80 ring-1 ring-slate-200 transition-all duration-300 group-hover:translate-x-0.5"
-                style={{ color: accent }}
-              >
-                <ArrowRight className="h-3.5 w-3.5" />
-              </span>
-            </div>
-            <dl className="relative grid grid-cols-2 gap-2 flex-1">
-              {lines.map(([label, value]) => (
-                <div key={label} className="rounded-2xl bg-slate-50/90 px-3 py-2 ring-1 ring-slate-100">
-                  <dt className="text-[11px] text-slate-500 truncate">{label}</dt>
-                  <dd className="mt-0.5 text-sm font-semibold text-slate-900 tabular-nums truncate">{value}</dd>
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 top-0 h-24 opacity-60 transition-opacity duration-300 group-hover:opacity-100"
+                style={{ background: `linear-gradient(180deg, ${accent}1f, transparent)` }}
+              />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full blur-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-50"
+                style={{ background: accent }}
+              />
+              <div className="relative flex items-center gap-3 mb-4">
+                <div
+                  className="flex h-10 w-10 items-center justify-center rounded-2xl text-white transition-transform duration-300 group-hover:rotate-[-6deg] group-hover:scale-110"
+                  style={{ background: `linear-gradient(135deg, ${accent}, ${accent}b3)`, boxShadow: `0 8px 18px -8px ${accent}` }}
+                >
+                  <Icon className="h-5 w-5" />
                 </div>
-              ))}
-            </dl>
-          </Link>
-        ))}
-      </div>
+                <h3 className="font-semibold tracking-tight text-slate-900">{title}</h3>
+                <span
+                  className="ml-auto flex h-7 w-7 items-center justify-center rounded-full bg-white/80 ring-1 ring-slate-200 transition-all duration-300 group-hover:translate-x-0.5"
+                  style={{ color: accent }}
+                >
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+              </div>
+              <dl className="relative grid grid-cols-2 gap-2 flex-1">
+                {lines.map(([label, value]) => (
+                  <div key={label} className="rounded-2xl bg-slate-50/90 px-3 py-2 ring-1 ring-slate-100">
+                    <dt className="text-[11px] text-slate-500 truncate">{label}</dt>
+                    <dd className="mt-0.5 text-sm font-semibold text-slate-900 tabular-nums truncate">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </Link>
+          ))}
+        </div>
+      )}
+
+      {/* Modules with nothing to show yet collapse into one compact list, instead
+          of a wall of near-identical empty cards competing with the real data above. */}
+      {inactive.length > 0 && (
+        <div className="animate-rise rounded-3xl border border-dashed border-slate-200 bg-slate-50/60 p-4">
+          <p className="mb-3 px-1 text-xs font-medium text-slate-500">Not set up yet</p>
+          <div className="flex flex-wrap gap-2">
+            {inactive.map(({ title, icon: Icon, to }) => (
+              <Link
+                key={title}
+                to={to}
+                className="group flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              >
+                <Icon className="h-3.5 w-3.5 text-slate-400 group-hover:text-slate-600" />
+                {title}
+                <ArrowRight className="h-3 w-3 text-slate-300 transition-transform group-hover:translate-x-0.5 group-hover:text-slate-500" />
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

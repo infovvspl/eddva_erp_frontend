@@ -1,6 +1,8 @@
 import { ROUTES } from '../constants/routes';
 import LoginPage from '../features/auth/pages/LoginPage';
 import DashboardPage from '../features/dashboard/pages/DashboardPage';
+import AdminManagementPage from '../features/core-users/pages/AdminManagementPage';
+import AttentionPage from '../features/dashboard/pages/AttentionPage';
 import CanteenDashboardPage from '../features/canteen/pages/dashboard/CanteenDashboardPage';
 import AccountsDashboardPage from '../features/accounts/pages/dashboard/AccountsDashboardPage';
 import TransportDashboardPage from '../features/transport/pages/dashboard/TransportDashboardPage';
@@ -581,7 +583,17 @@ export const routeConfig = [
     element: DashboardPage,
     isProtected: true,
   },
-  
+  {
+    path: '/dashboard/attention',
+    element: AttentionPage,
+    isProtected: true,
+  },
+  {
+    path: '/admin-management',
+    element: AdminManagementPage,
+    isProtected: true,
+  },
+
   // Front Office Routes
   {
     path: '/front-office',

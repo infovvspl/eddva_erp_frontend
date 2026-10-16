@@ -1,0 +1,747 @@
+{
+  "books": {
+    "detailsPage": {
+      "title": "Book Details",
+      "subtitle": "View book information",
+      "failedToLoad": "Failed to load book",
+      "duplicateBarcode": "A copy with this barcode already exists",
+      "deleteNotImplemented": "Delete functionality not yet implemented - API endpoint not provided",
+      "confirmDeleteVendor": "Are you sure you want to delete this vendor?",
+      "failedToDeleteVendor": "Failed to delete vendor",
+      "bookNotFound": "Book not found",
+      "backToCatalog": "Back to Catalog",
+      "editBook": "Edit Book",
+      "reserve": "Reserve",
+      "isbn": "ISBN",
+      "publisher": "Publisher",
+      "edition": "Edition",
+      "language": "Language",
+      "publishYear": "Publish Year",
+      "categoryId": "Category ID",
+      "description": "Description",
+      "added": "Added: {{date}}",
+      "updated": "Updated: {{date}}",
+      "bookCopies": "Book Copies",
+      "copiesParenCount": "({{count}} copies)",
+      "addCopy": "Add Copy",
+      "bookVendors": "Book Vendors",
+      "vendorsParenCount": "({{count}} vendors)",
+      "addVendor": "Add Vendor"
+    },
+    "listPage": {
+      "title": "Book Catalog",
+      "subtitle": "Manage library book collection",
+      "addBook": "Add Book",
+      "searchPlaceholder": "Search by title, author, ISBN...",
+      "scanPlaceholder": "Scan barcode to find book copy...",
+      "scanning": "Scanning...",
+      "scan": "Scan",
+      "failedToLoad": "Failed to load books",
+      "failedToSearch": "Failed to search books",
+      "confirmDelete": "Are you sure you want to delete this book?",
+      "failedToDelete": "Failed to delete book",
+      "copyNotFound": "Copy not found"
+    },
+    "createPage": {
+      "title": "Add Book",
+      "subtitle": "Add a new book to the library catalog",
+      "submit": "Add Book",
+      "failedToCreate": "Failed to create book"
+    },
+    "editPage": {
+      "title": "Edit Book",
+      "subtitle": "Update book details",
+      "submit": "Update Book",
+      "failedToLoad": "Failed to load book",
+      "failedToUpdate": "Failed to update book",
+      "coverUploadSuccess": "Cover image uploaded successfully",
+      "failedToUploadCover": "Failed to upload cover",
+      "coverImage": "Cover Image",
+      "uploading": "Uploading...",
+      "uploadCover": "Upload Cover"
+    },
+    "formFields": {
+      "isbn": "ISBN *",
+      "isbnPlaceholder": "e.g., 978-0-06-112008-4",
+      "title": "Title *",
+      "titlePlaceholder": "e.g., To Kill a Mockingbird",
+      "author": "Author *",
+      "authorPlaceholder": "e.g., Harper Lee",
+      "publisher": "Publisher *",
+      "publisherPlaceholder": "e.g., HarperCollins",
+      "edition": "Edition *",
+      "editionPlaceholder": "e.g., 1st",
+      "category": "Category *",
+      "selectCategory": "Select category",
+      "language": "Language *",
+      "languagePlaceholder": "e.g., English",
+      "publishYear": "Publish Year *",
+      "description": "Description *"
+    },
+    "table": {
+      "isbn": "ISBN",
+      "title": "Title",
+      "author": "Author",
+      "publisher": "Publisher",
+      "year": "Year",
+      "available": "Available",
+      "actions": "Actions",
+      "noBooksFound": "No books found. Add your first book to the catalog.",
+      "copiesCount": "{{count}} copies",
+      "noCopies": "No copies",
+      "editTitle": "Edit",
+      "viewDetailsTitle": "View Details",
+      "deleteTitle": "Delete"
+    }
+  },
+  "categories": {
+    "listPage": {
+      "title": "Categories",
+      "subtitle": "Manage library book categories",
+      "addCategory": "Add Category",
+      "failedToLoad": "Failed to load categories",
+      "confirmDelete": "Are you sure you want to delete this category?",
+      "failedToDelete": "Failed to delete category"
+    },
+    "createPage": {
+      "title": "Add Category",
+      "subtitle": "Create a new library book category",
+      "submit": "Create Category",
+      "failedToCreate": "Failed to create category"
+    },
+    "editPage": {
+      "title": "Edit Category",
+      "subtitle": "Update category details",
+      "submit": "Update Category",
+      "failedToLoad": "Failed to load category",
+      "failedToUpdate": "Failed to update category"
+    },
+    "formFields": {
+      "name": "Category Name *",
+      "namePlaceholder": "e.g., Fiction"
+    },
+    "table": {
+      "name": "Category Name",
+      "createdAt": "Created At",
+      "actions": "Actions",
+      "noCategoriesFound": "No categories found. Create your first category.",
+      "editTitle": "Edit",
+      "deleteTitle": "Delete"
+    }
+  },
+  "copies": {
+    "barcodeScanner": {
+      "title": "Barcode Scanner",
+      "placeholder": "Enter or scan barcode...",
+      "scan": "Scan",
+      "failedToScan": "Failed to scan barcode",
+      "clear": "Clear",
+      "copyFound": "Copy Found",
+      "resultSummary": "Barcode: {{barcode}} | Location: {{location}} | Status: {{status}}"
+    },
+    "table": {
+      "barcode": "Barcode",
+      "location": "Location",
+      "condition": "Condition",
+      "acquired": "Acquired",
+      "price": "Price",
+      "status": "Status",
+      "actions": "Actions",
+      "noCopiesFound": "No copies found. Add your first copy to this book.",
+      "editTitle": "Edit",
+      "deleteTitle": "Delete"
+    },
+    "createModal": {
+      "title": "Add New Copy",
+      "barcode": "Barcode",
+      "barcodePlaceholder": "e.g., BC-001-2024",
+      "rackLocation": "Rack Location",
+      "rackLocationPlaceholder": "e.g., Shelf A-3",
+      "condition": "Condition",
+      "acquiredDate": "Acquired Date",
+      "price": "Price (₹)",
+      "adding": "Adding...",
+      "submit": "Add Copy",
+      "failedToCreate": "Failed to create copy"
+    },
+    "editModal": {
+      "title": "Edit Copy",
+      "barcode": "Barcode",
+      "barcodePlaceholder": "e.g., BC-001-2024",
+      "rackLocation": "Rack Location",
+      "rackLocationPlaceholder": "e.g., Shelf A-3",
+      "condition": "Condition",
+      "acquiredDate": "Acquired Date",
+      "price": "Price (₹)",
+      "status": "Status",
+      "updating": "Updating...",
+      "submit": "Update Copy",
+      "failedToUpdate": "Failed to update copy"
+    },
+    "conditions": {
+      "new": "New",
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor",
+      "damaged": "Damaged"
+    },
+    "statuses": {
+      "available": "Available",
+      "issued": "Issued",
+      "reserved": "Reserved",
+      "lost": "Lost",
+      "under_repair": "Under Repair",
+      "withdrawn": "Withdrawn"
+    }
+  },
+  "dashboard": {
+    "failedToLoad": "Failed to load the library dashboard",
+    "noData": "No dashboard data available.",
+    "eyebrow": "Library",
+    "title": "Library dashboard",
+    "subtitle": "Catalog, circulation and fines at a glance",
+    "overdueHighlight": "{{count}} overdue",
+    "kpis": {
+      "totalBooks": "Total books",
+      "copiesHint": "{{count}} copies",
+      "availableCopies": "Available copies",
+      "ofTotalHint": "of {{count}} total",
+      "currentlyIssued": "Currently issued",
+      "overdueHint": "{{count}} overdue",
+      "pendingFines": "Pending fines"
+    },
+    "copyAvailability": {
+      "title": "Copy availability",
+      "subtitle": "Available vs total copies",
+      "gaugeLabel": "Available copies",
+      "caption": "{{available}} of {{total}} copies"
+    },
+    "dueSoon": {
+      "title": "Due soon",
+      "subtitle": "Issues due in the next few days",
+      "empty": "Nothing due soon."
+    },
+    "recentIssues": {
+      "title": "Recent issues",
+      "subtitle": "Latest circulation activity",
+      "empty": "No issues recorded yet."
+    }
+  },
+  "fines": {
+    "table": {
+      "reason": "Reason",
+      "amount": "Amount",
+      "paid": "Paid",
+      "status": "Status",
+      "actions": "Actions",
+      "noFinesFound": "No fines found.",
+      "waived": "Waived",
+      "paidStatus": "Paid",
+      "pending": "Pending",
+      "payFineTitle": "Pay Fine",
+      "pay": "Pay",
+      "waiveFineTitle": "Waive Fine",
+      "waive": "Waive"
+    },
+    "payModal": {
+      "title": "Pay Fine",
+      "totalFineAmount": "Total Fine Amount:",
+      "alreadyPaid": "Already Paid:",
+      "remaining": "Remaining:",
+      "amountToPay": "Amount to Pay (₹)",
+      "paymentMode": "Payment Mode",
+      "transactionRef": "Transaction Reference",
+      "transactionRefPlaceholder": "e.g., TXN-2024-001",
+      "receivedBy": "Received By (User ID)",
+      "processing": "Processing...",
+      "submit": "Pay Fine",
+      "failedToPay": "Failed to pay fine"
+    },
+    "waiveModal": {
+      "title": "Waive Fine",
+      "fineAmount": "Fine Amount:",
+      "reason": "Reason:",
+      "waiveReason": "Waive Reason",
+      "waiveReasonPlaceholder": "e.g., Financial hardship approved by principal",
+      "waiving": "Waiving...",
+      "submit": "Waive Fine",
+      "failedToWaive": "Failed to waive fine"
+    },
+    "paymentModes": {
+      "cash": "Cash",
+      "card": "Card",
+      "upi": "UPI",
+      "bank_transfer": "Bank Transfer",
+      "cheque": "Cheque"
+    }
+  },
+  "issues": {
+    "statusBadge": {
+      "issued": "Issued",
+      "overdue": "Overdue",
+      "returned": "Returned"
+    },
+    "table": {
+      "book": "Book",
+      "memberId": "Member ID",
+      "issued": "Issued",
+      "due": "Due",
+      "returned": "Returned",
+      "status": "Status",
+      "actions": "Actions",
+      "noIssuesFound": "No issues found.",
+      "copyId": "Copy ID: {{id}}",
+      "renewTitle": "Renew Issue",
+      "returnTitle": "Return Book",
+      "return": "Return"
+    },
+    "tabs": {
+      "desk": "Desk",
+      "active": "Active",
+      "overdue": "Overdue"
+    },
+    "librarianControl": {
+      "changeTitle": "Change the librarian ID used for issue/return/renew actions",
+      "actingAs": "Acting as Librarian #{{id}}"
+    },
+    "renewModal": {
+      "title": "Renew Book Issue",
+      "book": "Book:",
+      "copyId": "Copy ID:",
+      "currentDueDate": "Current Due Date:",
+      "renewalCount": "Renewal Count:",
+      "confirmPrompt": "Extend the due date for this loan?",
+      "renewing": "Renewing...",
+      "submit": "Confirm Renewal",
+      "failedToRenew": "Failed to renew issue"
+    },
+    "returnModal": {
+      "title": "Return Book",
+      "book": "Book:",
+      "copyId": "Copy ID:",
+      "dueDate": "Due Date:",
+      "returnedCondition": "Returned Condition",
+      "returning": "Returning...",
+      "submit": "Return Book",
+      "failedToReturn": "Failed to return book",
+      "conditions": {
+        "new": "New",
+        "good": "Good",
+        "worn": "Worn",
+        "damaged": "Damaged"
+      }
+    },
+    "activeListPage": {
+      "allStatuses": "All Statuses",
+      "failedToLoad": "Failed to load issues",
+      "returnedWithFine": "Returned. Fine of ₹{{amount}} created.",
+      "returnedNoFine": "Returned. No fine.",
+      "issueRenewed": "Issue renewed.",
+      "title": "Book Issues",
+      "subtitle": "Manage book issues, returns, and renewals",
+      "issueBook": "Issue Book",
+      "issueCount": "{{count}} issue(s)"
+    },
+    "detailPage": {
+      "failedToLoad": "Failed to load issue",
+      "notFound": "Issue not found.",
+      "backToIssues": "Back to Issues",
+      "issueHeading": "Issue #{{id}}",
+      "renew": "Renew",
+      "returnBook": "Return Book",
+      "copyAndBook": "Copy & Book",
+      "titleLabel": "Title:",
+      "authorLabel": "Author:",
+      "copyIdLabel": "Copy ID:",
+      "barcodeLabel": "Barcode:",
+      "member": "Member",
+      "nameLabel": "Name:",
+      "cardLabel": "Card:",
+      "typeLabel": "Type:",
+      "memberFallback": "#{{id}}",
+      "viewMemberProfile": "View member profile →",
+      "loanTimeline": "Loan Timeline",
+      "issued": "Issued",
+      "due": "Due",
+      "returned": "Returned",
+      "renewals": "Renewals",
+      "fineHistory": "Fine History"
+    },
+    "deskPage": {
+      "title": "Issues Desk",
+      "subtitle": "Issue a book to a member",
+      "copy": "Copy",
+      "change": "Change",
+      "scan": "Scan",
+      "search": "Search",
+      "copySummary": "Barcode: {{barcode}} | Copy ID: {{copyId}} | Location: {{location}}",
+      "bookSearchPlaceholder": "Search by title, author, ISBN...",
+      "back": "Back",
+      "noAvailableCopies": "No available copies for this book.",
+      "reserveInstead": "Reserve Instead",
+      "copyOption": "Copy #{{copyId}} — {{barcode}} — {{location}}",
+      "member": "Member",
+      "memberSummary": "Card: {{card}} | {{type}} | {{status}}",
+      "memberSearchPlaceholder": "Search by name or card number...",
+      "issuing": "Issuing...",
+      "issueBook": "Issue Book",
+      "issuedToast": "Issued \"{{title}}\" to {{name}}",
+      "bookFallback": "book",
+      "failedToIssue": "Failed to issue book"
+    },
+    "overduePage": {
+      "failedToLoad": "Failed to load overdue issues",
+      "title": "Overdue Dashboard",
+      "subtitle": "Books past their due date, with fines accrued so far",
+      "emptyTitle": "No overdue books",
+      "emptyDescription": "All active loans are within their due date.",
+      "memberFallback": "Member #{{id}}",
+      "daysOverdue": "{{count}} day(s) overdue",
+      "fineSoFar": "Fine so far: ₹{{amount}}"
+    }
+  },
+  "members": {
+    "createPage": {
+      "title": "Add Member",
+      "subtitle": "Create a new library member",
+      "submit": "Create Member",
+      "failedToCreate": "Failed to create member"
+    },
+    "editPage": {
+      "title": "Edit Member",
+      "subtitle": "Update member details",
+      "submit": "Update Member",
+      "failedToLoad": "Failed to load member",
+      "failedToUpdate": "Failed to update member"
+    },
+    "formFields": {
+      "externalRefId": "External Reference ID *",
+      "externalRefIdPlaceholder": "e.g., STU-2024-001",
+      "name": "Name *",
+      "namePlaceholder": "e.g., Arjun Kumar",
+      "memberType": "Member Type *",
+      "selectMemberType": "Select member type",
+      "memberTypeStudent": "Student",
+      "memberTypeFaculty": "Teacher",
+      "memberTypeTeacher": "Teacher",
+      "memberTypeStaff": "Staff",
+      "memberTypeGuest": "Guest"
+    },
+    "detailsPage": {
+      "title": "Member Details",
+      "subtitle": "View member information and activity",
+      "failedToLoad": "Failed to load member details",
+      "memberNotFound": "Member not found",
+      "backToMembers": "Back to Members",
+      "currentBookIssues": "Current Book Issues",
+      "bookCount": "{{count}} book(s)",
+      "noCurrentIssues": "No current book issues",
+      "issuedLabel": "Issued: {{date}}",
+      "dueLabel": "Due: {{date}}",
+      "fines": "Fines",
+      "totalOutstanding": "Total Outstanding:"
+    },
+    "listPage": {
+      "title": "Members",
+      "subtitle": "Manage library members",
+      "addMember": "Add Member",
+      "failedToLoad": "Failed to load members"
+    },
+    "table": {
+      "externalRefId": "External Ref ID",
+      "name": "Name",
+      "memberType": "Member Type",
+      "joinedDate": "Joined Date",
+      "actions": "Actions",
+      "noMembersFound": "No members found. Create your first member.",
+      "editTitle": "Edit",
+      "viewDetailsTitle": "View Details"
+    }
+  },
+  "membershipRules": {
+    "createPage": {
+      "title": "Add Membership Rule",
+      "subtitle": "Create a new library membership rule",
+      "submit": "Create Rule",
+      "failedToCreate": "Failed to create membership rule"
+    },
+    "editPage": {
+      "title": "Edit Membership Rule",
+      "subtitle": "Update membership rule details",
+      "submit": "Update Rule",
+      "failedToLoad": "Failed to load membership rule",
+      "failedToUpdate": "Failed to update membership rule"
+    },
+    "listPage": {
+      "title": "Membership Rules",
+      "subtitle": "Manage library membership rules and policies",
+      "addRule": "Add Rule",
+      "failedToLoad": "Failed to load membership rules"
+    },
+    "formFields": {
+      "memberType": "Member Type *",
+      "selectMemberType": "Select member type",
+      "memberTypeStudent": "Student",
+      "memberTypeStaff": "Staff",
+      "memberTypeFaculty": "Faculty",
+      "ruleExistsSuffix": " (rule already exists)",
+      "maxBooksAllowed": "Max Books Allowed *",
+      "loanPeriodDays": "Loan Period (Days) *",
+      "finePerDay": "Fine Per Day *",
+      "gracePeriodDays": "Grace Period (Days) *",
+      "maxFineCap": "Max Fine Cap *"
+    },
+    "table": {
+      "memberType": "Member Type",
+      "maxBooks": "Max Books",
+      "loanPeriod": "Loan Period",
+      "finePerDay": "Fine/Day",
+      "gracePeriod": "Grace Period",
+      "maxFineCap": "Max Fine Cap",
+      "actions": "Actions",
+      "noRulesFound": "No membership rules found. Create your first rule.",
+      "daysValue": "{{count}} days",
+      "editTitle": "Edit"
+    }
+  },
+  "rbac": {
+    "permissionTable": {
+      "resource": "Resource",
+      "action": "Action",
+      "name": "Name",
+      "category": "Category",
+      "actions": "Actions",
+      "noPermissionsFound": "No permissions found. Create your first permission.",
+      "editTitle": "Edit",
+      "deleteTitle": "Delete"
+    },
+    "catalogTable": {
+      "noPermissionsFound": "No permissions found",
+      "resource": "Resource",
+      "permission": "Permission",
+      "key": "Key",
+      "description": "Description",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "system": "System"
+    },
+    "resourceToggle": {
+      "deselectAll": "Deselect all",
+      "selectAll": "Select all",
+      "noPermissionTitle": "Your account does not have this permission",
+      "selectedCount": "{{count}} permission(s) selected"
+    },
+    "createPermissionPage": {
+      "title": "Add Permission",
+      "subtitle": "Create a new library permission",
+      "submit": "Create Permission",
+      "failedToCreate": "Failed to create permission"
+    },
+    "permissionFormFields": {
+      "resource": "Resource *",
+      "resourcePlaceholder": "e.g., catalog",
+      "action": "Action *",
+      "actionPlaceholder": "e.g., export",
+      "name": "Name *",
+      "namePlaceholder": "e.g., Export Book Catalog",
+      "category": "Category *",
+      "categoryPlaceholder": "e.g., Book Catalog",
+      "description": "Description *"
+    },
+    "createRolePage": {
+      "title": "Create Role",
+      "subtitle": "Create a new library role with permissions",
+      "loadingPermissions": "Loading permissions...",
+      "tokenWarning": "Set `VITE_API_TOKEN` in `.env` with a valid bearer token, then restart `npm run dev`. The dummy login token cannot create library roles.",
+      "permissions": "Permissions",
+      "submit": "Create Role",
+      "failedToLoadCatalog": "Failed to load permissions catalog",
+      "selectAtLeastOne": "Select at least one permission for this role.",
+      "onlyAssignOwnPermissions": "You can only assign permissions that your account already has in the library module.",
+      "failedToCreate": "Failed to create role"
+    },
+    "roleFormFields": {
+      "name": "Role Name *",
+      "namePlaceholder": "e.g. Senior Librarian",
+      "description": "Description *",
+      "descriptionPlaceholder": "e.g. Catalog, circulation and fine collection"
+    },
+    "createUserPage": {
+      "title": "Assign User",
+      "subtitle": "Create a library user assignment with login credentials",
+      "subtitleAssign": "Assign a user to a library role",
+      "loadingRoles": "Loading roles...",
+      "assigning": "Assigning...",
+      "submit": "Assign User",
+      "failedToLoadRoles": "Failed to load roles",
+      "failedToAssign": "Failed to assign user"
+    },
+    "userFormFields": {
+      "erpUserId": "ERP User ID *",
+      "erpUserIdPlaceholder": "erp-user-uuid",
+      "fullName": "Full Name *",
+      "fullNamePlaceholder": "Anita Sharma",
+      "email": "Email *",
+      "emailPlaceholder": "anita@example.com",
+      "libraryUsername": "Library Username *",
+      "libraryUsernamePlaceholder": "anita_lib",
+      "password": "Password *",
+      "passwordPlaceholder": "LibraryPass#2026",
+      "role": "Role *",
+      "selectRole": "Select a role"
+    },
+    "editPermissionPage": {
+      "title": "Edit Permission",
+      "subtitle": "Update permission details",
+      "submit": "Update Permission",
+      "failedToLoad": "Failed to load permission",
+      "failedToUpdate": "Failed to update permission"
+    },
+    "editRolePage": {
+      "title": "Edit Role",
+      "subtitle": "Update library role and permissions",
+      "submit": "Update Role",
+      "failedToLoad": "Failed to load data",
+      "failedToUpdate": "Failed to update role"
+    },
+    "permissionsPage": {
+      "title": "Permissions",
+      "subtitle": "Manage library permissions",
+      "addPermission": "Add Permission",
+      "failedToLoad": "Failed to load permissions",
+      "confirmDelete": "Are you sure you want to delete this permission?",
+      "failedToDelete": "Failed to delete permission"
+    },
+    "rolesPage": {
+      "title": "Roles",
+      "subtitle": "Manage library roles and permissions",
+      "addRole": "Add Role",
+      "failedToLoad": "Failed to load roles",
+      "confirmDelete": "Are you sure you want to delete this role?",
+      "failedToDelete": "Failed to delete role",
+      "roleName": "Role Name",
+      "description": "Description",
+      "permissions": "Permissions",
+      "users": "Users",
+      "actions": "Actions",
+      "noRolesFound": "No roles found",
+      "permissionsCount": "{{count}} permissions"
+    },
+    "usersPage": {
+      "title": "Users",
+      "subtitle": "Manage library user role assignments",
+      "assignUser": "Assign User",
+      "searchPlaceholder": "Search by name, email, username, or role...",
+      "failedToLoad": "Failed to load user assignments",
+      "confirmRevoke": "Revoke library access for \"{{userName}}\"?",
+      "failedToRevoke": "Failed to revoke assignment",
+      "failedToResetPassword": "Failed to reset password",
+      "user": "User",
+      "email": "Email",
+      "username": "Username",
+      "role": "Role",
+      "actions": "Actions",
+      "noAssignmentsFound": "No user assignments found",
+      "roleFallback": "Role #{{id}}",
+      "resetPasswordTitle": "Reset password",
+      "revokeAssignmentTitle": "Revoke assignment",
+      "resetModalTitle": "Reset Password — {{username}}",
+      "done": "Done",
+      "newPassword": "New Password *",
+      "resetting": "Resetting...",
+      "resetPassword": "Reset Password"
+    }
+  },
+  "reservations": {
+    "statusBadge": {
+      "pending": "Pending",
+      "readyForPickup": "Ready for Pickup",
+      "fulfilled": "Fulfilled",
+      "cancelled": "Cancelled",
+      "expired": "Expired"
+    },
+    "table": {
+      "book": "Book",
+      "member": "Member",
+      "reserved": "Reserved",
+      "expiry": "Expiry",
+      "status": "Status",
+      "actions": "Actions",
+      "noReservationsFound": "No reservations found.",
+      "bookFallback": "Book #{{id}}",
+      "cancelling": "Cancelling...",
+      "cancel": "Cancel"
+    },
+    "reserveModal": {
+      "title": "Reserve Book",
+      "book": "Book:",
+      "cardSummary": "Card: {{card}} | {{type}}",
+      "change": "Change",
+      "member": "Member",
+      "searchPlaceholder": "Search by name or card number...",
+      "reserving": "Reserving...",
+      "submit": "Reserve",
+      "reservedToast": "Reserved \"{{title}}\" for {{name}}",
+      "failedToReserve": "Failed to place reservation"
+    },
+    "listPage": {
+      "allStatuses": "All Statuses",
+      "failedToLoad": "Failed to load reservations",
+      "cancelled": "Reservation cancelled.",
+      "failedToCancel": "Failed to cancel reservation",
+      "title": "Reservations",
+      "subtitle": "Holds placed on books, awaiting pickup or expiry",
+      "reservationCount": "{{count}} reservation(s)"
+    }
+  },
+  "vendors": {
+    "createModal": {
+      "title": "Add New Vendor",
+      "vendorName": "Vendor Name",
+      "vendorNamePlaceholder": "e.g., Oxford University Press Distributor",
+      "name": "Name",
+      "contactPerson": "Contact Person",
+      "contactPersonPlaceholder": "e.g., Vikram Seth",
+      "phone": "Phone",
+      "phonePlaceholder": "e.g., +919876543210",
+      "email": "Email",
+      "emailPlaceholder": "e.g., orders@oxforddist.in",
+      "address": "Address",
+      "addressPlaceholder": "e.g., 45 Commercial Complex, New Delhi",
+      "lastPurchasePrice": "Last Purchase Price (₹)",
+      "adding": "Adding...",
+      "submit": "Add Vendor",
+      "failedToCreate": "Failed to create vendor"
+    },
+    "editModal": {
+      "title": "Edit Vendor",
+      "vendorName": "Vendor Name",
+      "vendorNamePlaceholder": "e.g., Oxford University Press Distributor",
+      "name": "Name",
+      "contactPerson": "Contact Person",
+      "contactPersonPlaceholder": "e.g., Vikram Seth",
+      "phone": "Phone",
+      "phonePlaceholder": "e.g., +919876543210",
+      "email": "Email",
+      "emailPlaceholder": "e.g., orders@oxforddist.in",
+      "address": "Address",
+      "addressPlaceholder": "e.g., 45 Commercial Complex, New Delhi",
+      "lastPurchasePrice": "Last Purchase Price (₹)",
+      "updating": "Updating...",
+      "submit": "Update Vendor",
+      "failedToUpdate": "Failed to update vendor"
+    },
+    "table": {
+      "vendorName": "Vendor Name",
+      "contactPerson": "Contact Person",
+      "phone": "Phone",
+      "email": "Email",
+      "lastPurchasePrice": "Last Purchase Price",
+      "actions": "Actions",
+      "noVendorsFound": "No vendors found. Add your first vendor to this book.",
+      "editTitle": "Edit",
+      "deleteTitle": "Delete"
+    }
+  }
+}

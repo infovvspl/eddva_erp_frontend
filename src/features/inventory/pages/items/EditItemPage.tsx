@@ -3,7 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import Select from '../../../../components/ui/Select';
-import { getItem, updateItem } from '../../api/items.api';
+import ItemImageField from '../../components/items/ItemImageField';
+import { getItem, updateItem, getUoms, type InventoryUom } from '../../api/items.api';
 import { getCategories } from '../../api/categories.api';
 import { getApiErrorMessage } from '../../utils/errors';
 import { ITEM_STATUS_OPTIONS } from '../../constants/item.constants';
@@ -14,6 +15,7 @@ export default function EditItemPage() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [categories, setCategories] = useState<InventoryCategory[]>([]);
+  const [uoms, setUoms] = useState<InventoryUom[]>([]);
   const [itemType, setItemType] = useState<string>('');
   const [formData, setFormData] = useState<InventoryItemUpdateData>({
     item_code: '',
@@ -38,7 +40,7 @@ export default function EditItemPage() {
     if (!id) return;
     try {
       setLoading(true);
-      const [item, allCategories] = await Promise.all([getItem(id), getCategories()]);
+      const [item, allCategories, allUoms] = await Promise.all([getItem(id), getCategories(), getUoms()]);
       setFormData({
         item_code: item.item_code,
         name: item.name,
@@ -51,6 +53,7 @@ export default function EditItemPage() {
       });
       setItemType(item.item_type);
       setCategories(allCategories);
+      setUoms(allUoms);
     } catch (err: any) {
       if (err.response?.status === 401) {
         return;
@@ -171,12 +174,12 @@ export default function EditItemPage() {
                 <label htmlFor="unit_of_measure" className="block text-sm font-medium text-slate-700 mb-1">
                   Unit of Measure *
                 </label>
-                <input
-                  type="text"
+                <Select
                   id="unit_of_measure"
                   value={formData.unit_of_measure}
                   onChange={(e) => setFormData({ ...formData, unit_of_measure: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
+                  placeholder="Select a unit"
+                  options={uoms.map((u) => ({ value: u.name, label: u.symbol ? `${u.name} (${u.symbol})` : u.name }))}
                   required
                 />
               </div>
@@ -210,15 +213,10 @@ export default function EditItemPage() {
             </div>
 
             <div>
-              <label htmlFor="image_url" className="block text-sm font-medium text-slate-700 mb-1">
-                Image URL
-              </label>
-              <input
-                type="text"
-                id="image_url"
+              <label className="block text-sm font-medium text-slate-700 mb-1">Item Image</label>
+              <ItemImageField
                 value={formData.image_url}
-                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
+                onChange={(storedPath) => setFormData({ ...formData, image_url: storedPath })}
               />
             </div>
 

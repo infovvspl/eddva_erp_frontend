@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Modal from '../../../../components/ui/Modal';
 import Button from '../../../../components/ui/Button';
 import type { BookCopyFormData } from '../../types/library.types';
@@ -11,6 +12,8 @@ interface CreateCopyModalProps {
 }
 
 export default function CreateCopyModal({ isOpen, onClose, onSubmit, isLoading }: CreateCopyModalProps) {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const [formData, setFormData] = useState<BookCopyFormData>({
     barcode: '',
     rack_location: '',
@@ -33,12 +36,12 @@ export default function CreateCopyModal({ isOpen, onClose, onSubmit, isLoading }
         price: 0,
       });
     } catch (err: any) {
-      setError(err.message || 'Failed to create copy');
+      setError(err.message || t('copies.createModal.failedToCreate'));
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Add New Copy" size="lg">
+    <Modal isOpen={isOpen} onClose={onClose} title={t('copies.createModal.title')} size="lg">
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
@@ -46,46 +49,46 @@ export default function CreateCopyModal({ isOpen, onClose, onSubmit, isLoading }
           </div>
         )}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Barcode</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('copies.createModal.barcode')}</label>
           <input
             type="text"
             required
             value={formData.barcode}
             onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g., BC-001-2024"
+            placeholder={t('copies.createModal.barcodePlaceholder')}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Rack Location</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('copies.createModal.rackLocation')}</label>
           <input
             type="text"
             required
             value={formData.rack_location}
             onChange={(e) => setFormData({ ...formData, rack_location: e.target.value })}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g., Shelf A-3"
+            placeholder={t('copies.createModal.rackLocationPlaceholder')}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Condition</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('copies.createModal.condition')}</label>
           <select
             value={formData.condition}
             onChange={(e) => setFormData({ ...formData, condition: e.target.value as any })}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
-            <option value="new">New</option>
-            <option value="good">Good</option>
-            <option value="fair">Fair</option>
-            <option value="poor">Poor</option>
-            <option value="damaged">Damaged</option>
+            <option value="new">{t('copies.conditions.new')}</option>
+            <option value="good">{t('copies.conditions.good')}</option>
+            <option value="fair">{t('copies.conditions.fair')}</option>
+            <option value="poor">{t('copies.conditions.poor')}</option>
+            <option value="damaged">{t('copies.conditions.damaged')}</option>
           </select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Acquired Date</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('copies.createModal.acquiredDate')}</label>
           <input
             type="date"
             required
@@ -96,7 +99,7 @@ export default function CreateCopyModal({ isOpen, onClose, onSubmit, isLoading }
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Price (₹)</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('copies.createModal.price')}</label>
           <input
             type="number"
             required
@@ -111,10 +114,10 @@ export default function CreateCopyModal({ isOpen, onClose, onSubmit, isLoading }
 
         <div className="flex justify-end gap-3 pt-4">
           <Button type="button" variant="ghost" onClick={onClose} disabled={isLoading}>
-            Cancel
+            {tc('actions.cancel')}
           </Button>
           <Button type="submit" variant="primary" disabled={isLoading}>
-            {isLoading ? 'Adding...' : 'Add Copy'}
+            {isLoading ? t('copies.createModal.adding') : t('copies.createModal.submit')}
           </Button>
         </div>
       </form>

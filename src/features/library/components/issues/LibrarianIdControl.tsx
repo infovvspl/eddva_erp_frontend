@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { UserCog, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useLibrarianStore } from '../../stores/librarian.store';
 
 export default function LibrarianIdControl() {
+  const { t } = useTranslation('library');
   const { librarianId, setLibrarianId } = useLibrarianStore();
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(String(librarianId));
@@ -49,11 +51,11 @@ export default function LibrarianIdControl() {
   return (
     <button
       onClick={startEdit}
-      title="Change the librarian ID used for issue/return/renew actions"
+      title={t('issues.librarianControl.changeTitle')}
       className="flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-200"
     >
       <UserCog className="h-3.5 w-3.5" />
-      Acting as Librarian #{librarianId}
+      {t('issues.librarianControl.actingAs', { id: librarianId })}
     </button>
   );
 }

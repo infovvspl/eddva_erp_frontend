@@ -1,16 +1,18 @@
 import { Link, useLocation } from 'react-router-dom';
 import { BookPlus, ListChecks, AlertTriangle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../../../utils/cn';
 import LibrarianIdControl from './LibrarianIdControl';
 
-const TABS = [
-  { path: '/library/issues/desk', label: 'Desk', icon: BookPlus },
-  { path: '/library/issues', label: 'Active', icon: ListChecks },
-  { path: '/library/issues/overdue', label: 'Overdue', icon: AlertTriangle },
-];
-
 export default function IssuesTabs() {
+  const { t } = useTranslation('library');
   const location = useLocation();
+
+  const TABS = [
+    { path: '/library/issues/desk', label: t('issues.tabs.desk'), icon: BookPlus },
+    { path: '/library/issues', label: t('issues.tabs.active'), icon: ListChecks },
+    { path: '/library/issues/overdue', label: t('issues.tabs.overdue'), icon: AlertTriangle },
+  ];
 
   return (
     <div className="flex items-center justify-between">

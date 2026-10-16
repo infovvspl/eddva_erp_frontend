@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Modal from '../../../../components/ui/Modal';
 import Button from '../../../../components/ui/Button';
 import type { BookVendor, BookVendorUpdateData } from '../../types/library.types';
@@ -12,6 +13,8 @@ interface EditVendorModalProps {
 }
 
 export default function EditVendorModal({ isOpen, onClose, vendor, onSubmit, isLoading }: EditVendorModalProps) {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const [formData, setFormData] = useState<BookVendorUpdateData>({});
   const [error, setError] = useState<string | null>(null);
 
@@ -36,12 +39,12 @@ export default function EditVendorModal({ isOpen, onClose, vendor, onSubmit, isL
     try {
       await onSubmit(vendor.book_vendor_id || vendor.id, formData);
     } catch (err: any) {
-      setError(err.message || 'Failed to update vendor');
+      setError(err.message || t('vendors.editModal.failedToUpdate'));
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Edit Vendor" size="lg">
+    <Modal isOpen={isOpen} onClose={onClose} title={t('vendors.editModal.title')} size="lg">
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
@@ -49,73 +52,73 @@ export default function EditVendorModal({ isOpen, onClose, vendor, onSubmit, isL
           </div>
         )}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Vendor Name</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('vendors.editModal.vendorName')}</label>
           <input
             type="text"
             value={formData.vendor_name || ''}
             onChange={(e) => setFormData({ ...formData, vendor_name: e.target.value })}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g., Oxford University Press Distributor"
+            placeholder={t('vendors.editModal.vendorNamePlaceholder')}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('vendors.editModal.name')}</label>
           <input
             type="text"
             value={formData.name || ''}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g., Oxford University Press Distributor"
+            placeholder={t('vendors.editModal.vendorNamePlaceholder')}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Contact Person</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('vendors.editModal.contactPerson')}</label>
           <input
             type="text"
             value={formData.contact_person || ''}
             onChange={(e) => setFormData({ ...formData, contact_person: e.target.value })}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g., Vikram Seth"
+            placeholder={t('vendors.editModal.contactPersonPlaceholder')}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('vendors.editModal.phone')}</label>
           <input
             type="tel"
             value={formData.phone || ''}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g., +919876543210"
+            placeholder={t('vendors.editModal.phonePlaceholder')}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('vendors.editModal.email')}</label>
           <input
             type="email"
             value={formData.email || ''}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g., orders@oxforddist.in"
+            placeholder={t('vendors.editModal.emailPlaceholder')}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Address</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('vendors.editModal.address')}</label>
           <input
             type="text"
             value={formData.address || ''}
             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g., 45 Commercial Complex, New Delhi"
+            placeholder={t('vendors.editModal.addressPlaceholder')}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Last Purchase Price (₹)</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('vendors.editModal.lastPurchasePrice')}</label>
           <input
             type="number"
             min="0"
@@ -129,10 +132,10 @@ export default function EditVendorModal({ isOpen, onClose, vendor, onSubmit, isL
 
         <div className="flex justify-end gap-3 pt-4">
           <Button type="button" variant="ghost" onClick={onClose} disabled={isLoading}>
-            Cancel
+            {tc('actions.cancel')}
           </Button>
           <Button type="submit" variant="primary" disabled={isLoading}>
-            {isLoading ? 'Updating...' : 'Update Vendor'}
+            {isLoading ? t('vendors.editModal.updating') : t('vendors.editModal.submit')}
           </Button>
         </div>
       </form>

@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import { getRoles, createUserAssignment } from '../../api/library.api';
 import type { Role, UserAssignmentFormData } from '../../types/library.types';
 
 export default function CreateUserPage() {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const navigate = useNavigate();
   const [roles, setRoles] = useState<Role[]>([]);
   const [formData, setFormData] = useState<UserAssignmentFormData>({
@@ -33,7 +36,7 @@ export default function CreateUserPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err instanceof Error ? err.message : 'Failed to load roles');
+      setError(err instanceof Error ? err.message : t('rbac.createUserPage.failedToLoadRoles'));
     } finally {
       setLoading(false);
     }
@@ -53,7 +56,7 @@ export default function CreateUserPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err.response?.data?.message || 'Failed to assign user');
+      setError(err.response?.data?.message || t('rbac.createUserPage.failedToAssign'));
     } finally {
       setSubmitting(false);
     }
@@ -63,11 +66,11 @@ export default function CreateUserPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Assign User</h1>
-          <p className="text-slate-600 mt-1">Assign a user to a library role</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('rbac.createUserPage.title')}</h1>
+          <p className="text-slate-600 mt-1">{t('rbac.createUserPage.subtitleAssign')}</p>
         </div>
         <Card className="border-slate-200">
-          <div className="p-8 text-center text-slate-500">Loading roles...</div>
+          <div className="p-8 text-center text-slate-500">{t('rbac.createUserPage.loadingRoles')}</div>
         </Card>
       </div>
     );
@@ -76,8 +79,8 @@ export default function CreateUserPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Assign User</h1>
-        <p className="text-slate-600 mt-1">Create a library user assignment with login credentials</p>
+        <h1 className="text-2xl font-bold text-slate-900">{t('rbac.createUserPage.title')}</h1>
+        <p className="text-slate-600 mt-1">{t('rbac.createUserPage.subtitle')}</p>
       </div>
 
       <Card className="border-slate-200">
@@ -92,14 +95,14 @@ export default function CreateUserPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="eddva_user_id" className="block text-sm font-medium text-slate-700 mb-1">
-                  ERP User ID *
+                  {t('rbac.userFormFields.erpUserId')}
                 </label>
                 <input
                   type="text"
                   id="eddva_user_id"
                   value={formData.eddva_user_id}
                   onChange={(e) => setFormData({ ...formData, eddva_user_id: e.target.value })}
-                  placeholder="erp-user-uuid"
+                  placeholder={t('rbac.userFormFields.erpUserIdPlaceholder')}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                   required
                 />
@@ -107,14 +110,14 @@ export default function CreateUserPage() {
 
               <div>
                 <label htmlFor="user_name" className="block text-sm font-medium text-slate-700 mb-1">
-                  Full Name *
+                  {t('rbac.userFormFields.fullName')}
                 </label>
                 <input
                   type="text"
                   id="user_name"
                   value={formData.user_name}
                   onChange={(e) => setFormData({ ...formData, user_name: e.target.value })}
-                  placeholder="Anita Sharma"
+                  placeholder={t('rbac.userFormFields.fullNamePlaceholder')}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                   required
                 />
@@ -122,14 +125,14 @@ export default function CreateUserPage() {
 
               <div>
                 <label htmlFor="user_email" className="block text-sm font-medium text-slate-700 mb-1">
-                  Email *
+                  {t('rbac.userFormFields.email')}
                 </label>
                 <input
                   type="email"
                   id="user_email"
                   value={formData.user_email}
                   onChange={(e) => setFormData({ ...formData, user_email: e.target.value })}
-                  placeholder="anita@example.com"
+                  placeholder={t('rbac.userFormFields.emailPlaceholder')}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                   required
                 />
@@ -137,14 +140,14 @@ export default function CreateUserPage() {
 
               <div>
                 <label htmlFor="username" className="block text-sm font-medium text-slate-700 mb-1">
-                  Library Username *
+                  {t('rbac.userFormFields.libraryUsername')}
                 </label>
                 <input
                   type="text"
                   id="username"
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  placeholder="anita_lib"
+                  placeholder={t('rbac.userFormFields.libraryUsernamePlaceholder')}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                   required
                 />
@@ -152,14 +155,14 @@ export default function CreateUserPage() {
 
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
-                  Password *
+                  {t('rbac.userFormFields.password')}
                 </label>
                 <input
                   type="password"
                   id="password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder="LibraryPass#2026"
+                  placeholder={t('rbac.userFormFields.passwordPlaceholder')}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                   required
                   minLength={8}
@@ -168,7 +171,7 @@ export default function CreateUserPage() {
 
               <div>
                 <label htmlFor="role_id" className="block text-sm font-medium text-slate-700 mb-1">
-                  Role *
+                  {t('rbac.userFormFields.role')}
                 </label>
                 <select
                   id="role_id"
@@ -177,7 +180,7 @@ export default function CreateUserPage() {
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                   required
                 >
-                  <option value="">Select a role</option>
+                  <option value="">{t('rbac.userFormFields.selectRole')}</option>
                   {roles.map((role) => (
                     <option key={role.role_id} value={role.role_id}>
                       {role.name}
@@ -194,10 +197,10 @@ export default function CreateUserPage() {
                 onClick={() => navigate('/library/users')}
                 disabled={submitting}
               >
-                Cancel
+                {tc('actions.cancel')}
               </Button>
               <Button type="submit" variant="primary" disabled={submitting}>
-                {submitting ? 'Assigning...' : 'Assign User'}
+                {submitting ? t('rbac.createUserPage.assigning') : t('rbac.createUserPage.submit')}
               </Button>
             </div>
           </form>

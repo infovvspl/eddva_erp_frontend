@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Search, Barcode } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import BookTable from '../../components/books/BookTable';
@@ -9,6 +10,8 @@ import type { Book } from '../../types/library.types';
 import { ROUTES } from '../../../../constants/routes';
 
 export default function BooksPage() {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const navigate = useNavigate();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,7 +34,7 @@ export default function BooksPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err instanceof Error ? err.message : 'Failed to load books');
+      setError(err instanceof Error ? err.message : t('books.listPage.failedToLoad'));
     } finally {
       setLoading(false);
     }
@@ -51,14 +54,14 @@ export default function BooksPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err instanceof Error ? err.message : 'Failed to search books');
+      setError(err instanceof Error ? err.message : t('books.listPage.failedToSearch'));
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this book?')) {
+    if (!confirm(t('books.listPage.confirmDelete'))) {
       return;
     }
     try {
@@ -68,7 +71,7 @@ export default function BooksPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err instanceof Error ? err.message : 'Failed to delete book');
+      setError(err instanceof Error ? err.message : t('books.listPage.failedToDelete'));
     }
   };
 
@@ -92,7 +95,7 @@ export default function BooksPage() {
       navigate(ROUTES.LIBRARY_BOOKS_DETAILS.replace(':id', bookId.toString()));
     } catch (err: any) {
       console.error('Scan error:', err);
-      setScanError(err.message || 'Copy not found');
+      setScanError(err.message || t('books.listPage.copyNotFound'));
     } finally {
       setIsScanning(false);
     }
@@ -102,13 +105,13 @@ export default function BooksPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Book Catalog</h1>
-          <p className="text-slate-600 mt-1">Manage library book collection</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('books.listPage.title')}</h1>
+          <p className="text-slate-600 mt-1">{t('books.listPage.subtitle')}</p>
         </div>
         <Link to={ROUTES.LIBRARY_BOOKS_NEW}>
           <Button variant="primary">
             <Plus className="h-4 w-4 mr-2" />
-            Add Book
+            {t('books.listPage.addBook')}
           </Button>
         </Link>
       </div>
@@ -123,13 +126,13 @@ export default function BooksPage() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search by title, author, ISBN..."
+                    placeholder={t('books.listPage.searchPlaceholder')}
                     className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                   />
                 </div>
                 <Button type="submit" variant="secondary">
                   <Search className="h-4 w-4 mr-2" />
-                  Search
+                  {tc('actions.search')}
                 </Button>
               </div>
             </form>
@@ -141,13 +144,13 @@ export default function BooksPage() {
                     type="text"
                     value={barcodeQuery}
                     onChange={(e) => setBarcodeQuery(e.target.value)}
-                    placeholder="Scan barcode to find book copy..."
+                    placeholder={t('books.listPage.scanPlaceholder')}
                     className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <Button type="submit" variant="secondary" disabled={isScanning}>
                   <Barcode className="h-4 w-4 mr-2" />
-                  {isScanning ? 'Scanning...' : 'Scan'}
+                  {isScanning ? t('books.listPage.scanning') : t('books.listPage.scan')}
                 </Button>
               </div>
               {scanError && (
@@ -157,7 +160,7 @@ export default function BooksPage() {
           </div>
 
           {loading ? (
-            <div className="text-center text-slate-500 py-8">Loading...</div>
+            <div className="text-center text-slate-500 py-8">{tc('status.loading')}</div>
           ) : error ? (
             <div className="text-center text-red-500 py-8">{error}</div>
           ) : (

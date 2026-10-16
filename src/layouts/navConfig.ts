@@ -10,6 +10,7 @@ export interface NavItem {
 
 export const navItems: NavItem[] = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { path: '/admin-management', label: 'Admin Management', icon: UserCog },
   { 
     path: '/sales-purchase', 
     label: 'Sales & Purchase', 

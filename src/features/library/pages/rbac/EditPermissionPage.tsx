@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import { getPermission, updatePermission } from '../../api/library.api';
@@ -7,6 +8,8 @@ import type { PermissionFormData } from '../../types/library.types';
 import { ROUTES } from '../../../../constants/routes';
 
 export default function EditPermissionPage() {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [formData, setFormData] = useState<PermissionFormData>({
@@ -40,7 +43,7 @@ export default function EditPermissionPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err instanceof Error ? err.message : 'Failed to load permission');
+      setError(err instanceof Error ? err.message : t('rbac.editPermissionPage.failedToLoad'));
     } finally {
       setLoading(false);
     }
@@ -58,7 +61,7 @@ export default function EditPermissionPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err.response?.data?.message || 'Failed to update permission');
+      setError(err.response?.data?.message || t('rbac.editPermissionPage.failedToUpdate'));
     } finally {
       setSubmitting(false);
     }
@@ -68,11 +71,11 @@ export default function EditPermissionPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Edit Permission</h1>
-          <p className="text-slate-600 mt-1">Update permission details</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('rbac.editPermissionPage.title')}</h1>
+          <p className="text-slate-600 mt-1">{t('rbac.editPermissionPage.subtitle')}</p>
         </div>
         <Card className="border-slate-200">
-          <div className="p-8 text-center text-slate-500">Loading...</div>
+          <div className="p-8 text-center text-slate-500">{tc('status.loading')}</div>
         </Card>
       </div>
     );
@@ -81,8 +84,8 @@ export default function EditPermissionPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Edit Permission</h1>
-        <p className="text-slate-600 mt-1">Update permission details</p>
+        <h1 className="text-2xl font-bold text-slate-900">{t('rbac.editPermissionPage.title')}</h1>
+        <p className="text-slate-600 mt-1">{t('rbac.editPermissionPage.subtitle')}</p>
       </div>
 
       <Card className="border-slate-200">
@@ -96,14 +99,14 @@ export default function EditPermissionPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="resource" className="block text-sm font-medium text-slate-700 mb-1">
-                Resource *
+                {t('rbac.permissionFormFields.resource')}
               </label>
               <input
                 type="text"
                 id="resource"
                 value={formData.resource}
                 onChange={(e) => setFormData({ ...formData, resource: e.target.value })}
-                placeholder="e.g., catalog"
+                placeholder={t('rbac.permissionFormFields.resourcePlaceholder')}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                 required
               />
@@ -111,14 +114,14 @@ export default function EditPermissionPage() {
 
             <div>
               <label htmlFor="action" className="block text-sm font-medium text-slate-700 mb-1">
-                Action *
+                {t('rbac.permissionFormFields.action')}
               </label>
               <input
                 type="text"
                 id="action"
                 value={formData.action}
                 onChange={(e) => setFormData({ ...formData, action: e.target.value })}
-                placeholder="e.g., export"
+                placeholder={t('rbac.permissionFormFields.actionPlaceholder')}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                 required
               />
@@ -126,14 +129,14 @@ export default function EditPermissionPage() {
 
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">
-                Name *
+                {t('rbac.permissionFormFields.name')}
               </label>
               <input
                 type="text"
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g., Export Book Catalog"
+                placeholder={t('rbac.permissionFormFields.namePlaceholder')}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                 required
               />
@@ -141,14 +144,14 @@ export default function EditPermissionPage() {
 
             <div>
               <label htmlFor="category" className="block text-sm font-medium text-slate-700 mb-1">
-                Category *
+                {t('rbac.permissionFormFields.category')}
               </label>
               <input
                 type="text"
                 id="category"
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                placeholder="e.g., Book Catalog"
+                placeholder={t('rbac.permissionFormFields.categoryPlaceholder')}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                 required
               />
@@ -156,7 +159,7 @@ export default function EditPermissionPage() {
 
             <div>
               <label htmlFor="description" className="block text-sm font-medium text-slate-700 mb-1">
-                Description *
+                {t('rbac.permissionFormFields.description')}
               </label>
               <textarea
                 id="description"
@@ -175,10 +178,10 @@ export default function EditPermissionPage() {
                 onClick={() => navigate(ROUTES.LIBRARY_PERMISSIONS)}
                 disabled={submitting}
               >
-                Cancel
+                {tc('actions.cancel')}
               </Button>
               <Button type="submit" variant="primary" disabled={submitting}>
-                {submitting ? 'Updating...' : 'Update Permission'}
+                {submitting ? tc('status.saving') : t('rbac.editPermissionPage.submit')}
               </Button>
             </div>
           </form>

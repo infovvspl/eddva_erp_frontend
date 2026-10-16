@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Plus, Shield, Lock, Trash2, Users } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import { getRoles, deleteRole } from '../../api/library.api';
@@ -11,6 +12,8 @@ function countPermissions(role: Role): number {
 }
 
 export default function RolesPage() {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,14 +31,14 @@ export default function RolesPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err instanceof Error ? err.message : 'Failed to load roles');
+      setError(err instanceof Error ? err.message : t('rbac.rolesPage.failedToLoad'));
     } finally {
       setLoading(false);
     }
   }
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this role?')) {
+    if (!window.confirm(t('rbac.rolesPage.confirmDelete'))) {
       return;
     }
     try {
@@ -45,7 +48,7 @@ export default function RolesPage() {
       if (err.response?.status === 401) {
         return;
       }
-      alert(err.response?.data?.message || (err instanceof Error ? err.message : 'Failed to delete role'));
+      alert(err.response?.data?.message || (err instanceof Error ? err.message : t('rbac.rolesPage.failedToDelete')));
     }
   };
 
@@ -53,20 +56,20 @@ export default function RolesPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Roles</h1>
-          <p className="text-slate-600 mt-1">Manage library roles and permissions</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('rbac.rolesPage.title')}</h1>
+          <p className="text-slate-600 mt-1">{t('rbac.rolesPage.subtitle')}</p>
         </div>
         <Link to="/library/roles/new">
           <Button variant="primary">
             <Plus className="h-4 w-4 mr-2" />
-            Add Role
+            {t('rbac.rolesPage.addRole')}
           </Button>
         </Link>
       </div>
 
       {loading ? (
         <Card className="border-slate-200">
-          <div className="p-8 text-center text-slate-500">Loading...</div>
+          <div className="p-8 text-center text-slate-500">{tc('status.loading')}</div>
         </Card>
       ) : error ? (
         <Card className="border-slate-200">
@@ -78,18 +81,18 @@ export default function RolesPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-200">
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700">Role Name</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700">Description</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700">Permissions</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700">Users</th>
-                  <th className="text-right py-3 px-4 font-semibold text-slate-700">Actions</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-700">{t('rbac.rolesPage.roleName')}</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-700">{t('rbac.rolesPage.description')}</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-700">{t('rbac.rolesPage.permissions')}</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-700">{t('rbac.rolesPage.users')}</th>
+                  <th className="text-right py-3 px-4 font-semibold text-slate-700">{t('rbac.rolesPage.actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {roles.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="text-center py-8 text-slate-500">
-                      No roles found
+                      {t('rbac.rolesPage.noRolesFound')}
                     </td>
                   </tr>
                 ) : (
@@ -105,7 +108,7 @@ export default function RolesPage() {
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-1">
                           <Lock className="h-4 w-4 text-slate-400" />
-                          <span className="text-slate-600">{countPermissions(role)} permissions</span>
+                          <span className="text-slate-600">{t('rbac.rolesPage.permissionsCount', { count: countPermissions(role) })}</span>
                         </div>
                       </td>
                       <td className="py-3 px-4">
@@ -118,7 +121,7 @@ export default function RolesPage() {
                         <div className="flex items-center justify-end gap-2">
                           <Link to={`/library/roles/${role.role_id}/edit`}>
                             <Button variant="ghost" size="sm">
-                              Edit
+                              {tc('actions.edit')}
                             </Button>
                           </Link>
                           <Button variant="ghost" size="sm" onClick={() => handleDelete(role.role_id)}>

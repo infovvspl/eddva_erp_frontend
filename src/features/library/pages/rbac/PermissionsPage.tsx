@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import PermissionTable from '../../components/rbac/LibraryPermissionTable';
@@ -9,6 +10,8 @@ import type { Permission } from '../../types/library.types';
 import { ROUTES } from '../../../../constants/routes';
 
 export default function PermissionsPage() {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,14 +29,14 @@ export default function PermissionsPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err instanceof Error ? err.message : 'Failed to load permissions');
+      setError(err instanceof Error ? err.message : t('rbac.permissionsPage.failedToLoad'));
     } finally {
       setLoading(false);
     }
   }
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this permission?')) {
+    if (!window.confirm(t('rbac.permissionsPage.confirmDelete'))) {
       return;
     }
     try {
@@ -43,7 +46,7 @@ export default function PermissionsPage() {
       if (err.response?.status === 401) {
         return;
       }
-      alert(err.response?.data?.message || (err instanceof Error ? err.message : 'Failed to delete permission'));
+      alert(err.response?.data?.message || (err instanceof Error ? err.message : t('rbac.permissionsPage.failedToDelete')));
     }
   };
 
@@ -51,20 +54,20 @@ export default function PermissionsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Permissions</h1>
-          <p className="text-slate-600 mt-1">Manage library permissions</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('rbac.permissionsPage.title')}</h1>
+          <p className="text-slate-600 mt-1">{t('rbac.permissionsPage.subtitle')}</p>
         </div>
         <Link to={ROUTES.LIBRARY_PERMISSIONS_NEW}>
           <Button variant="primary">
             <Plus className="h-4 w-4 mr-2" />
-            Add Permission
+            {t('rbac.permissionsPage.addPermission')}
           </Button>
         </Link>
       </div>
 
       {loading ? (
         <Card className="border-slate-200">
-          <div className="p-8 text-center text-slate-500">Loading...</div>
+          <div className="p-8 text-center text-slate-500">{tc('status.loading')}</div>
         </Card>
       ) : error ? (
         <Card className="border-slate-200">

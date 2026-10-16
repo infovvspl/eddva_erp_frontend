@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AlertTriangle, BookCopy, BookOpen, Gauge as GaugeIcon, IndianRupee, RotateCcw } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import ErrorState from '../../../../components/feedback/ErrorState';
 import DashboardSkeleton from '../../../../components/premium/DashboardSkeleton';
 import KpiTile from '../../../../components/premium/KpiTile';
@@ -24,6 +25,7 @@ const STATUS_STYLE: Record<string, string> = {
 const stagger = (index: number) => ({ animationDelay: `${Math.min(index, 10) * 50}ms` });
 
 export default function LibraryDashboardPage() {
+  const { t } = useTranslation('library');
   const [summary, setSummary] = useState<LibraryDashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -37,7 +39,7 @@ export default function LibraryDashboardPage() {
       setSummary(await getLibraryDashboardSummary());
       setUpdatedAt(Date.now());
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Failed to load the library dashboard'));
+      setError(getApiErrorMessage(err, t('dashboard.failedToLoad')));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -50,24 +52,24 @@ export default function LibraryDashboardPage() {
   }, [load]);
 
   if (loading) return <DashboardSkeleton />;
-  if (error || !summary) return <ErrorState message={error ?? 'No dashboard data available.'} onRetry={load} />;
+  if (error || !summary) return <ErrorState message={error ?? t('dashboard.noData')} onRetry={load} />;
 
   const { totals, due_soon, recent_issues } = summary;
 
   const kpis = [
-    { label: 'Total books', value: totals.titles, icon: BookOpen, hint: `${totals.copies} copies`, accent: ACCENT },
-    { label: 'Available copies', value: totals.available_copies, icon: BookCopy, hint: `of ${totals.copies} total`, accent: ACCENT },
-    { label: 'Currently issued', value: totals.issued_now, icon: RotateCcw, hint: `${totals.overdue} overdue`, accent: ACCENT },
-    { label: 'Pending fines', value: rupees(totals.unpaid_fines), icon: IndianRupee, accent: ACCENT },
+    { label: t('dashboard.kpis.totalBooks'), value: totals.titles, icon: BookOpen, hint: t('dashboard.kpis.copiesHint', { count: totals.copies }), accent: ACCENT },
+    { label: t('dashboard.kpis.availableCopies'), value: totals.available_copies, icon: BookCopy, hint: t('dashboard.kpis.ofTotalHint', { count: totals.copies }), accent: ACCENT },
+    { label: t('dashboard.kpis.currentlyIssued'), value: totals.issued_now, icon: RotateCcw, hint: t('dashboard.kpis.overdueHint', { count: totals.overdue }), accent: ACCENT },
+    { label: t('dashboard.kpis.pendingFines'), value: rupees(totals.unpaid_fines), icon: IndianRupee, accent: ACCENT },
   ];
 
   return (
     <div className="space-y-8">
       <PageHero
-        eyebrow="Library"
-        title="Library dashboard"
-        subtitle="Catalog, circulation and fines at a glance"
-        highlights={[{ icon: AlertTriangle, label: `${totals.overdue} overdue` }]}
+        eyebrow={t('dashboard.eyebrow')}
+        title={t('dashboard.title')}
+        subtitle={t('dashboard.subtitle')}
+        highlights={[{ icon: AlertTriangle, label: t('dashboard.overdueHighlight', { count: totals.overdue }) }]}
         updatedAt={updatedAt}
         refreshing={refreshing}
         onRefresh={() => void load()}
@@ -80,19 +82,19 @@ export default function LibraryDashboardPage() {
       </div>
 
       <div className="grid gap-5 grid-cols-1 lg:grid-cols-12">
-        <ChartCard title="Copy availability" subtitle="Available vs total copies" icon={GaugeIcon} className="lg:col-span-4">
+        <ChartCard title={t('dashboard.copyAvailability.title')} subtitle={t('dashboard.copyAvailability.subtitle')} icon={GaugeIcon} className="lg:col-span-4">
           <Gauge
-            label="Available copies"
+            label={t('dashboard.copyAvailability.gaugeLabel')}
             value={totals.available_copies}
             max={totals.copies}
-            caption={`${totals.available_copies} of ${totals.copies} copies`}
+            caption={t('dashboard.copyAvailability.caption', { available: totals.available_copies, total: totals.copies })}
             color={ACCENT}
           />
         </ChartCard>
 
-        <ChartCard title="Due soon" subtitle="Issues due in the next few days" icon={BookCopy} className="lg:col-span-4" style={stagger(1)}>
+        <ChartCard title={t('dashboard.dueSoon.title')} subtitle={t('dashboard.dueSoon.subtitle')} icon={BookCopy} className="lg:col-span-4" style={stagger(1)}>
           {due_soon.length === 0 ? (
-            <p className="py-6 text-center text-sm text-slate-500">Nothing due soon.</p>
+            <p className="py-6 text-center text-sm text-slate-500">{t('dashboard.dueSoon.empty')}</p>
           ) : (
             <ul className="divide-y divide-slate-100">
               {due_soon.map((i) => (
@@ -108,9 +110,9 @@ export default function LibraryDashboardPage() {
           )}
         </ChartCard>
 
-        <ChartCard title="Recent issues" subtitle="Latest circulation activity" icon={RotateCcw} className="lg:col-span-4" style={stagger(2)}>
+        <ChartCard title={t('dashboard.recentIssues.title')} subtitle={t('dashboard.recentIssues.subtitle')} icon={RotateCcw} className="lg:col-span-4" style={stagger(2)}>
           {recent_issues.length === 0 ? (
-            <p className="py-6 text-center text-sm text-slate-500">No issues recorded yet.</p>
+            <p className="py-6 text-center text-sm text-slate-500">{t('dashboard.recentIssues.empty')}</p>
           ) : (
             <ul className="divide-y divide-slate-100">
               {recent_issues.map((i) => (

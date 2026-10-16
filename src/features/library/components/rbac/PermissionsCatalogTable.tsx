@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { PermissionResource } from '../../types/library.types';
 
 interface PermissionsCatalogTableProps {
@@ -9,9 +10,11 @@ function formatAction(action: string): string {
 }
 
 export default function PermissionsCatalogTable({ resources }: PermissionsCatalogTableProps) {
+  const { t } = useTranslation('library');
+
   if (resources.length === 0) {
     return (
-      <div className="p-8 text-center text-slate-500">No permissions found</div>
+      <div className="p-8 text-center text-slate-500">{t('rbac.catalogTable.noPermissionsFound')}</div>
     );
   }
 
@@ -20,11 +23,11 @@ export default function PermissionsCatalogTable({ resources }: PermissionsCatalo
       <table className="w-full">
         <thead>
           <tr className="border-b border-slate-200">
-            <th className="text-left py-3 px-4 font-semibold text-slate-700">Resource</th>
-            <th className="text-left py-3 px-4 font-semibold text-slate-700">Permission</th>
-            <th className="text-left py-3 px-4 font-semibold text-slate-700">Key</th>
-            <th className="text-left py-3 px-4 font-semibold text-slate-700">Description</th>
-            <th className="text-left py-3 px-4 font-semibold text-slate-700">Status</th>
+            <th className="text-left py-3 px-4 font-semibold text-slate-700">{t('rbac.catalogTable.resource')}</th>
+            <th className="text-left py-3 px-4 font-semibold text-slate-700">{t('rbac.catalogTable.permission')}</th>
+            <th className="text-left py-3 px-4 font-semibold text-slate-700">{t('rbac.catalogTable.key')}</th>
+            <th className="text-left py-3 px-4 font-semibold text-slate-700">{t('rbac.catalogTable.description')}</th>
+            <th className="text-left py-3 px-4 font-semibold text-slate-700">{t('rbac.catalogTable.status')}</th>
           </tr>
         </thead>
         <tbody>
@@ -72,11 +75,11 @@ export default function PermissionsCatalogTable({ resources }: PermissionsCatalo
                         : 'bg-slate-100 text-slate-500'
                     }`}
                   >
-                    {permission.is_active ? 'Active' : 'Inactive'}
+                    {permission.is_active ? t('rbac.catalogTable.active') : t('rbac.catalogTable.inactive')}
                   </span>
                   {permission.is_system && (
                     <span className="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                      System
+                      {t('rbac.catalogTable.system')}
                     </span>
                   )}
                 </td>

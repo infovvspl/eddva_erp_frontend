@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import { createBook, getCategories } from '../../api/library.api';
@@ -7,6 +8,8 @@ import type { BookFormData, Category } from '../../types/library.types';
 import { ROUTES } from '../../../../constants/routes';
 
 export default function CreateBookPage() {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const navigate = useNavigate();
   const [formData, setFormData] = useState<BookFormData>({
     isbn: '',
@@ -47,7 +50,7 @@ export default function CreateBookPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err.response?.data?.message || 'Failed to create book');
+      setError(err.response?.data?.message || t('books.createPage.failedToCreate'));
     } finally {
       setSubmitting(false);
     }
@@ -56,8 +59,8 @@ export default function CreateBookPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Add Book</h1>
-        <p className="text-slate-600 mt-1">Add a new book to the library catalog</p>
+        <h1 className="text-2xl font-bold text-slate-900">{t('books.createPage.title')}</h1>
+        <p className="text-slate-600 mt-1">{t('books.createPage.subtitle')}</p>
       </div>
 
       <Card className="border-slate-200">
@@ -72,14 +75,14 @@ export default function CreateBookPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="isbn" className="block text-sm font-medium text-slate-700 mb-1">
-                  ISBN *
+                  {t('books.formFields.isbn')}
                 </label>
                 <input
                   type="text"
                   id="isbn"
                   value={formData.isbn}
                   onChange={(e) => setFormData({ ...formData, isbn: e.target.value })}
-                  placeholder="e.g., 978-0-06-112008-4"
+                  placeholder={t('books.formFields.isbnPlaceholder')}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                   required
                 />
@@ -87,14 +90,14 @@ export default function CreateBookPage() {
 
               <div>
                 <label htmlFor="title" className="block text-sm font-medium text-slate-700 mb-1">
-                  Title *
+                  {t('books.formFields.title')}
                 </label>
                 <input
                   type="text"
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="e.g., To Kill a Mockingbird"
+                  placeholder={t('books.formFields.titlePlaceholder')}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                   required
                 />
@@ -102,14 +105,14 @@ export default function CreateBookPage() {
 
               <div>
                 <label htmlFor="author" className="block text-sm font-medium text-slate-700 mb-1">
-                  Author *
+                  {t('books.formFields.author')}
                 </label>
                 <input
                   type="text"
                   id="author"
                   value={formData.author}
                   onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                  placeholder="e.g., Harper Lee"
+                  placeholder={t('books.formFields.authorPlaceholder')}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                   required
                 />
@@ -117,14 +120,14 @@ export default function CreateBookPage() {
 
               <div>
                 <label htmlFor="publisher" className="block text-sm font-medium text-slate-700 mb-1">
-                  Publisher *
+                  {t('books.formFields.publisher')}
                 </label>
                 <input
                   type="text"
                   id="publisher"
                   value={formData.publisher}
                   onChange={(e) => setFormData({ ...formData, publisher: e.target.value })}
-                  placeholder="e.g., HarperCollins"
+                  placeholder={t('books.formFields.publisherPlaceholder')}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                   required
                 />
@@ -132,14 +135,14 @@ export default function CreateBookPage() {
 
               <div>
                 <label htmlFor="edition" className="block text-sm font-medium text-slate-700 mb-1">
-                  Edition *
+                  {t('books.formFields.edition')}
                 </label>
                 <input
                   type="text"
                   id="edition"
                   value={formData.edition}
                   onChange={(e) => setFormData({ ...formData, edition: e.target.value })}
-                  placeholder="e.g., 1st"
+                  placeholder={t('books.formFields.editionPlaceholder')}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                   required
                 />
@@ -147,7 +150,7 @@ export default function CreateBookPage() {
 
               <div>
                 <label htmlFor="category_id" className="block text-sm font-medium text-slate-700 mb-1">
-                  Category *
+                  {t('books.formFields.category')}
                 </label>
                 <select
                   id="category_id"
@@ -156,7 +159,7 @@ export default function CreateBookPage() {
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                   required
                 >
-                  <option value="">Select category</option>
+                  <option value="">{t('books.formFields.selectCategory')}</option>
                   {categories.map((cat) => (
                     <option key={cat.category_id} value={cat.category_id}>
                       {cat.name}
@@ -167,14 +170,14 @@ export default function CreateBookPage() {
 
               <div>
                 <label htmlFor="language" className="block text-sm font-medium text-slate-700 mb-1">
-                  Language *
+                  {t('books.formFields.language')}
                 </label>
                 <input
                   type="text"
                   id="language"
                   value={formData.language}
                   onChange={(e) => setFormData({ ...formData, language: e.target.value })}
-                  placeholder="e.g., English"
+                  placeholder={t('books.formFields.languagePlaceholder')}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                   required
                 />
@@ -182,7 +185,7 @@ export default function CreateBookPage() {
 
               <div>
                 <label htmlFor="publish_year" className="block text-sm font-medium text-slate-700 mb-1">
-                  Publish Year *
+                  {t('books.formFields.publishYear')}
                 </label>
                 <input
                   type="number"
@@ -198,7 +201,7 @@ export default function CreateBookPage() {
 
               <div className="md:col-span-2">
                 <label htmlFor="description" className="block text-sm font-medium text-slate-700 mb-1">
-                  Description *
+                  {t('books.formFields.description')}
                 </label>
                 <textarea
                   id="description"
@@ -218,10 +221,10 @@ export default function CreateBookPage() {
                 onClick={() => navigate(ROUTES.LIBRARY_BOOKS)}
                 disabled={submitting}
               >
-                Cancel
+                {tc('actions.cancel')}
               </Button>
               <Button type="submit" variant="primary" disabled={submitting}>
-                {submitting ? 'Creating...' : 'Add Book'}
+                {submitting ? tc('status.creating') : t('books.createPage.submit')}
               </Button>
             </div>
           </form>

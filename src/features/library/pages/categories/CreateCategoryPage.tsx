@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import { createCategory } from '../../api/library.api';
@@ -7,6 +8,8 @@ import type { CategoryFormData } from '../../types/library.types';
 import { ROUTES } from '../../../../constants/routes';
 
 export default function CreateCategoryPage() {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const navigate = useNavigate();
   const [formData, setFormData] = useState<CategoryFormData>({
     name: ''
@@ -25,7 +28,7 @@ export default function CreateCategoryPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err.response?.data?.message || 'Failed to create category');
+      setError(err.response?.data?.message || t('categories.createPage.failedToCreate'));
     } finally {
       setSubmitting(false);
     }
@@ -34,8 +37,8 @@ export default function CreateCategoryPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Add Category</h1>
-        <p className="text-slate-600 mt-1">Create a new library book category</p>
+        <h1 className="text-2xl font-bold text-slate-900">{t('categories.createPage.title')}</h1>
+        <p className="text-slate-600 mt-1">{t('categories.createPage.subtitle')}</p>
       </div>
 
       <Card className="border-slate-200">
@@ -49,14 +52,14 @@ export default function CreateCategoryPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">
-                Category Name *
+                {t('categories.formFields.name')}
               </label>
               <input
                 type="text"
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g., Fiction"
+                placeholder={t('categories.formFields.namePlaceholder')}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                 required
               />
@@ -69,10 +72,10 @@ export default function CreateCategoryPage() {
                 onClick={() => navigate(ROUTES.LIBRARY_CATEGORIES)}
                 disabled={submitting}
               >
-                Cancel
+                {tc('actions.cancel')}
               </Button>
               <Button type="submit" variant="primary" disabled={submitting}>
-                {submitting ? 'Creating...' : 'Create Category'}
+                {submitting ? tc('status.creating') : t('categories.createPage.submit')}
               </Button>
             </div>
           </form>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Modal from '../../../../components/ui/Modal';
 import Button from '../../../../components/ui/Button';
 import Input from '../../../../components/ui/Input';
@@ -17,6 +18,8 @@ interface ReserveBookModalProps {
 }
 
 export default function ReserveBookModal({ isOpen, onClose, bookId, bookTitle, onReserved }: ReserveBookModalProps) {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const { toast } = useToast();
   const [memberQuery, setMemberQuery] = useState('');
   const [memberResults, setMemberResults] = useState<Member[]>([]);
@@ -55,25 +58,25 @@ export default function ReserveBookModal({ isOpen, onClose, bookId, bookTitle, o
     setIsSubmitting(true);
     try {
       await reserveBook(bookId, { member_id: selectedMember.member_id });
-      toast.success(`Reserved "${bookTitle}" for ${selectedMember.name}`);
+      toast.success(t('reservations.reserveModal.reservedToast', { title: bookTitle, name: selectedMember.name }));
       onReserved?.();
       onClose();
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Failed to place reservation'));
+      setError(getApiErrorMessage(err, t('reservations.reserveModal.failedToReserve')));
     } finally {
       setIsSubmitting(false);
     }
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Reserve Book" size="lg">
+    <Modal isOpen={isOpen} onClose={onClose} title={t('reservations.reserveModal.title')} size="lg">
       <div className="space-y-4">
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">{error}</div>
         )}
 
         <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-sm text-slate-600">
-          <span className="font-medium">Book:</span> {bookTitle}
+          <span className="font-medium">{t('reservations.reserveModal.book')}</span> {bookTitle}
         </div>
 
         {selectedMember ? (
@@ -81,20 +84,20 @@ export default function ReserveBookModal({ isOpen, onClose, bookId, bookTitle, o
             <div>
               <p className="font-medium text-green-900">{selectedMember.name}</p>
               <p className="text-sm text-green-700">
-                Card: {selectedMember.library_card_number} | {selectedMember.member_type}
+                {t('reservations.reserveModal.cardSummary', { card: selectedMember.library_card_number, type: selectedMember.member_type })}
               </p>
             </div>
             <button onClick={() => setSelectedMember(null)} className="text-sm text-green-700 hover:text-green-900">
-              Change
+              {t('reservations.reserveModal.change')}
             </button>
           </div>
         ) : (
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-slate-700">Member</label>
+            <label className="block text-sm font-medium text-slate-700">{t('reservations.reserveModal.member')}</label>
             <Input
               value={memberQuery}
               onChange={(e) => setMemberQuery(e.target.value)}
-              placeholder="Search by name or card number..."
+              placeholder={t('reservations.reserveModal.searchPlaceholder')}
             />
             {memberResults.length > 0 && (
               <div className="border border-slate-200 rounded-lg divide-y divide-slate-100 max-h-56 overflow-y-auto">
@@ -115,10 +118,10 @@ export default function ReserveBookModal({ isOpen, onClose, bookId, bookTitle, o
 
         <div className="flex justify-end gap-3 pt-4">
           <Button type="button" variant="ghost" onClick={onClose} disabled={isSubmitting}>
-            Cancel
+            {tc('actions.cancel')}
           </Button>
           <Button type="button" variant="primary" onClick={handleConfirm} disabled={!selectedMember || isSubmitting}>
-            {isSubmitting ? 'Reserving...' : 'Reserve'}
+            {isSubmitting ? t('reservations.reserveModal.reserving') : t('reservations.reserveModal.submit')}
           </Button>
         </div>
       </div>

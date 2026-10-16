@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import Select from '../../../../components/ui/Select';
@@ -13,15 +14,17 @@ import ReturnIssueModal from '../../components/issues/ReturnIssueModal';
 import RenewIssueModal from '../../components/issues/RenewIssueModal';
 import IssuesTabs from '../../components/issues/IssuesTabs';
 
-const STATUS_OPTIONS = [
-  { value: '', label: 'All Statuses' },
-  { value: 'issued', label: 'Issued' },
-  { value: 'overdue', label: 'Overdue' },
-  { value: 'returned', label: 'Returned' },
-];
-
 export default function ActiveIssuesListPage() {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const { toast } = useToast();
+
+  const STATUS_OPTIONS = [
+    { value: '', label: t('issues.activeListPage.allStatuses') },
+    { value: 'issued', label: t('issues.statusBadge.issued') },
+    { value: 'overdue', label: t('issues.statusBadge.overdue') },
+    { value: 'returned', label: t('issues.statusBadge.returned') },
+  ];
   const [issues, setIssues] = useState<BookIssue[]>([]);
   const [statusFilter, setStatusFilter] = useState<IssueStatus | ''>('');
   const [loading, setLoading] = useState(true);
@@ -41,7 +44,7 @@ export default function ActiveIssuesListPage() {
       setIssues(data);
     } catch (err: any) {
       if (err.response?.status === 401) return;
-      toast.error(getApiErrorMessage(err, 'Failed to load issues'));
+      toast.error(getApiErrorMessage(err, t('issues.activeListPage.failedToLoad')));
     } finally {
       setLoading(false);
     }
@@ -55,9 +58,9 @@ export default function ActiveIssuesListPage() {
       setIsReturnModalOpen(false);
       setSelectedIssue(null);
       if (result.fine) {
-        toast.success(`Returned. Fine of ₹${result.fine.amount} created.`);
+        toast.success(t('issues.activeListPage.returnedWithFine', { amount: result.fine.amount }));
       } else {
-        toast.success('Returned. No fine.');
+        toast.success(t('issues.activeListPage.returnedNoFine'));
       }
     } finally {
       setIsSubmitting(false);
@@ -71,7 +74,7 @@ export default function ActiveIssuesListPage() {
       await loadIssues();
       setIsRenewModalOpen(false);
       setSelectedIssue(null);
-      toast.success('Issue renewed.');
+      toast.success(t('issues.activeListPage.issueRenewed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -91,13 +94,13 @@ export default function ActiveIssuesListPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Book Issues</h1>
-          <p className="text-slate-600 mt-1">Manage book issues, returns, and renewals</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('issues.activeListPage.title')}</h1>
+          <p className="text-slate-600 mt-1">{t('issues.activeListPage.subtitle')}</p>
         </div>
         <Link to="/library/issues/desk">
           <Button>
             <Plus className="h-4 w-4 mr-2" />
-            Issue Book
+            {t('issues.activeListPage.issueBook')}
           </Button>
         </Link>
       </div>
@@ -113,10 +116,10 @@ export default function ActiveIssuesListPage() {
               options={STATUS_OPTIONS}
               className="w-48"
             />
-            <span className="text-sm text-slate-600">{issues.length} issue(s)</span>
+            <span className="text-sm text-slate-600">{t('issues.activeListPage.issueCount', { count: issues.length })}</span>
           </div>
           {loading ? (
-            <div className="text-center py-8 text-slate-500">Loading...</div>
+            <div className="text-center py-8 text-slate-500">{tc('status.loading')}</div>
           ) : (
             <IssueTable issues={issues} onReturn={handleReturnClick} onRenew={handleRenewClick} />
           )}

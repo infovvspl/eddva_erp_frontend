@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Modal from '../../../../components/ui/Modal';
 import Button from '../../../../components/ui/Button';
 import Select from '../../../../components/ui/Select';
@@ -14,17 +15,19 @@ interface ReturnIssueModalProps {
   isLoading?: boolean;
 }
 
-const CONDITION_OPTIONS: { value: ReturnedCondition; label: string }[] = [
-  { value: 'new', label: 'New' },
-  { value: 'good', label: 'Good' },
-  { value: 'worn', label: 'Worn' },
-  { value: 'damaged', label: 'Damaged' },
-];
-
 export default function ReturnIssueModal({ isOpen, onClose, issue, onSubmit, isLoading }: ReturnIssueModalProps) {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const { librarianId } = useLibrarianStore();
   const [condition, setCondition] = useState<ReturnedCondition>('good');
   const [error, setError] = useState<string | null>(null);
+
+  const CONDITION_OPTIONS: { value: ReturnedCondition; label: string }[] = [
+    { value: 'new', label: t('issues.returnModal.conditions.new') },
+    { value: 'good', label: t('issues.returnModal.conditions.good') },
+    { value: 'worn', label: t('issues.returnModal.conditions.worn') },
+    { value: 'damaged', label: t('issues.returnModal.conditions.damaged') },
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,12 +42,12 @@ export default function ReturnIssueModal({ isOpen, onClose, issue, onSubmit, isL
       setCondition('good');
       onClose();
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Failed to return book'));
+      setError(getApiErrorMessage(err, t('issues.returnModal.failedToReturn')));
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Return Book" size="lg">
+    <Modal isOpen={isOpen} onClose={onClose} title={t('issues.returnModal.title')} size="lg">
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
@@ -54,18 +57,18 @@ export default function ReturnIssueModal({ isOpen, onClose, issue, onSubmit, isL
         {issue && (
           <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
             <div className="text-sm text-slate-600">
-              <span className="font-medium">Book:</span> {issue.book_title}
+              <span className="font-medium">{t('issues.returnModal.book')}</span> {issue.book_title}
             </div>
             <div className="text-sm text-slate-600 mt-1">
-              <span className="font-medium">Copy ID:</span> {issue.copy_id}
+              <span className="font-medium">{t('issues.returnModal.copyId')}</span> {issue.copy_id}
             </div>
             <div className="text-sm text-slate-600 mt-1">
-              <span className="font-medium">Due Date:</span> {new Date(issue.due_date).toLocaleDateString()}
+              <span className="font-medium">{t('issues.returnModal.dueDate')}</span> {new Date(issue.due_date).toLocaleDateString()}
             </div>
           </div>
         )}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Returned Condition</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('issues.returnModal.returnedCondition')}</label>
           <Select
             required
             value={condition}
@@ -76,10 +79,10 @@ export default function ReturnIssueModal({ isOpen, onClose, issue, onSubmit, isL
 
         <div className="flex justify-end gap-3 pt-4">
           <Button type="button" variant="ghost" onClick={onClose} disabled={isLoading}>
-            Cancel
+            {tc('actions.cancel')}
           </Button>
           <Button type="submit" variant="primary" disabled={isLoading}>
-            {isLoading ? 'Returning...' : 'Return Book'}
+            {isLoading ? t('issues.returnModal.returning') : t('issues.returnModal.submit')}
           </Button>
         </div>
       </form>

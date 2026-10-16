@@ -4,7 +4,7 @@ import { ArrowLeft, Edit, Plus, Truck, MapPin, Folder, Package } from 'lucide-re
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import ItemVendorModal from '../../components/items/ItemVendorModal';
-import { getItem, getItemVendors, upsertItemVendor } from '../../api/items.api';
+import { getItem, getItemImageObjectUrl, getItemVendors, upsertItemVendor } from '../../api/items.api';
 import { getVendors } from '../../api/vendors.api';
 import { getApiErrorMessage } from '../../utils/errors';
 import type { InventoryItem, InventoryItemVendor, InventoryItemVendorFormData } from '../../types/item.types';
@@ -20,11 +20,32 @@ export default function ItemDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [isVendorModalOpen, setIsVendorModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  useEffect(() => {
+    if (!item?.image_url) {
+      setImageUrl(null);
+      return;
+    }
+    let objectUrl: string | null = null;
+    let cancelled = false;
+    getItemImageObjectUrl(item.image_url)
+      .then((url) => {
+        if (cancelled) return;
+        objectUrl = url;
+        setImageUrl(url);
+      })
+      .catch(() => setImageUrl(null));
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [item?.image_url]);
 
   async function load() {
     if (!id) return;
@@ -125,17 +146,18 @@ export default function ItemDetailPage() {
 
       {(item.description || item.image_url) && (
         <Card className="border-slate-200 p-4">
-          {item.description && <p className="text-sm text-slate-600">{item.description}</p>}
-          {item.image_url && (
-            <a
-              href={item.image_url}
-              target="_blank"
-              rel="noreferrer"
-              className="text-sm text-[#008BE9] hover:underline mt-2 inline-block"
-            >
-              {item.image_url}
-            </a>
-          )}
+          <div className="flex items-start gap-4">
+            {item.image_url && (
+              <div className="h-20 w-20 rounded-lg bg-slate-100 overflow-hidden flex items-center justify-center flex-shrink-0 border border-slate-200">
+                {imageUrl ? (
+                  <img src={imageUrl} alt={item.name} className="h-full w-full object-cover" />
+                ) : (
+                  <Package className="h-6 w-6 text-slate-300" />
+                )}
+              </div>
+            )}
+            {item.description && <p className="text-sm text-slate-600">{item.description}</p>}
+          </div>
         </Card>
       )}
 

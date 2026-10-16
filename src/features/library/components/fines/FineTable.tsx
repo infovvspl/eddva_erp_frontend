@@ -1,4 +1,5 @@
 import { DollarSign, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Fine } from '../../types/library.types';
 import { cn } from '../../../../utils/cn';
 
@@ -10,6 +11,7 @@ interface FineTableProps {
 }
 
 export default function FineTable({ fines, className, onWaive, onPay }: FineTableProps) {
+  const { t } = useTranslation('library');
   const finesArray = Array.isArray(fines) ? fines : [];
 
   return (
@@ -17,18 +19,18 @@ export default function FineTable({ fines, className, onWaive, onPay }: FineTabl
       <table className="w-full min-w-[600px]">
         <thead>
           <tr className="border-b border-slate-200 bg-slate-50">
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Reason</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Amount</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Paid</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Status</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Actions</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('fines.table.reason')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('fines.table.amount')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('fines.table.paid')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('fines.table.status')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('fines.table.actions')}</th>
           </tr>
         </thead>
         <tbody>
           {finesArray.length === 0 ? (
             <tr key="no-fines">
               <td colSpan={5} className="py-8 text-center text-slate-500">
-                No fines found.
+                {t('fines.table.noFinesFound')}
               </td>
             </tr>
           ) : (
@@ -54,17 +56,17 @@ export default function FineTable({ fines, className, onWaive, onPay }: FineTabl
                   {fine.waived ? (
                     <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
                       <XCircle className="h-3 w-3" />
-                      Waived
+                      {t('fines.table.waived')}
                     </span>
                   ) : fine.paid ? (
                     <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
                       <CheckCircle className="h-3 w-3" />
-                      Paid
+                      {t('fines.table.paidStatus')}
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
                       <Clock className="h-3 w-3" />
-                      Pending
+                      {t('fines.table.pending')}
                     </span>
                   )}
                 </td>
@@ -75,16 +77,16 @@ export default function FineTable({ fines, className, onWaive, onPay }: FineTabl
                         <button
                           onClick={() => onPay?.(fine)}
                           className="px-3 py-1.5 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg"
-                          title="Pay Fine"
+                          title={t('fines.table.payFineTitle')}
                         >
-                          Pay
+                          {t('fines.table.pay')}
                         </button>
                         <button
                           onClick={() => onWaive?.(fine)}
                           className="px-3 py-1.5 text-sm bg-purple-600 hover:bg-purple-700 text-white rounded-lg"
-                          title="Waive Fine"
+                          title={t('fines.table.waiveFineTitle')}
                         >
-                          Waive
+                          {t('fines.table.waive')}
                         </button>
                       </>
                     )}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Card from '../../../../components/ui/Card';
 import Select from '../../../../components/ui/Select';
 import { useToast } from '../../../../hooks/useToast';
@@ -7,17 +8,19 @@ import { getApiErrorMessage } from '../../utils/apiError';
 import ReservationTable from '../../components/reservations/ReservationTable';
 import type { Reservation, ReservationStatus } from '../../types/library.types';
 
-const STATUS_OPTIONS = [
-  { value: '', label: 'All Statuses' },
-  { value: 'pending', label: 'Pending' },
-  { value: 'ready_for_pickup', label: 'Ready for Pickup' },
-  { value: 'fulfilled', label: 'Fulfilled' },
-  { value: 'cancelled', label: 'Cancelled' },
-  { value: 'expired', label: 'Expired' },
-];
-
 export default function ReservationsPage() {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const { toast } = useToast();
+
+  const STATUS_OPTIONS = [
+    { value: '', label: t('reservations.listPage.allStatuses') },
+    { value: 'pending', label: t('reservations.statusBadge.pending') },
+    { value: 'ready_for_pickup', label: t('reservations.statusBadge.readyForPickup') },
+    { value: 'fulfilled', label: t('reservations.statusBadge.fulfilled') },
+    { value: 'cancelled', label: t('reservations.statusBadge.cancelled') },
+    { value: 'expired', label: t('reservations.statusBadge.expired') },
+  ];
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [statusFilter, setStatusFilter] = useState<ReservationStatus | ''>('');
   const [loading, setLoading] = useState(true);
@@ -34,7 +37,7 @@ export default function ReservationsPage() {
       setReservations(data);
     } catch (err: any) {
       if (err.response?.status === 401) return;
-      toast.error(getApiErrorMessage(err, 'Failed to load reservations'));
+      toast.error(getApiErrorMessage(err, t('reservations.listPage.failedToLoad')));
     } finally {
       setLoading(false);
     }
@@ -45,10 +48,10 @@ export default function ReservationsPage() {
     try {
       await cancelReservation(reservation.reservation_id);
       await loadReservations();
-      toast.success('Reservation cancelled.');
+      toast.success(t('reservations.listPage.cancelled'));
     } catch (err: any) {
       if (err.response?.status === 401) return;
-      toast.error(getApiErrorMessage(err, 'Failed to cancel reservation'));
+      toast.error(getApiErrorMessage(err, t('reservations.listPage.failedToCancel')));
     } finally {
       setCancellingId(null);
     }
@@ -57,8 +60,8 @@ export default function ReservationsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Reservations</h1>
-        <p className="text-slate-600 mt-1">Holds placed on books, awaiting pickup or expiry</p>
+        <h1 className="text-2xl font-bold text-slate-900">{t('reservations.listPage.title')}</h1>
+        <p className="text-slate-600 mt-1">{t('reservations.listPage.subtitle')}</p>
       </div>
 
       <Card className="border-slate-200">
@@ -70,10 +73,10 @@ export default function ReservationsPage() {
               options={STATUS_OPTIONS}
               className="w-52"
             />
-            <span className="text-sm text-slate-600">{reservations.length} reservation(s)</span>
+            <span className="text-sm text-slate-600">{t('reservations.listPage.reservationCount', { count: reservations.length })}</span>
           </div>
           {loading ? (
-            <div className="text-center py-8 text-slate-500">Loading...</div>
+            <div className="text-center py-8 text-slate-500">{tc('status.loading')}</div>
           ) : (
             <ReservationTable
               reservations={reservations}

@@ -38,6 +38,39 @@ export async function getItemVendors(id: string | number): Promise<InventoryItem
   return response.data.data || response.data || [];
 }
 
+export interface InventoryUom {
+  uom_id: number;
+  name: string;
+  symbol: string;
+}
+
+export async function getUoms(): Promise<InventoryUom[]> {
+  const response = await axiosInstance.get('/inventory/items/uoms');
+  return response.data.data || response.data || [];
+}
+
+/** Uploads an item photo and returns the stored path to save as `image_url`. */
+export async function uploadItemImage(file: File): Promise<string> {
+  const body = new FormData();
+  body.append('file', file);
+  const response = await axiosInstance.post('/inventory/items/upload-image', body);
+  const data = response.data.data || response.data;
+  return data.path;
+}
+
+/**
+ * Item images are served through an authenticated endpoint, not a public
+ * static URL (same convention as Alumni's profile photos) — fetch as a blob
+ * and hand back an object URL the caller must revoke when done with it.
+ */
+export async function getItemImageObjectUrl(storedPath: string): Promise<string> {
+  const response = await axiosInstance.get('/inventory/items/image', {
+    params: { path: storedPath },
+    responseType: 'blob',
+  });
+  return URL.createObjectURL(response.data as Blob);
+}
+
 export async function upsertItemVendor(
   id: string | number,
   data: InventoryItemVendorFormData

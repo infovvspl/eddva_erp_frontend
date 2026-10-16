@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import { getMembershipRule, updateMembershipRule } from '../../api/library.api';
@@ -7,6 +8,8 @@ import type { MembershipRuleFormData } from '../../types/library.types';
 import { ROUTES } from '../../../../constants/routes';
 
 export default function EditMembershipRulePage() {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [formData, setFormData] = useState<MembershipRuleFormData>({
@@ -42,7 +45,7 @@ export default function EditMembershipRulePage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err instanceof Error ? err.message : 'Failed to load membership rule');
+      setError(err instanceof Error ? err.message : t('membershipRules.editPage.failedToLoad'));
     } finally {
       setLoading(false);
     }
@@ -60,7 +63,7 @@ export default function EditMembershipRulePage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err.response?.data?.error?.message || err.response?.data?.message || 'Failed to update membership rule');
+      setError(err.response?.data?.error?.message || err.response?.data?.message || t('membershipRules.editPage.failedToUpdate'));
     } finally {
       setSubmitting(false);
     }
@@ -70,11 +73,11 @@ export default function EditMembershipRulePage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Edit Membership Rule</h1>
-          <p className="text-slate-600 mt-1">Update membership rule details</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('membershipRules.editPage.title')}</h1>
+          <p className="text-slate-600 mt-1">{t('membershipRules.editPage.subtitle')}</p>
         </div>
         <Card className="border-slate-200">
-          <div className="p-8 text-center text-slate-500">Loading...</div>
+          <div className="p-8 text-center text-slate-500">{tc('status.loading')}</div>
         </Card>
       </div>
     );
@@ -83,8 +86,8 @@ export default function EditMembershipRulePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Edit Membership Rule</h1>
-        <p className="text-slate-600 mt-1">Update membership rule details</p>
+        <h1 className="text-2xl font-bold text-slate-900">{t('membershipRules.editPage.title')}</h1>
+        <p className="text-slate-600 mt-1">{t('membershipRules.editPage.subtitle')}</p>
       </div>
 
       <Card className="border-slate-200">
@@ -98,7 +101,7 @@ export default function EditMembershipRulePage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="member_type" className="block text-sm font-medium text-slate-700 mb-1">
-                Member Type *
+                {t('membershipRules.formFields.memberType')}
               </label>
               <select
                 id="member_type"
@@ -107,17 +110,17 @@ export default function EditMembershipRulePage() {
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                 required
               >
-                <option value="">Select member type</option>
-                <option value="student">Student</option>
-                <option value="staff">Staff</option>
-                <option value="faculty">Faculty</option>
+                <option value="">{t('membershipRules.formFields.selectMemberType')}</option>
+                <option value="student">{t('membershipRules.formFields.memberTypeStudent')}</option>
+                <option value="staff">{t('membershipRules.formFields.memberTypeStaff')}</option>
+                <option value="faculty">{t('membershipRules.formFields.memberTypeFaculty')}</option>
               </select>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="max_books_allowed" className="block text-sm font-medium text-slate-700 mb-1">
-                  Max Books Allowed *
+                  {t('membershipRules.formFields.maxBooksAllowed')}
                 </label>
                 <input
                   type="number"
@@ -132,7 +135,7 @@ export default function EditMembershipRulePage() {
 
               <div>
                 <label htmlFor="loan_period_days" className="block text-sm font-medium text-slate-700 mb-1">
-                  Loan Period (Days) *
+                  {t('membershipRules.formFields.loanPeriodDays')}
                 </label>
                 <input
                   type="number"
@@ -147,7 +150,7 @@ export default function EditMembershipRulePage() {
 
               <div>
                 <label htmlFor="fine_per_day" className="block text-sm font-medium text-slate-700 mb-1">
-                  Fine Per Day *
+                  {t('membershipRules.formFields.finePerDay')}
                 </label>
                 <input
                   type="number"
@@ -163,7 +166,7 @@ export default function EditMembershipRulePage() {
 
               <div>
                 <label htmlFor="grace_period_days" className="block text-sm font-medium text-slate-700 mb-1">
-                  Grace Period (Days) *
+                  {t('membershipRules.formFields.gracePeriodDays')}
                 </label>
                 <input
                   type="number"
@@ -178,7 +181,7 @@ export default function EditMembershipRulePage() {
 
               <div className="md:col-span-2">
                 <label htmlFor="max_fine_cap" className="block text-sm font-medium text-slate-700 mb-1">
-                  Max Fine Cap *
+                  {t('membershipRules.formFields.maxFineCap')}
                 </label>
                 <input
                   type="number"
@@ -200,10 +203,10 @@ export default function EditMembershipRulePage() {
                 onClick={() => navigate(ROUTES.LIBRARY_MEMBERSHIP_RULES)}
                 disabled={submitting}
               >
-                Cancel
+                {tc('actions.cancel')}
               </Button>
               <Button type="submit" variant="primary" disabled={submitting}>
-                {submitting ? 'Updating...' : 'Update Rule'}
+                {submitting ? tc('status.saving') : t('membershipRules.editPage.submit')}
               </Button>
             </div>
           </form>

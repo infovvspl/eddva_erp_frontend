@@ -12,6 +12,7 @@ import { useIsInstituteAdmin as useIsHostelInstituteAdmin } from '../../features
 import { useIsInstituteAdmin as useIsAlumniInstituteAdmin } from '../../features/alumni/utils/rbac.utils';
 import { findActiveModule, moduleHomePath, navItems } from '../navConfig';
 import type { NavItem } from '../navConfig';
+import { useEnabledModules } from '../../features/erp-modules/hooks/useEnabledModules';
 
 export default function Sidebar() {
   const sidebarOpen = useUIStore((state) => state.sidebarOpen);
@@ -23,7 +24,12 @@ export default function Sidebar() {
   const isAdmissionAdmin = useIsAdmissionInstituteAdmin();
   const isHostelAdmin = useIsHostelInstituteAdmin();
   const isAlumniAdmin = useIsAlumniInstituteAdmin();
-  const visibleNavItems = navItems.map((item) => {
+  // `null` (not yet loaded, or the LMS reports "not restricted") shows every
+  // module, same as before this existed — only a concrete array restricts.
+  const { data: enabledPaths } = useEnabledModules();
+  const moduleAllowed = (path: string) =>
+    !enabledPaths || path === '/dashboard' || path === '/admin-management' || enabledPaths.includes(path);
+  const visibleNavItems = navItems.filter((item) => moduleAllowed(item.path)).map((item) => {
     if (item.path === '/sales-purchase' && item.children && !isSalesPurchaseAdmin) {
       return {
         ...item,

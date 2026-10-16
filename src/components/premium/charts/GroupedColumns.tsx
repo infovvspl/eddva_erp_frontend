@@ -1,3 +1,13 @@
+import { CartesianGrid, Line, LineChart, XAxis } from 'recharts';
+import {
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from '../../ui-shadcn/chart';
+
 interface Series {
   key: string;
   name: string;
@@ -17,40 +27,45 @@ const PALETTE = ['#008BE9', '#eb6834', '#15936a', '#d55181'];
 // Grouped bar comparison across a small set of rows (e.g. sales vs purchase per metric).
 export default function GroupedColumns({ rows, series, tone = 'light', format, height = 220, showValues }: GroupedColumnsProps) {
   const dark = tone === 'dark';
-  const max = Math.max(1, ...rows.flatMap((r) => series.map((s) => Number(r[s.key]) || 0)));
   const fmt = format ?? ((v: number) => String(v));
 
+  const config: ChartConfig = Object.fromEntries(
+    series.map((s, i) => [s.key, { label: s.name, color: PALETTE[i % PALETTE.length] }]),
+  );
+
+  const tickColor = dark ? 'rgba(224, 242, 254, 0.7)' : undefined;
+  const gridColor = dark ? 'rgba(255, 255, 255, 0.1)' : undefined;
+
   return (
-    <div style={{ height }} className="flex items-end gap-4">
-      {rows.map((row) => (
-        <div key={String(row.label)} className="flex flex-1 flex-col items-center gap-2">
-          <div className="flex h-full items-end gap-1.5">
-            {series.map((s, i) => {
-              const value = Number(row[s.key]) || 0;
-              const pct = Math.max((value / max) * 100, value > 0 ? 3 : 0);
-              return (
-                <div key={s.key} className="flex w-6 flex-col items-center justify-end" style={{ height: '100%' }}>
-                  {showValues && (
-                    <span className={`mb-1 text-[10px] tabular-nums ${dark ? 'text-sky-100/70' : 'text-slate-500'}`}>
-                      {fmt(value)}
-                    </span>
-                  )}
-                  <div
-                    className="w-full rounded-t-md transition-[height] duration-700 ease-out"
-                    style={{ height: `${pct}%`, background: PALETTE[i % PALETTE.length], minHeight: value > 0 ? 2 : 0 }}
-                  />
-                </div>
-              );
-            })}
-          </div>
-          <span className={`text-center text-[11px] ${dark ? 'text-sky-100/70' : 'text-slate-500'}`}>{row.label}</span>
-        </div>
-      ))}
-      <div className="sr-only">
-        {series.map((s) => (
-          <span key={s.key}>{s.name}</span>
+    <ChartContainer config={config} style={{ height }} className="aspect-auto w-full">
+      <LineChart data={rows} margin={{ top: showValues ? 16 : 8, left: 0, right: 12, bottom: 0 }}>
+        <CartesianGrid vertical={false} stroke={gridColor} />
+        <XAxis
+          dataKey="label"
+          tickLine={false}
+          axisLine={false}
+          tickMargin={8}
+          tick={tickColor ? { fill: tickColor } : undefined}
+        />
+        <ChartTooltip
+          cursor={{ stroke: dark ? 'rgba(255,255,255,0.15)' : 'rgba(15,23,42,0.1)' }}
+          content={<ChartTooltipContent formatter={(value) => fmt(Number(value))} />}
+        />
+        {series.length > 1 && <ChartLegend content={<ChartLegendContent />} />}
+        {series.map((s, i) => (
+          <Line
+            key={s.key}
+            type="monotone"
+            dataKey={s.key}
+            name={s.name}
+            stroke={PALETTE[i % PALETTE.length]}
+            strokeWidth={2}
+            dot={{ r: 3, fill: PALETTE[i % PALETTE.length] }}
+            activeDot={{ r: 5 }}
+            label={showValues ? { position: 'top', fontSize: 10, fill: tickColor ?? '#64748b', formatter: fmt } : undefined}
+          />
         ))}
-      </div>
-    </div>
+      </LineChart>
+    </ChartContainer>
   );
 }

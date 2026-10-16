@@ -36,8 +36,8 @@ export default function AttentionList({ items, footer }: AttentionListProps) {
   }
 
   return (
-    <div className="flex flex-1 flex-col">
-      <ul className="-mx-1 flex-1 space-y-1 overflow-y-auto">
+    <div className="flex min-h-0 flex-1 flex-col">
+      <ul className="-mx-1 min-h-0 flex-1 space-y-1 overflow-y-auto">
         {items.map((item, i) => (
           <li key={`${item.module}-${item.label}-${i}`}>
             <Link

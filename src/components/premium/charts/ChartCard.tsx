@@ -10,11 +10,13 @@ interface ChartCardProps {
   tone?: 'light' | 'dark';
   // Stretches to fill the row (used for the attention rail, which has no fixed content height).
   fill?: boolean;
+  // Optional header-right slot (e.g. a "View all" link to a dedicated page).
+  action?: ReactNode;
   children: ReactNode;
 }
 
 // Shared card shell for every dashboard widget — a title row plus a content slot.
-export default function ChartCard({ title, subtitle, icon: Icon, className = '', style, tone = 'light', fill, children }: ChartCardProps) {
+export default function ChartCard({ title, subtitle, icon: Icon, className = '', style, tone = 'light', fill, action, children }: ChartCardProps) {
   const dark = tone === 'dark';
   return (
     <div
@@ -37,12 +39,13 @@ export default function ChartCard({ title, subtitle, icon: Icon, className = '',
             <Icon className="h-4 w-4" />
           </div>
         )}
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h3 className={`truncate text-sm font-semibold tracking-tight ${dark ? 'text-white' : 'text-slate-900'}`}>{title}</h3>
           {subtitle && <p className={`truncate text-xs ${dark ? 'text-sky-100/70' : 'text-slate-400'}`}>{subtitle}</p>}
         </div>
+        {action && <div className="shrink-0">{action}</div>}
       </div>
-      <div className={`mt-4 ${fill ? 'flex flex-1 flex-col' : ''}`}>{children}</div>
+      <div className={`mt-4 ${fill ? 'flex min-h-0 flex-1 flex-col' : ''}`}>{children}</div>
     </div>
   );
 }

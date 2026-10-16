@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Edit, Eye, User, Badge, Calendar } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Member } from '../../types/library.types';
 import { cn } from '../../../../utils/cn';
 import { ROUTES } from '../../../../constants/routes';
@@ -10,25 +11,26 @@ interface MemberTableProps {
 }
 
 export default function MemberTable({ members, className }: MemberTableProps) {
+  const { t } = useTranslation('library');
   const membersArray = Array.isArray(members) ? members : [];
-  
+
   return (
     <div className={cn('overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0', className)}>
       <table className="w-full min-w-[700px]">
         <thead>
           <tr className="border-b border-slate-200 bg-slate-50">
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">External Ref ID</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Name</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 hidden md:table-cell">Member Type</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 hidden lg:table-cell">Joined Date</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Actions</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('members.table.externalRefId')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('members.table.name')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 hidden md:table-cell">{t('members.table.memberType')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 hidden lg:table-cell">{t('members.table.joinedDate')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('members.table.actions')}</th>
           </tr>
         </thead>
         <tbody>
           {membersArray.length === 0 ? (
             <tr>
               <td colSpan={5} className="py-8 text-center text-slate-500">
-                No members found. Create your first member.
+                {t('members.table.noMembersFound')}
               </td>
             </tr>
           ) : (
@@ -62,12 +64,12 @@ export default function MemberTable({ members, className }: MemberTableProps) {
                 <td className="py-3 px-4">
                   <div className="flex items-center gap-2">
                     <Link to={ROUTES.LIBRARY_MEMBERS_EDIT.replace(':id', member.member_id.toString())}>
-                      <button className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-600" title="Edit">
+                      <button className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-600" title={t('members.table.editTitle')}>
                         <Edit className="h-4 w-4" />
                       </button>
                     </Link>
                     <Link to={ROUTES.LIBRARY_MEMBERS_DETAILS.replace(':id', member.member_id.toString())}>
-                      <button className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-600" title="View Details">
+                      <button className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-600" title={t('members.table.viewDetailsTitle')}>
                         <Eye className="h-4 w-4" />
                       </button>
                     </Link>

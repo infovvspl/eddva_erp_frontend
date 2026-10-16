@@ -1,3 +1,6 @@
+import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '../../ui-shadcn/chart';
+
 interface AreaRow {
   label: string;
   value: number;
@@ -9,39 +12,47 @@ interface GradientAreaProps {
   height?: number;
 }
 
-// Small SVG area/line sparkline for a day-by-day trend.
+const config: ChartConfig = {
+  value: { label: 'Count', color: '#008BE9' },
+};
+
+// Day-by-day trend area chart (e.g. campus visitors over a date range).
 export default function GradientArea({ name, rows, height = 180 }: GradientAreaProps) {
   if (rows.length === 0) {
     return <p className="py-8 text-center text-xs text-slate-400">No data</p>;
   }
 
-  const width = 100;
-  const max = Math.max(1, ...rows.map((r) => r.value));
-  const stepX = rows.length > 1 ? width / (rows.length - 1) : 0;
-  const points = rows.map((r, i) => ({ x: i * stepX, y: height - (r.value / max) * (height - 24) - 4 }));
-  const line = points.map((p) => `${p.x},${p.y}`).join(' ');
-  const area = `0,${height} ${line} ${width},${height}`;
   const gradientId = `grad-${name.replace(/\s+/g, '-')}`;
 
   return (
-    <div>
-      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="h-44 w-full">
+    <ChartContainer config={config} style={{ height }} className="aspect-auto w-full">
+      <AreaChart data={rows} margin={{ top: 8, left: 0, right: 12, bottom: 0 }}>
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#008BE9" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="#008BE9" stopOpacity="0" />
+            <stop offset="0%" stopColor="#008BE9" stopOpacity={0.35} />
+            <stop offset="100%" stopColor="#008BE9" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <polygon points={area} fill={`url(#${gradientId})`} />
-        <polyline points={line} fill="none" stroke="#008BE9" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-        {points.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="1.6" fill="#008BE9" vectorEffect="non-scaling-stroke" />
-        ))}
-      </svg>
-      <div className="mt-1 flex justify-between text-[10px] text-slate-400">
-        <span>{rows[0]?.label}</span>
-        <span>{rows[rows.length - 1]?.label}</span>
-      </div>
-    </div>
+        <CartesianGrid vertical={false} />
+        <XAxis
+          dataKey="label"
+          tickLine={false}
+          axisLine={false}
+          tickMargin={8}
+          minTickGap={32}
+        />
+        <ChartTooltip cursor={{ stroke: 'rgba(15,23,42,0.1)' }} content={<ChartTooltipContent hideLabel={false} />} />
+        <Area
+          type="monotone"
+          dataKey="value"
+          name={name}
+          stroke="#008BE9"
+          strokeWidth={2}
+          fill={`url(#${gradientId})`}
+          dot={false}
+          activeDot={{ r: 4 }}
+        />
+      </AreaChart>
+    </ChartContainer>
   );
 }

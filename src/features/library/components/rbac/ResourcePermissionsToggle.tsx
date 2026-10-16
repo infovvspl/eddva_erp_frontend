@@ -1,4 +1,5 @@
 import { Check, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../../../utils/cn';
 import type { PermissionResource, RolePermission } from '../../types/library.types';
 
@@ -37,6 +38,7 @@ export default function ResourcePermissionsToggle({
   isInstituteAdmin = false,
   className,
 }: ResourcePermissionsToggleProps) {
+  const { t } = useTranslation('library');
   const getSelectedActions = (resource: string): string[] => {
     return selectedPermissions.find((p) => p.resource === resource)?.actions ?? [];
   };
@@ -104,7 +106,7 @@ export default function ResourcePermissionsToggle({
                       : 'text-[#008BE9] hover:bg-[#008BE9]/10'
                 )}
               >
-                {allSelected ? 'Deselect all' : 'Select all'}
+                {allSelected ? t('rbac.resourceToggle.deselectAll') : t('rbac.resourceToggle.selectAll')}
               </button>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -125,7 +127,7 @@ export default function ResourcePermissionsToggle({
                     title={
                       isAllowed
                         ? permissionDetail?.description
-                        : 'Your account does not have this permission'
+                        : t('rbac.resourceToggle.noPermissionTitle')
                     }
                     disabled={!isAllowed}
                     onClick={() => toggleAction(resourceItem.resource, action)}
@@ -150,7 +152,7 @@ export default function ResourcePermissionsToggle({
           </div>
         );
       })}
-      <p className="text-xs text-slate-500">{totalSelected} permission(s) selected</p>
+      <p className="text-xs text-slate-500">{t('rbac.resourceToggle.selectedCount', { count: totalSelected })}</p>
     </div>
   );
 }

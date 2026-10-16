@@ -10,3 +10,9 @@ export const logoutApi = async (): Promise<void> => {
   // This will call the real API: POST /auth/logout
   await new Promise((resolve) => setTimeout(resolve, 500));
 };
+
+/** Mints a short-lived bridge token the LMS's /school/sso route exchanges for a real LMS session. */
+export const mintLmsSsoTokenApi = async (): Promise<{ success: boolean; token: string }> => {
+  const response = await axiosInstance.post('/auth/lms-sso-token');
+  return response.data.data ?? response.data;
+};

@@ -1,4 +1,5 @@
 import { Edit, Trash2, Building2, Phone, Mail } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { BookVendor } from '../../types/library.types';
 import { cn } from '../../../../utils/cn';
 
@@ -10,6 +11,7 @@ interface VendorTableProps {
 }
 
 export default function VendorTable({ vendors, className, onEdit, onDelete }: VendorTableProps) {
+  const { t } = useTranslation('library');
   const vendorsArray = Array.isArray(vendors) ? vendors : [];
 
   return (
@@ -17,19 +19,19 @@ export default function VendorTable({ vendors, className, onEdit, onDelete }: Ve
       <table className="w-full min-w-[800px]">
         <thead>
           <tr className="border-b border-slate-200 bg-slate-50">
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Vendor Name</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Contact Person</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 hidden md:table-cell">Phone</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 hidden lg:table-cell">Email</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 hidden xl:table-cell">Last Purchase Price</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Actions</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('vendors.table.vendorName')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('vendors.table.contactPerson')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 hidden md:table-cell">{t('vendors.table.phone')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 hidden lg:table-cell">{t('vendors.table.email')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 hidden xl:table-cell">{t('vendors.table.lastPurchasePrice')}</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">{t('vendors.table.actions')}</th>
           </tr>
         </thead>
         <tbody>
           {vendorsArray.length === 0 ? (
             <tr key="no-vendors">
               <td colSpan={6} className="py-8 text-center text-slate-500">
-                No vendors found. Add your first vendor to this book.
+                {t('vendors.table.noVendorsFound')}
               </td>
             </tr>
           ) : (
@@ -67,14 +69,14 @@ export default function VendorTable({ vendors, className, onEdit, onDelete }: Ve
                     <button
                       onClick={() => onEdit?.(vendor)}
                       className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-600"
-                      title="Edit"
+                      title={t('vendors.table.editTitle')}
                     >
                       <Edit className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => onDelete?.(vendor.book_vendor_id)}
                       className="p-1.5 hover:bg-red-50 rounded-lg text-red-600"
-                      title="Delete"
+                      title={t('vendors.table.deleteTitle')}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

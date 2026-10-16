@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import type { LucideIcon } from 'lucide-react';
 import {
   BarChart3,
@@ -52,9 +53,14 @@ interface Kpi {
   icon: LucideIcon;
   hint?: string;
   accent: string;
+  empty?: boolean;
+  to?: string;
 }
 
 function buildKpis({ sales_purchase: sp, inventory, hostel, front_office: fo, admission, canteen, transport }: DashboardData): Kpi[] {
+  // "Empty" means the module has never been used, not that today's reading
+  // happens to be zero — a real ₹0 receivable is still real data, but zero
+  // invoices ever raised means nobody's set this module up yet.
   const kpis: (Kpi | undefined)[] = [
     sp && {
       label: 'Sales invoiced',
@@ -62,6 +68,8 @@ function buildKpis({ sales_purchase: sp, inventory, hostel, front_office: fo, ad
       icon: TrendingUp,
       hint: `${rupees(sp.sales.invoices.outstanding_amount)} receivable`,
       accent: '#008BE9',
+      empty: sp.sales.invoices.period_count === 0,
+      to: '/sales-purchase/dashboard',
     },
     sp && {
       label: 'Purchases invoiced',
@@ -69,6 +77,8 @@ function buildKpis({ sales_purchase: sp, inventory, hostel, front_office: fo, ad
       icon: ShoppingCart,
       hint: `${rupees(sp.purchase.invoices.outstanding_amount)} payable`,
       accent: '#eb6834',
+      empty: sp.purchase.invoices.period_count === 0,
+      to: '/sales-purchase/dashboard',
     },
     inventory && {
       label: 'Stock valuation',
@@ -76,6 +86,8 @@ function buildKpis({ sales_purchase: sp, inventory, hostel, front_office: fo, ad
       icon: Boxes,
       hint: `${inventory.total_items} items tracked`,
       accent: '#15936a',
+      empty: inventory.total_items === 0,
+      to: '/inventory',
     },
     hostel && {
       label: 'Hostel occupancy',
@@ -83,6 +95,8 @@ function buildKpis({ sales_purchase: sp, inventory, hostel, front_office: fo, ad
       icon: BedDouble,
       hint: `${hostel.occupancy.occupied_places} of ${hostel.occupancy.total_capacity} places`,
       accent: '#d55181',
+      empty: hostel.occupancy.total_capacity === 0,
+      to: '/hostel/dashboard',
     },
     fo && {
       label: 'Visitors on campus',
@@ -90,6 +104,8 @@ function buildKpis({ sales_purchase: sp, inventory, hostel, front_office: fo, ad
       icon: UserCheck,
       hint: `${fo.visitors.today_visitors} checked in today`,
       accent: '#7c3aed',
+      empty: fo.visitors.today_visitors === 0 && fo.visitors.currently_checked_in === 0,
+      to: '/front-office',
     },
     admission && {
       label: 'Seats available',
@@ -97,6 +113,8 @@ function buildKpis({ sales_purchase: sp, inventory, hostel, front_office: fo, ad
       icon: School,
       hint: `of ${admission.seats.total_seats} · ${admission.kpis.applications} applied`,
       accent: '#4a3aa7',
+      empty: admission.seats.total_seats === 0,
+      to: '/admission/dashboard',
     },
     canteen && {
       label: 'Canteen wallets',
@@ -104,6 +122,8 @@ function buildKpis({ sales_purchase: sp, inventory, hostel, front_office: fo, ad
       icon: Wallet,
       hint: `${canteen.members.total_members} members · ${canteen.members.active_wallets} wallets`,
       accent: '#c98500',
+      empty: canteen.members.total_members === 0,
+      to: '/canteen/dashboard',
     },
     transport && {
       label: 'Transport fees',
@@ -111,6 +131,8 @@ function buildKpis({ sales_purchase: sp, inventory, hostel, front_office: fo, ad
       icon: Bus,
       hint: `${transport.fees.payments_in_range} payment${transport.fees.payments_in_range === 1 ? '' : 's'} · ${rangeLabel(transport.range)}`,
       accent: '#0891b2',
+      empty: transport.totals.vehicles === 0,
+      to: '/transport/dashboard',
     },
   ];
   return kpis.filter((k): k is Kpi => !!k);
@@ -129,7 +151,11 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* Bento: hero + KPIs on the left, a tall attention rail on the right. */}
+      {/* Bento: hero + KPIs on the left, a tall attention rail on the right. The
+          rail is height-capped to match the left column and scrolls internally
+          (AttentionList's <ul> already has overflow-y-auto) — otherwise, with
+          8+ attention items, the rail grows taller than the left column and
+          grid's default row-stretch leaves a visible gap under the KPI tiles. */}
       <div className="grid gap-5 grid-cols-1 lg:grid-cols-12">
         <div className="lg:col-span-8 space-y-5">
           <HeroBanner
@@ -149,9 +175,23 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <ChartCard title="Needs attention" subtitle="Open items across modules" icon={Bell} className="lg:col-span-4" style={stagger(2)} fill>
+        <ChartCard
+          title="Needs attention"
+          subtitle="Open items across modules"
+          icon={Bell}
+          className="lg:col-span-4 lg:max-h-[468px]"
+          style={stagger(2)}
+          fill
+          action={
+            attention.length > 0 && (
+              <Link to="/dashboard/attention" className="text-xs font-semibold text-brand hover:underline">
+                View all
+              </Link>
+            )
+          }
+        >
           <AttentionList
-            items={attention}
+            items={attention.slice(0, 8)}
             footer={<ModuleHealth items={attention} moduleCount={Object.values(data).filter(Boolean).length} />}
           />
         </ChartCard>

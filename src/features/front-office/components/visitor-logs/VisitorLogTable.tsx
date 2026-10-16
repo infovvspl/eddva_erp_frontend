@@ -1,7 +1,14 @@
 import { Link } from 'react-router-dom';
 import { Eye, LogOut, User, Building2 } from 'lucide-react';
-import type { VisitorLogSummary } from '../../types/visitorLog.types';
+import type { VisitorLogSummary, VisitorType } from '../../types/visitorLog.types';
+import { VISITOR_TYPE_LABELS } from '../../types/visitorLog.types';
 import { cn } from '../../../../utils/cn';
+
+function visitorTypeLabel(log: VisitorLogSummary): string {
+  if (!log.visitor_type) return '—';
+  const label = VISITOR_TYPE_LABELS[log.visitor_type as VisitorType] ?? log.visitor_type;
+  return log.agency_vendor_name ? `${label} — ${log.agency_vendor_name}` : label;
+}
 
 interface VisitorLogTableProps {
   logs: VisitorLogSummary[];
@@ -14,10 +21,11 @@ export default function VisitorLogTable({ logs, className, onCheckOut }: Visitor
 
   return (
     <div className={cn('overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0', className)}>
-      <table className="w-full min-w-[900px]">
+      <table className="w-full min-w-[1000px]">
         <thead>
           <tr className="border-b border-slate-200 bg-slate-50">
             <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Visitor</th>
+            <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Visitor Type</th>
             <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Host</th>
             <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Purpose</th>
             <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Badge</th>
@@ -30,7 +38,7 @@ export default function VisitorLogTable({ logs, className, onCheckOut }: Visitor
         <tbody>
           {logsArray.length === 0 ? (
             <tr>
-              <td colSpan={8} className="py-8 text-center text-slate-500">
+              <td colSpan={9} className="py-8 text-center text-slate-500">
                 No visitor logs found.
               </td>
             </tr>
@@ -43,10 +51,14 @@ export default function VisitorLogTable({ logs, className, onCheckOut }: Visitor
                     <span className="font-medium text-slate-900 text-sm">{log.visitor?.full_name ?? `#${log.visitor_id}`}</span>
                   </Link>
                 </td>
+                <td className="py-3 px-4 text-sm text-slate-600">{visitorTypeLabel(log)}</td>
                 <td className="py-3 px-4 text-sm text-slate-600">
                   <div className="flex items-center gap-1">
                     <Building2 className="h-3.5 w-3.5 text-slate-400" />
-                    {log.host_employee?.name ?? `#${log.host_employee_id}`}
+                    <div>
+                      <div>{log.host_employee?.name ?? `#${log.host_employee_id}`}</div>
+                      {log.department?.name && <div className="text-xs text-slate-400">{log.department.name}</div>}
+                    </div>
                   </div>
                 </td>
                 <td className="py-3 px-4 text-sm text-slate-600">{log.purpose || '—'}</td>

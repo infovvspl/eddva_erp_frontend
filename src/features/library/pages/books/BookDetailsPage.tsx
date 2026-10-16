@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Calendar, Edit, CheckCircle, Plus, Barcode, Building2, BookmarkPlus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import { getBook, getBookCopies, createBookCopy, updateBookCopy, getBookVendors, createBookVendor, updateBookVendor, deleteBookVendor } from '../../api/library.api';
@@ -15,6 +16,8 @@ import EditVendorModal from '../../components/vendors/EditVendorModal';
 import ReserveBookModal from '../../components/reservations/ReserveBookModal';
 
 export default function BookDetailsPage() {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
   const [book, setBook] = useState<Book | null>(null);
   const [copies, setCopies] = useState<BookCopy[]>([]);
@@ -46,7 +49,7 @@ export default function BookDetailsPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err instanceof Error ? err.message : 'Failed to load book');
+      setError(err instanceof Error ? err.message : t('books.detailsPage.failedToLoad'));
     } finally {
       setLoading(false);
     }
@@ -87,7 +90,7 @@ export default function BookDetailsPage() {
       setIsCreateModalOpen(false);
     } catch (err: any) {
       if (err.response?.status === 409) {
-        throw new Error('A copy with this barcode already exists');
+        throw new Error(t('books.detailsPage.duplicateBarcode'));
       }
       throw err;
     } finally {
@@ -134,7 +137,7 @@ export default function BookDetailsPage() {
   function handleDeleteCopy(_copyId: number) {
     // Note: Delete API not provided in requirements
     // When API is available, implement: await deleteBookCopy(copyId);
-    alert('Delete functionality not yet implemented - API endpoint not provided');
+    alert(t('books.detailsPage.deleteNotImplemented'));
   }
 
   async function handleCreateVendor(data: BookVendorFormData) {
@@ -171,7 +174,7 @@ export default function BookDetailsPage() {
   }
 
   async function handleDeleteVendor(vendorId: number) {
-    if (!confirm('Are you sure you want to delete this vendor?')) return;
+    if (!confirm(t('books.detailsPage.confirmDeleteVendor'))) return;
     try {
       await deleteBookVendor(vendorId);
       await loadVendors();
@@ -180,7 +183,7 @@ export default function BookDetailsPage() {
         return;
       }
       console.error('Failed to delete vendor:', err);
-      alert('Failed to delete vendor');
+      alert(t('books.detailsPage.failedToDeleteVendor'));
     }
   }
 
@@ -188,11 +191,11 @@ export default function BookDetailsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Book Details</h1>
-          <p className="text-slate-600 mt-1">View book information</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('books.detailsPage.title')}</h1>
+          <p className="text-slate-600 mt-1">{t('books.detailsPage.subtitle')}</p>
         </div>
         <Card className="border-slate-200">
-          <div className="p-8 text-center text-slate-500">Loading...</div>
+          <div className="p-8 text-center text-slate-500">{tc('status.loading')}</div>
         </Card>
       </div>
     );
@@ -202,11 +205,11 @@ export default function BookDetailsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Book Details</h1>
-          <p className="text-slate-600 mt-1">View book information</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('books.detailsPage.title')}</h1>
+          <p className="text-slate-600 mt-1">{t('books.detailsPage.subtitle')}</p>
         </div>
         <Card className="border-slate-200">
-          <div className="p-8 text-center text-red-500">{error || 'Book not found'}</div>
+          <div className="p-8 text-center text-red-500">{error || t('books.detailsPage.bookNotFound')}</div>
         </Card>
       </div>
     );
@@ -219,18 +222,18 @@ export default function BookDetailsPage() {
           <Link to={ROUTES.LIBRARY_BOOKS}>
             <Button variant="ghost" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Catalog
+              {t('books.detailsPage.backToCatalog')}
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Book Details</h1>
-            <p className="text-slate-600 mt-1">View book information</p>
+            <h1 className="text-2xl font-bold text-slate-900">{t('books.detailsPage.title')}</h1>
+            <p className="text-slate-600 mt-1">{t('books.detailsPage.subtitle')}</p>
           </div>
         </div>
         <Link to={ROUTES.LIBRARY_BOOKS_EDIT.replace(':id', book.book_id.toString())}>
           <Button variant="primary">
             <Edit className="h-4 w-4 mr-2" />
-            Edit Book
+            {t('books.detailsPage.editBook')}
           </Button>
         </Link>
       </div>
@@ -257,61 +260,61 @@ export default function BookDetailsPage() {
                 {book._count?.copies && book._count.copies > 0 ? (
                   <div className="flex items-center gap-2 text-green-600 bg-green-50 px-3 py-1.5 rounded-full">
                     <CheckCircle className="h-4 w-4" />
-                    <span className="font-medium">{book._count.copies} copies</span>
+                    <span className="font-medium">{t('books.table.copiesCount', { count: book._count.copies })}</span>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 text-slate-600 bg-slate-50 px-3 py-1.5 rounded-full">
-                    <span className="font-medium">No copies</span>
+                    <span className="font-medium">{t('books.table.noCopies')}</span>
                   </div>
                 )}
                 {copies.filter((c) => c.status === 'available').length === 0 && (
                   <Button variant="secondary" size="sm" onClick={() => setIsReserveModalOpen(true)}>
                     <BookmarkPlus className="h-4 w-4 mr-2" />
-                    Reserve
+                    {t('books.detailsPage.reserve')}
                   </Button>
                 )}
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-4">
                 <div>
-                  <div className="text-sm text-slate-500 mb-1">ISBN</div>
+                  <div className="text-sm text-slate-500 mb-1">{t('books.detailsPage.isbn')}</div>
                   <div className="font-mono text-sm text-slate-900">{book.isbn}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-slate-500 mb-1">Publisher</div>
+                  <div className="text-sm text-slate-500 mb-1">{t('books.detailsPage.publisher')}</div>
                   <div className="text-slate-900">{book.publisher}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-slate-500 mb-1">Edition</div>
+                  <div className="text-sm text-slate-500 mb-1">{t('books.detailsPage.edition')}</div>
                   <div className="text-slate-900">{book.edition}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-slate-500 mb-1">Language</div>
+                  <div className="text-sm text-slate-500 mb-1">{t('books.detailsPage.language')}</div>
                   <div className="text-slate-900">{book.language}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-slate-500 mb-1">Publish Year</div>
+                  <div className="text-sm text-slate-500 mb-1">{t('books.detailsPage.publishYear')}</div>
                   <div className="text-slate-900">{book.publish_year}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-slate-500 mb-1">Category ID</div>
+                  <div className="text-sm text-slate-500 mb-1">{t('books.detailsPage.categoryId')}</div>
                   <div className="text-slate-900">{book.category_id}</div>
                 </div>
               </div>
 
               <div className="pt-4">
-                <div className="text-sm text-slate-500 mb-1">Description</div>
+                <div className="text-sm text-slate-500 mb-1">{t('books.detailsPage.description')}</div>
                 <p className="text-slate-700">{book.description}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4 pt-4 text-sm text-slate-500">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
-                  <span>Added: {new Date(book.created_at).toLocaleDateString()}</span>
+                  <span>{t('books.detailsPage.added', { date: new Date(book.created_at).toLocaleDateString() })}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <BookOpen className="h-4 w-4" />
-                  <span>Updated: {new Date(book.updated_at).toLocaleDateString()}</span>
+                  <span>{t('books.detailsPage.updated', { date: new Date(book.updated_at).toLocaleDateString() })}</span>
                 </div>
               </div>
             </div>
@@ -325,12 +328,12 @@ export default function BookDetailsPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <Barcode className="h-5 w-5 text-blue-600" />
-              <h3 className="text-lg font-semibold text-slate-900">Book Copies</h3>
-              <span className="text-sm text-slate-500">({copies.length} copies)</span>
+              <h3 className="text-lg font-semibold text-slate-900">{t('books.detailsPage.bookCopies')}</h3>
+              <span className="text-sm text-slate-500">{t('books.detailsPage.copiesParenCount', { count: copies.length })}</span>
             </div>
             <Button variant="primary" size="sm" onClick={() => setIsCreateModalOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
-              Add Copy
+              {t('books.detailsPage.addCopy')}
             </Button>
           </div>
           <CopyTable
@@ -347,12 +350,12 @@ export default function BookDetailsPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <Building2 className="h-5 w-5 text-blue-600" />
-              <h3 className="text-lg font-semibold text-slate-900">Book Vendors</h3>
-              <span className="text-sm text-slate-500">({vendors.length} vendors)</span>
+              <h3 className="text-lg font-semibold text-slate-900">{t('books.detailsPage.bookVendors')}</h3>
+              <span className="text-sm text-slate-500">{t('books.detailsPage.vendorsParenCount', { count: vendors.length })}</span>
             </div>
             <Button variant="primary" size="sm" onClick={() => setIsVendorCreateModalOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
-              Add Vendor
+              {t('books.detailsPage.addVendor')}
             </Button>
           </div>
           <VendorTable

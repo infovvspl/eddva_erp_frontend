@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import Select from '../../../../components/ui/Select';
-import { createItem } from '../../api/items.api';
+import ItemImageField from '../../components/items/ItemImageField';
+import { createItem, getUoms, type InventoryUom } from '../../api/items.api';
 import { getCategories } from '../../api/categories.api';
 import { getApiErrorMessage } from '../../utils/errors';
 import { ITEM_TYPE_OPTIONS } from '../../constants/item.constants';
@@ -13,6 +14,7 @@ import type { InventoryCategory } from '../../types/category.types';
 export default function CreateItemPage() {
   const navigate = useNavigate();
   const [categories, setCategories] = useState<InventoryCategory[]>([]);
+  const [uoms, setUoms] = useState<InventoryUom[]>([]);
   const [formData, setFormData] = useState<InventoryItemFormData>({
     item_code: '',
     name: '',
@@ -28,6 +30,7 @@ export default function CreateItemPage() {
 
   useEffect(() => {
     getCategories().then(setCategories).catch(() => setCategories([]));
+    getUoms().then(setUoms).catch(() => setUoms([]));
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -129,13 +132,12 @@ export default function CreateItemPage() {
                 <label htmlFor="unit_of_measure" className="block text-sm font-medium text-slate-700 mb-1">
                   Unit of Measure *
                 </label>
-                <input
-                  type="text"
+                <Select
                   id="unit_of_measure"
                   value={formData.unit_of_measure}
                   onChange={(e) => setFormData({ ...formData, unit_of_measure: e.target.value })}
-                  placeholder="e.g., ream"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
+                  placeholder="Select a unit"
+                  options={uoms.map((u) => ({ value: u.name, label: u.symbol ? `${u.name} (${u.symbol})` : u.name }))}
                   required
                 />
               </div>
@@ -170,16 +172,10 @@ export default function CreateItemPage() {
             </div>
 
             <div>
-              <label htmlFor="image_url" className="block text-sm font-medium text-slate-700 mb-1">
-                Image URL
-              </label>
-              <input
-                type="text"
-                id="image_url"
+              <label className="block text-sm font-medium text-slate-700 mb-1">Item Image</label>
+              <ItemImageField
                 value={formData.image_url}
-                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                placeholder="e.g., https://cdn.example.com/items/a4-paper.jpg"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
+                onChange={(storedPath) => setFormData({ ...formData, image_url: storedPath })}
               />
             </div>
 

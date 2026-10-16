@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import { getMember, updateMember } from '../../api/library.api';
@@ -7,6 +8,8 @@ import type { MemberFormData } from '../../types/library.types';
 import { ROUTES } from '../../../../constants/routes';
 
 export default function EditMemberPage() {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [formData, setFormData] = useState<MemberFormData>({
@@ -36,7 +39,7 @@ export default function EditMemberPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err instanceof Error ? err.message : 'Failed to load member');
+      setError(err instanceof Error ? err.message : t('members.editPage.failedToLoad'));
     } finally {
       setLoading(false);
     }
@@ -54,7 +57,7 @@ export default function EditMemberPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err.response?.data?.message || 'Failed to update member');
+      setError(err.response?.data?.message || t('members.editPage.failedToUpdate'));
     } finally {
       setSubmitting(false);
     }
@@ -64,11 +67,11 @@ export default function EditMemberPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Edit Member</h1>
-          <p className="text-slate-600 mt-1">Update member details</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('members.editPage.title')}</h1>
+          <p className="text-slate-600 mt-1">{t('members.editPage.subtitle')}</p>
         </div>
         <Card className="border-slate-200">
-          <div className="p-8 text-center text-slate-500">Loading...</div>
+          <div className="p-8 text-center text-slate-500">{tc('status.loading')}</div>
         </Card>
       </div>
     );
@@ -77,8 +80,8 @@ export default function EditMemberPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Edit Member</h1>
-        <p className="text-slate-600 mt-1">Update member details</p>
+        <h1 className="text-2xl font-bold text-slate-900">{t('members.editPage.title')}</h1>
+        <p className="text-slate-600 mt-1">{t('members.editPage.subtitle')}</p>
       </div>
 
       <Card className="border-slate-200">
@@ -92,14 +95,14 @@ export default function EditMemberPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="external_ref_id" className="block text-sm font-medium text-slate-700 mb-1">
-                External Reference ID *
+                {t('members.formFields.externalRefId')}
               </label>
               <input
                 type="text"
                 id="external_ref_id"
                 value={formData.external_ref_id}
                 onChange={(e) => setFormData({ ...formData, external_ref_id: e.target.value })}
-                placeholder="e.g., STU-2024-001"
+                placeholder={t('members.formFields.externalRefIdPlaceholder')}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                 required
               />
@@ -107,14 +110,14 @@ export default function EditMemberPage() {
 
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">
-                Name *
+                {t('members.formFields.name')}
               </label>
               <input
                 type="text"
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g., Arjun Kumar"
+                placeholder={t('members.formFields.namePlaceholder')}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                 required
               />
@@ -122,7 +125,7 @@ export default function EditMemberPage() {
 
             <div>
               <label htmlFor="member_type" className="block text-sm font-medium text-slate-700 mb-1">
-                Member Type *
+                {t('members.formFields.memberType')}
               </label>
               <select
                 id="member_type"
@@ -131,11 +134,11 @@ export default function EditMemberPage() {
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
                 required
               >
-                <option value="">Select member type</option>
-                <option value="student">Student</option>
-                <option value="teacher">Teacher</option>
-                <option value="staff">Staff</option>
-                <option value="guest">Guest</option>
+                <option value="">{t('members.formFields.selectMemberType')}</option>
+                <option value="student">{t('members.formFields.memberTypeStudent')}</option>
+                <option value="teacher">{t('members.formFields.memberTypeTeacher')}</option>
+                <option value="staff">{t('members.formFields.memberTypeStaff')}</option>
+                <option value="guest">{t('members.formFields.memberTypeGuest')}</option>
               </select>
             </div>
 
@@ -146,10 +149,10 @@ export default function EditMemberPage() {
                 onClick={() => navigate(ROUTES.LIBRARY_MEMBERS)}
                 disabled={submitting}
               >
-                Cancel
+                {tc('actions.cancel')}
               </Button>
               <Button type="submit" variant="primary" disabled={submitting}>
-                {submitting ? 'Updating...' : 'Update Member'}
+                {submitting ? tc('status.saving') : t('members.editPage.submit')}
               </Button>
             </div>
           </form>

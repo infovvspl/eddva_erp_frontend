@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Plus, Users, Shield, Trash2, KeyRound } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import Modal from '../../../../components/ui/Modal';
@@ -12,6 +13,8 @@ import {
 import type { UserAssignment } from '../../types/library.types';
 
 export default function UsersPage() {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const [assignments, setAssignments] = useState<UserAssignment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +38,7 @@ export default function UsersPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err instanceof Error ? err.message : 'Failed to load user assignments');
+      setError(err instanceof Error ? err.message : t('rbac.usersPage.failedToLoad'));
     } finally {
       setLoading(false);
     }
@@ -52,7 +55,7 @@ export default function UsersPage() {
   });
 
   const handleRevoke = async (id: number, userName: string) => {
-    if (!window.confirm(`Revoke library access for "${userName}"?`)) {
+    if (!window.confirm(t('rbac.usersPage.confirmRevoke', { userName }))) {
       return;
     }
     try {
@@ -62,7 +65,7 @@ export default function UsersPage() {
       if (err.response?.status === 401) {
         return;
       }
-      alert(err.response?.data?.message || (err instanceof Error ? err.message : 'Failed to revoke assignment'));
+      alert(err.response?.data?.message || (err instanceof Error ? err.message : t('rbac.usersPage.failedToRevoke')));
     }
   };
 
@@ -96,7 +99,7 @@ export default function UsersPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setResetError(err.response?.data?.message || 'Failed to reset password');
+      setResetError(err.response?.data?.message || t('rbac.usersPage.failedToResetPassword'));
     } finally {
       setResetting(false);
     }
@@ -106,13 +109,13 @@ export default function UsersPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Users</h1>
-          <p className="text-slate-600 mt-1">Manage library user role assignments</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('rbac.usersPage.title')}</h1>
+          <p className="text-slate-600 mt-1">{t('rbac.usersPage.subtitle')}</p>
         </div>
         <Link to="/library/users/new">
           <Button variant="primary">
             <Plus className="h-4 w-4 mr-2" />
-            Assign User
+            {t('rbac.usersPage.assignUser')}
           </Button>
         </Link>
       </div>
@@ -121,7 +124,7 @@ export default function UsersPage() {
         <div className="p-4 border-b border-slate-200">
           <input
             type="text"
-            placeholder="Search by name, email, username, or role..."
+            placeholder={t('rbac.usersPage.searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008BE9] focus:border-transparent"
@@ -129,7 +132,7 @@ export default function UsersPage() {
         </div>
 
         {loading ? (
-          <div className="p-8 text-center text-slate-500">Loading...</div>
+          <div className="p-8 text-center text-slate-500">{tc('status.loading')}</div>
         ) : error ? (
           <div className="p-8 text-center text-red-500">{error}</div>
         ) : (
@@ -137,18 +140,18 @@ export default function UsersPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-200">
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700">User</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700">Email</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700">Username</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700">Role</th>
-                  <th className="text-right py-3 px-4 font-semibold text-slate-700">Actions</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-700">{t('rbac.usersPage.user')}</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-700">{t('rbac.usersPage.email')}</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-700">{t('rbac.usersPage.username')}</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-700">{t('rbac.usersPage.role')}</th>
+                  <th className="text-right py-3 px-4 font-semibold text-slate-700">{t('rbac.usersPage.actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredAssignments.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="text-center py-8 text-slate-500">
-                      No user assignments found
+                      {t('rbac.usersPage.noAssignmentsFound')}
                     </td>
                   </tr>
                 ) : (
@@ -174,7 +177,7 @@ export default function UsersPage() {
                       <td className="py-3 px-4">
                         <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
                           <Shield className="h-3 w-3" />
-                          {assignment.role?.name ?? `Role #${assignment.role_id}`}
+                          {assignment.role?.name ?? t('rbac.usersPage.roleFallback', { id: assignment.role_id })}
                         </span>
                       </td>
                       <td className="py-3 px-4 text-right">
@@ -183,7 +186,7 @@ export default function UsersPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => openResetModal(assignment)}
-                            title="Reset password"
+                            title={t('rbac.usersPage.resetPasswordTitle')}
                           >
                             <KeyRound className="h-4 w-4 text-[#008BE9]" />
                           </Button>
@@ -191,7 +194,7 @@ export default function UsersPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleRevoke(assignment.id, assignment.user_name)}
-                            title="Revoke assignment"
+                            title={t('rbac.usersPage.revokeAssignmentTitle')}
                           >
                             <Trash2 className="h-4 w-4 text-red-600" />
                           </Button>
@@ -209,7 +212,7 @@ export default function UsersPage() {
       <Modal
         isOpen={!!resetTarget}
         onClose={closeResetModal}
-        title={`Reset Password — ${resetTarget?.username ?? ''}`}
+        title={t('rbac.usersPage.resetModalTitle', { username: resetTarget?.username ?? '' })}
         size="sm"
       >
         {resetSuccess ? (
@@ -219,7 +222,7 @@ export default function UsersPage() {
             </div>
             <div className="flex justify-end">
               <Button variant="primary" onClick={closeResetModal}>
-                Done
+                {t('rbac.usersPage.done')}
               </Button>
             </div>
           </div>
@@ -232,7 +235,7 @@ export default function UsersPage() {
             )}
             <div>
               <label htmlFor="new_password" className="block text-sm font-medium text-slate-700 mb-1">
-                New Password *
+                {t('rbac.usersPage.newPassword')}
               </label>
               <input
                 type="password"
@@ -247,10 +250,10 @@ export default function UsersPage() {
             </div>
             <div className="flex justify-end gap-3">
               <Button type="button" variant="ghost" onClick={closeResetModal} disabled={resetting}>
-                Cancel
+                {tc('actions.cancel')}
               </Button>
               <Button type="submit" variant="primary" disabled={resetting}>
-                {resetting ? 'Resetting...' : 'Reset Password'}
+                {resetting ? t('rbac.usersPage.resetting') : t('rbac.usersPage.resetPassword')}
               </Button>
             </div>
           </form>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, BookOpen, AlertTriangle, Clock, Calendar } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import { getMember, getMemberCurrentIssues, getMemberFines, waiveFine, payFine, getFine } from '../../api/library.api';
@@ -11,6 +12,8 @@ import WaiveFineModal from '../../components/fines/WaiveFineModal';
 import PayFineModal from '../../components/fines/PayFineModal';
 
 export default function MemberDetailsPage() {
+  const { t } = useTranslation('library');
+  const { t: tc } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
   const [member, setMember] = useState<Member | null>(null);
   const [currentIssues, setCurrentIssues] = useState<BookIssue[]>([]);
@@ -46,7 +49,7 @@ export default function MemberDetailsPage() {
       if (err.response?.status === 401) {
         return;
       }
-      setError(err instanceof Error ? err.message : 'Failed to load member details');
+      setError(err instanceof Error ? err.message : t('members.detailsPage.failedToLoad'));
     } finally {
       setLoading(false);
     }
@@ -106,11 +109,11 @@ export default function MemberDetailsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Member Details</h1>
-          <p className="text-slate-600 mt-1">View member information and activity</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('members.detailsPage.title')}</h1>
+          <p className="text-slate-600 mt-1">{t('members.detailsPage.subtitle')}</p>
         </div>
         <Card className="border-slate-200">
-          <div className="p-8 text-center text-slate-500">Loading...</div>
+          <div className="p-8 text-center text-slate-500">{tc('status.loading')}</div>
         </Card>
       </div>
     );
@@ -120,11 +123,11 @@ export default function MemberDetailsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Member Details</h1>
-          <p className="text-slate-600 mt-1">View member information and activity</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('members.detailsPage.title')}</h1>
+          <p className="text-slate-600 mt-1">{t('members.detailsPage.subtitle')}</p>
         </div>
         <Card className="border-slate-200">
-          <div className="p-8 text-center text-red-500">{error || 'Member not found'}</div>
+          <div className="p-8 text-center text-red-500">{error || t('members.detailsPage.memberNotFound')}</div>
         </Card>
       </div>
     );
@@ -138,12 +141,12 @@ export default function MemberDetailsPage() {
         <Link to={ROUTES.LIBRARY_MEMBERS}>
           <Button variant="ghost" size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Members
+            {t('members.detailsPage.backToMembers')}
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Member Details</h1>
-          <p className="text-slate-600 mt-1">View member information and activity</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('members.detailsPage.title')}</h1>
+          <p className="text-slate-600 mt-1">{t('members.detailsPage.subtitle')}</p>
         </div>
       </div>
 
@@ -152,19 +155,19 @@ export default function MemberDetailsPage() {
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
-              <p className="text-sm text-slate-600 mb-1">External Ref ID</p>
+              <p className="text-sm text-slate-600 mb-1">{t('members.table.externalRefId')}</p>
               <p className="font-mono text-slate-900">{member.external_ref_id}</p>
             </div>
             <div>
-              <p className="text-sm text-slate-600 mb-1">Name</p>
+              <p className="text-sm text-slate-600 mb-1">{t('members.table.name')}</p>
               <p className="font-medium text-slate-900">{member.name}</p>
             </div>
             <div>
-              <p className="text-sm text-slate-600 mb-1">Member Type</p>
+              <p className="text-sm text-slate-600 mb-1">{t('members.table.memberType')}</p>
               <p className="capitalize text-slate-900">{member.member_type}</p>
             </div>
             <div>
-              <p className="text-sm text-slate-600 mb-1">Joined Date</p>
+              <p className="text-sm text-slate-600 mb-1">{t('members.table.joinedDate')}</p>
               <p className="text-slate-900">{new Date(member.created_at).toLocaleDateString()}</p>
             </div>
           </div>
@@ -177,13 +180,13 @@ export default function MemberDetailsPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
               <BookOpen className="h-5 w-5" />
-              Current Book Issues
+              {t('members.detailsPage.currentBookIssues')}
             </h2>
-            <span className="text-sm text-slate-600">{currentIssues.length} book(s)</span>
+            <span className="text-sm text-slate-600">{t('members.detailsPage.bookCount', { count: currentIssues.length })}</span>
           </div>
           {currentIssues.length === 0 ? (
             <div className="text-center py-8 text-slate-500">
-              No current book issues
+              {t('members.detailsPage.noCurrentIssues')}
             </div>
           ) : (
             <div className="space-y-3">
@@ -195,11 +198,11 @@ export default function MemberDetailsPage() {
                       <div className="flex items-center gap-4 mt-2 text-sm text-slate-600">
                         <div className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          <span>Issued: {new Date(issue.issue_date).toLocaleDateString()}</span>
+                          <span>{t('members.detailsPage.issuedLabel', { date: new Date(issue.issue_date).toLocaleDateString() })}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          <span>Due: {new Date(issue.due_date).toLocaleDateString()}</span>
+                          <span>{t('members.detailsPage.dueLabel', { date: new Date(issue.due_date).toLocaleDateString() })}</span>
                         </div>
                       </div>
                     </div>
@@ -226,10 +229,10 @@ export default function MemberDetailsPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
               <AlertTriangle className="h-5 w-5" />
-              Fines
+              {t('members.detailsPage.fines')}
             </h2>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-slate-600">Total Outstanding:</span>
+              <span className="text-sm text-slate-600">{t('members.detailsPage.totalOutstanding')}</span>
               <span className="text-lg font-bold text-red-600">₹{totalFines.toFixed(2)}</span>
             </div>
           </div>
